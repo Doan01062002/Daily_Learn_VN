@@ -197,7 +197,7 @@ export default function LessonDetailPage({
       <div className="absolute bottom-[20%] right-[-10%] w-[35%] h-[35%] rounded-full bg-pink-200/15 blur-[120px] pointer-events-none"></div>
 
       {/* Focused Navigation Header - Floating design */}
-      <header className="sticky top-4 z-40 max-w-5xl w-[calc(100%-2rem)] mx-auto rounded-2xl border border-white/60 bg-white/75 backdrop-blur-md px-5 py-3 flex justify-between items-center shadow-lg shadow-indigo-950/5 mt-4 transition-all duration-300">
+      <header className="sticky top-4 z-40 max-w-7xl w-[calc(100%-2rem)] mx-auto rounded-2xl border border-white/60 bg-white/75 backdrop-blur-md px-5 py-3 flex justify-between items-center shadow-lg shadow-indigo-950/5 mt-4 transition-all duration-300">
         <Link
           href="/dashboard"
           className="flex items-center gap-1.5 text-xs font-bold text-slate-500 hover:text-slate-800 transition duration-200 border border-slate-200/85 px-3 py-2 rounded-xl hover:bg-slate-50"
@@ -216,7 +216,7 @@ export default function LessonDetailPage({
       </header>
 
       {/* Main Focus Reading Responsive Container */}
-      <main className="flex-1 max-w-5xl w-full mx-auto px-4 py-8 z-20">
+      <main className="flex-1 max-w-7xl w-full mx-auto px-4 py-8 z-20">
         
         {loading ? (
           <div className="flex justify-center items-center py-20 flex-1">

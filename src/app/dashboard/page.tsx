@@ -373,7 +373,7 @@ export default function DashboardPage() {
       <div className="absolute bottom-[20%] right-[-10%] w-[35%] h-[35%] rounded-full bg-pink-200/15 blur-[120px] pointer-events-none"></div>
 
       {/* Header Layout - Floating Pill design */}
-      <header className="sticky top-4 z-40 max-w-5xl w-[calc(100%-2rem)] mx-auto rounded-2xl border border-white/60 bg-white/75 backdrop-blur-md px-5 py-3 flex justify-between items-center shadow-lg shadow-indigo-950/5 mt-4 transition-all duration-300">
+      <header className="sticky top-4 z-40 max-w-7xl w-[calc(100%-2rem)] mx-auto rounded-2xl border border-white/60 bg-white/75 backdrop-blur-md px-5 py-3 flex justify-between items-center shadow-lg shadow-indigo-950/5 mt-4 transition-all duration-300">
         <div className="flex items-center gap-3">
           <div className="h-9.5 w-9.5 rounded-xl bg-gradient-to-tr from-[#4F46E5] to-[#EC4899] flex items-center justify-center shadow-md shadow-indigo-500/25 shrink-0 transform hover:rotate-6 transition duration-300">
             <svg className="h-5.5 w-5.5 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
@@ -446,12 +446,12 @@ export default function DashboardPage() {
       </header>
 
       {/* Main SaaS Dashboard Container */}
-      <main className="flex-1 max-w-5xl w-full mx-auto px-4 py-8 z-20">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-start">
+      <main className="flex-1 max-w-7xl w-full mx-auto px-4 py-8 z-20">
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-8 items-start">
           
-          {/* Left Column (1/3 Width) - User Stats & Sidebar info */}
+          {/* Left Column (1/4 Width) - User Stats & Sidebar info */}
           {/* On mobile: Rendered below the main lessons feed to keep mobile focal point clean */}
-          <div className="md:col-span-1 space-y-6 order-2 md:order-1">
+          <div className="lg:col-span-1 space-y-6 order-2 lg:order-1">
             
             {/* Streak & Profile Info Card - Redesigned with premium banner & XP progression */}
             <div className="rounded-2xl border border-slate-100 bg-white/70 backdrop-blur-md overflow-hidden shadow-sm shadow-indigo-950/5 flex flex-col items-center text-center pb-6">
@@ -685,9 +685,9 @@ export default function DashboardPage() {
 
           </div>
 
-          {/* Right Column (2/3 Width) - Active Feed & Dynamic widgets */}
+          {/* Right Column (3/4 Width) - Active Feed & Dynamic widgets */}
           {/* On mobile: Rendered first to display active lessons feed immediately */}
-          <div className="md:col-span-2 space-y-6 order-1 md:order-2">
+          <div className="lg:col-span-3 space-y-6 order-1 lg:order-2">
             
             {/* Daily Quote widget */}
             {dailyQuote.text && (
