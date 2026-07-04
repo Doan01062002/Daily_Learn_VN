@@ -46,6 +46,14 @@ const LESSONS = [
     actionableStep: "Thực hành thiết kế 3 Endpoint RESTful chuẩn cho thực thể 'Bài viết' (Posts).",
     level: "Beginner",
     status: "PUBLISHED" as const,
+    quizzes: [
+      {
+        question: "RESTful API sử dụng phương thức HTTP nào để tạo mới tài nguyên?",
+        options: ["GET", "POST", "PUT", "DELETE"],
+        correctAnswer: "POST",
+        explanation: "Phương thức POST được thiết kế để gửi dữ liệu lên server để tạo mới một tài nguyên con.",
+      }
+    ]
   },
   {
     title: "Kiến trúc Microservices cơ bản",
@@ -59,6 +67,14 @@ const LESSONS = [
     actionableStep: "Vẽ sơ đồ luồng đi của request từ API Gateway đến 2 microservices: Users và Orders.",
     level: "Experienced",
     status: "PUBLISHED" as const,
+    quizzes: [
+      {
+        question: "Thách thức lớn nhất khi thiết kế cơ sở dữ liệu trong Microservices là gì?",
+        options: ["Hiệu năng truy vấn chậm", "Tính nhất quán dữ liệu (Data Consistency)", "Khó sao lưu dữ liệu", "Không dùng được PostgreSQL"],
+        correctAnswer: "Tính nhất quán dữ liệu (Data Consistency)",
+        explanation: "Do mô hình mỗi dịch vụ quản lý một database riêng, việc đồng bộ dữ liệu giữa các dịch vụ để đảm bảo tính nhất quán rất phức tạp.",
+      }
+    ]
   },
   {
     title: "Docker và Container hóa",
@@ -72,6 +88,14 @@ const LESSONS = [
     actionableStep: "Viết một tệp Dockerfile tối giản để container hóa ứng dụng Node.js hiện tại.",
     level: "Beginner",
     status: "PUBLISHED" as const,
+    quizzes: [
+      {
+        question: "Sự khác biệt cốt lõi giúp Container khởi động nhanh hơn Virtual Machine là gì?",
+        options: ["Chạy trực tiếp file exe", "Không cần ổ đĩa cứng", "Chia sẻ chung nhân hệ điều hành (Kernel)", "Không dùng RAM"],
+        correctAnswer: "Chia sẻ chung nhân hệ điều hành (Kernel)",
+        explanation: "Container chia sẻ nhân OS của máy Host và chỉ đóng gói các thư viện ứng dụng, trong khi VM phải khởi chạy toàn bộ Guest OS riêng.",
+      }
+    ]
   },
 
   // BUSINESS TOPIC
@@ -87,6 +111,14 @@ const LESSONS = [
     actionableStep: "Áp dụng mô hình Porter để phân tích sơ bộ mức độ cạnh tranh của thị trường App Học tập tại Việt Nam.",
     level: "Beginner",
     status: "PUBLISHED" as const,
+    quizzes: [
+      {
+        question: "Yếu tố nào trong 5 lực lượng cạnh tranh nói về sức ép từ đối thủ cùng ngành?",
+        options: ["Sức ép từ khách hàng", "Mức độ cạnh tranh của các đối thủ hiện tại", "Nguy cơ sản phẩm thay thế", "Sức ép từ nhà cung cấp"],
+        correctAnswer: "Mức độ cạnh tranh của các đối thủ hiện tại",
+        explanation: "Đây là cường độ cạnh tranh trực tiếp giữa các doanh nghiệp đang cùng kinh doanh một dòng sản phẩm trên thị trường.",
+      }
+    ]
   },
   {
     title: "Chỉ số Unit Economics trong Startup",
@@ -100,6 +132,14 @@ const LESSONS = [
     actionableStep: "Tính toán chỉ số CAC nếu bạn chi 10 triệu VND chạy quảng cáo thu về được 50 học viên trả phí.",
     level: "Experienced",
     status: "PUBLISHED" as const,
+    quizzes: [
+      {
+        question: "Tỷ lệ LTV / CAC lý tưởng tối thiểu của một startup bền vững là bao nhiêu?",
+        options: ["Lớn hơn 1", "Lớn hơn 3", "Bằng 0.5", "Lớn hơn 10"],
+        correctAnswer: "Lớn hơn 3",
+        explanation: "Tỷ lệ LTV/CAC > 3 chứng tỏ giá trị thu về từ một khách hàng cao gấp 3 lần chi phí bỏ ra để có khách hàng đó.",
+      }
+    ]
   },
 
   // DESIGN TOPIC
@@ -115,6 +155,14 @@ const LESSONS = [
     actionableStep: "Tăng khoảng cách padding từ 12px lên 24px cho một thẻ sản phẩm để thấy sự khác biệt về độ thoáng.",
     level: "Beginner",
     status: "PUBLISHED" as const,
+    quizzes: [
+      {
+        question: "Mục đích quan trọng nhất của việc sử dụng khoảng trắng (Whitespace) trong UI là gì?",
+        options: ["Làm trang web dài hơn", "Nhóm các phần tử và tạo hệ thống phân cấp thị giác", "Giảm dung lượng trang web", "Tránh sử dụng màu sắc"],
+        correctAnswer: "Nhóm các phần tử và tạo hệ thống phân cấp thị giác",
+        explanation: "Khoảng trắng giúp mắt người dùng dễ phân biệt các cụm thông tin và nhận diện yếu tố quan trọng nhất trên màn hình.",
+      }
+    ]
   },
   {
     title: "Hệ thống lưới (Grid System) trong Layout",
@@ -128,19 +176,35 @@ const LESSONS = [
     actionableStep: "Phác thảo layout 12 cột trên giấy và vẽ cách chia bố cục khi ở màn hình PC (3 cột) và Mobile (1 cột).",
     level: "Beginner",
     status: "PUBLISHED" as const,
+    quizzes: [
+      {
+        question: "Tại sao hệ thống lưới 12 cột lại được ưa chuộng rộng rãi trong thiết kế Responsive?",
+        options: ["Vì nó chia đều được cho 2, 3, 4 và 6", "Vì nó bắt buộc bởi Apple", "Vì nó tốn ít CSS nhất", "Vì nó hiển thị được 12 hình ảnh"],
+        correctAnswer: "Vì nó chia đều được cho 2, 3, 4 và 6",
+        explanation: "Số 12 chia hết cho nhiều số giúp chia bố cục linh hoạt thành 2, 3, 4 hoặc 6 phần bằng nhau.",
+      }
+    ]
   },
   {
     title: "Áp dụng Luật Fitts trong Thiết kế Tương tác",
+    tags: ["Design"],
+    sourceDomain: "nngroup.com",
     summary: [
       "Thời gian người dùng click/chạm vào một nút phụ thuộc vào khoảng cách địa lý và kích thước nút đó.",
       "Đặt các nút hành động quan trọng (như Nút Thanh Toán) ở vùng ngón cái dễ chạm đến nhất trên điện thoại.",
       "Thiết kế kích thước nút bấm tối thiểu đạt 48x48px để tránh bấm nhầm và cải thiện trải nghiệm sử dụng."
     ],
     actionableStep: "Kiểm tra và tăng kích thước vùng chạm của nút 'Đăng xuất' trên màn hình điện thoại đạt chuẩn 48px.",
-    tags: ["Design"],
-    sourceDomain: "nngroup.com",
     level: "Experienced",
     status: "PUBLISHED" as const,
+    quizzes: [
+      {
+        question: "Theo Luật Fitts, hai yếu tố nào quyết định thời gian người dùng tương tác với một nút bấm?",
+        options: ["Màu sắc và viền của nút", "Khoảng cách và kích thước của nút", "Font chữ và đổ bóng của nút", "Độ trong suốt và tốc độ mạng"],
+        correctAnswer: "Khoảng cách và kích thước của nút",
+        explanation: "Luật Fitts phát biểu thời gian di chuyển tới mục tiêu tỷ lệ thuận với khoảng cách và tỷ lệ nghịch với kích thước mục tiêu.",
+      }
+    ]
   },
 
   // SOFTSKILLS TOPIC
@@ -156,6 +220,14 @@ const LESSONS = [
     actionableStep: "Thiết lập đồng hồ đếm ngược đúng 25 phút và hoàn thành việc đọc sách không cầm vào điện thoại.",
     level: "Beginner",
     status: "PUBLISHED" as const,
+    quizzes: [
+      {
+        question: "Một chu kỳ làm việc Pomodoro tiêu chuẩn kéo dài bao nhiêu phút tập trung?",
+        options: ["15 phút", "25 phút", "50 phút", "60 phút"],
+        correctAnswer: "25 phút",
+        explanation: "Một Pomodoro tiêu chuẩn gồm 25 phút làm việc tập trung hoàn toàn và nghỉ ngắn 5 phút.",
+      }
+    ]
   },
   {
     title: "Nguyên tắc giao tiếp Minto Pyramid",
@@ -169,6 +241,14 @@ const LESSONS = [
     actionableStep: "Viết lại một email xin nghỉ phép theo chuẩn Minto: Đưa lý do và ngày nghỉ lên dòng đầu tiên.",
     level: "Experienced",
     status: "PUBLISHED" as const,
+    quizzes: [
+      {
+        question: "Theo Nguyên tắc Kim tự tháp Minto, thông tin nào nên được trình bày đầu tiên?",
+        options: ["Các lập luận chi tiết", "Quy trình khảo sát", "Kết luận cốt lõi", "Lời chào hỏi dài dòng"],
+        correctAnswer: "Kết luận cốt lõi",
+        explanation: "Nguyên tắc Minto khuyên cấu trúc giao tiếp đi xuống: đưa kết luận chính lên trước, giải thích chứng minh theo sau.",
+      }
+    ]
   },
 
   // HEALTH TOPIC
@@ -184,6 +264,14 @@ const LESSONS = [
     actionableStep: "Lên lịch ngủ tối nay sao cho thời gian từ lúc nhắm mắt đến lúc báo thức chia hết cho 90 phút.",
     level: "Beginner",
     status: "PUBLISHED" as const,
+    quizzes: [
+      {
+        question: "Thời lượng trung bình của một chu kỳ giấc ngủ hoàn chỉnh ở người trưởng thành là bao nhiêu?",
+        options: ["45 phút", "90 phút", "120 phút", "180 phút"],
+        correctAnswer: "90 phút",
+        explanation: "Mỗi chu kỳ giấc ngủ kéo dài trung bình 90 phút. Thức dậy vào cuối chu kỳ giúp cơ thể sảng khoái nhất.",
+      }
+    ]
   },
   {
     title: "Tác hại của ngồi nhiều & tư thế làm việc chuẩn",
@@ -197,22 +285,37 @@ const LESSONS = [
     actionableStep: "Cài đặt ứng dụng nhắc nhở đứng dậy vận động sau mỗi 50 phút làm việc liên tục.",
     level: "Beginner",
     status: "PUBLISHED" as const,
+    quizzes: [
+      {
+        question: "Tư thế đặt chân chuẩn xác nhất khi ngồi làm việc trước máy tính là gì?",
+        options: ["Bắt chéo chân", "Đặt phẳng trên mặt sàn", "Gác chân lên ghế", "Duỗi thẳng chân về trước"],
+        correctAnswer: "Đặt phẳng trên mặt sàn",
+        explanation: "Bàn chân chạm phẳng thoải mái trên sàn nhà giúp giảm sức ép lên đùi và phân bổ đều trọng lượng lên hông.",
+      }
+    ]
   },
 ];
 
 async function main() {
   console.log("Cleaning Database...");
   await prisma.userLessonProgress.deleteMany({});
+  await prisma.quiz.deleteMany({});
   await prisma.lesson.deleteMany({});
 
-  console.log("Seeding Lessons...");
-  for (const lesson of LESSONS) {
+  console.log("Seeding Lessons and Quizzes...");
+  for (const lessonData of LESSONS) {
+    const { quizzes, ...lessonFields } = lessonData;
     await prisma.lesson.create({
-      data: lesson,
+      data: {
+        ...lessonFields,
+        quizzes: {
+          create: quizzes,
+        },
+      },
     });
   }
 
-  console.log(`Successfully seeded ${LESSONS.length} lessons.`);
+  console.log(`Successfully seeded ${LESSONS.length} lessons and quizzes.`);
 }
 
 main()
