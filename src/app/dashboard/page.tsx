@@ -211,13 +211,13 @@ export default function DashboardPage() {
         {/* Progress tracker bar */}
         {activeTab === "today" && totalCount > 0 && (
           <div className="px-1">
-            <div className="flex justify-between items-center text-xs font-semibold text-[#8C8375] mb-1.5">
-              <span>TIẾN ĐỘ HÔM NAY</span>
-              <span>{completedCount} / {totalCount} bài học</span>
+            <div className="flex justify-between items-center text-[10px] font-bold text-[#8C8375] uppercase tracking-wider mb-2">
+              <span>Tiến độ học hôm nay</span>
+              <span className="font-mono text-xs">{completedCount} / {totalCount} bài học</span>
             </div>
-            <div className="h-2 w-full bg-[#EBE6DD] rounded-full overflow-hidden">
+            <div className="h-1.5 w-full bg-[#EBE6DD] rounded-full overflow-hidden">
               <div
-                className="h-full bg-emerald-600 transition-all duration-300 ease-out"
+                className="h-full bg-[#BF753F] transition-all duration-500 ease-out"
                 style={{ width: `${(completedCount / totalCount) * 100}%` }}
               ></div>
             </div>
@@ -228,9 +228,9 @@ export default function DashboardPage() {
         <div className="flex border-b border-[#EBE6DD] gap-6 px-1">
           <button
             onClick={() => setActiveTab("today")}
-            className={`pb-2 text-xs font-bold uppercase tracking-wider border-b-2 transition focus:outline-none ${
+            className={`pb-2 text-xs font-bold uppercase tracking-wider border-b-2 transition duration-200 focus:outline-none ${
               activeTab === "today"
-                ? "border-[#4E4941] text-[#3E3A35]"
+                ? "border-[#BF753F] text-[#BF753F]"
                 : "border-transparent text-[#8C8375] hover:text-[#3E3A35]"
             }`}
           >
@@ -238,9 +238,9 @@ export default function DashboardPage() {
           </button>
           <button
             onClick={() => setActiveTab("stats")}
-            className={`pb-2 text-xs font-bold uppercase tracking-wider border-b-2 transition focus:outline-none ${
+            className={`pb-2 text-xs font-bold uppercase tracking-wider border-b-2 transition duration-200 focus:outline-none ${
               activeTab === "stats"
-                ? "border-[#4E4941] text-[#3E3A35]"
+                ? "border-[#BF753F] text-[#BF753F]"
                 : "border-transparent text-[#8C8375] hover:text-[#3E3A35]"
             }`}
           >
@@ -250,8 +250,8 @@ export default function DashboardPage() {
 
         {/* Tab Contents */}
         {activeTab === "today" ? (
-          <div className="space-y-4">
-            <h2 className="text-xs font-bold text-[#8C8375] uppercase tracking-wider px-1">
+          <div className="space-y-5">
+            <h2 className="text-[10px] font-bold text-[#8C8375] uppercase tracking-wider px-1">
               Bài học dành riêng cho bạn hôm nay
             </h2>
 
@@ -260,66 +260,66 @@ export default function DashboardPage() {
                 <div className="h-8 w-8 animate-spin rounded-full border-2 border-[#8C8375] border-t-transparent"></div>
               </div>
             ) : errorMsg ? (
-              <div className="rounded-xl bg-[#FDF3F2] p-4 text-center text-sm text-[#D32F2F] border border-[#FBE3E1]">
+              <div className="rounded-xl bg-[#FDF3F2] p-4 text-center text-xs text-[#D32F2F] border border-[#FBE3E1]">
                 {errorMsg}
               </div>
             ) : lessons.length === 0 ? (
-              <div className="text-center py-12 border border-dashed border-[#D5CFC5] rounded-xl text-[#8C8375]">
-                Không có bài học nào phù hợp. Vui lòng cập nhật Onboarding.
+              <div className="text-center py-12 border border-dashed border-[#D5CFC5] rounded-xl text-xs text-[#8C8375] italic">
+                Không có bài học nào phù hợp. Vui lòng cập nhật cài đặt sở thích.
               </div>
             ) : (
-              <div className="space-y-4">
+              <div className="space-y-5">
                 {lessons.map((lesson) => (
                   <div
                     key={lesson.id}
-                    className={`rounded-2xl border p-6 transition duration-300 relative ${
+                    className={`rounded-2xl border p-6 transition-all duration-300 ease-out relative ${
                       lesson.completed
-                        ? "bg-[#FAF9F6] border-[#EBE6DD] opacity-75 shadow-none"
-                        : "bg-[#FCFAF7] border-[#EBE6DD] hover:border-[#BFB8AC] hover:shadow-[0_8px_30px_rgb(0,0,0,0.015)] shadow-sm"
+                        ? "bg-[#FAF9F6] border-[#EBE6DD] opacity-70 shadow-none"
+                        : "bg-white border-[#EBE6DD] hover:border-[#BF753F] hover:shadow-[0_8px_30px_rgba(191,117,63,0.025)] hover:-translate-y-0.5 shadow-sm"
                     }`}
                   >
                     {/* Topic tag chips */}
-                    <div className="flex flex-wrap gap-2 items-center mb-3.5">
+                    <div className="flex flex-wrap gap-2 items-center mb-4">
                       {lesson.tags.map((tag) => (
                         <span
                           key={tag}
-                          className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-[#FAF0E6] text-[#8C8375] border border-[#F5D5C5]"
+                          className="text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-[#FAF2EB] text-[#BF753F] border border-[#F0DDC5]"
                         >
                           #{tag}
                         </span>
                       ))}
-                      <span className="text-xs text-[#BFB8AC] font-serif italic ml-auto">
+                      <span className="text-[10px] text-[#BFB8AC] font-serif italic ml-auto">
                         nguồn: {lesson.sourceDomain}
                       </span>
                     </div>
 
-                    <h3 className="font-serif text-lg font-bold text-[#3E3A35] mb-2 leading-tight">
+                    <h3 className="font-serif text-xl font-bold text-[#3E3A35] mb-2.5 leading-snug tracking-tight">
                       {lesson.title}
                     </h3>
 
                     {/* Summary takeaways list */}
-                    <ul className="space-y-1.5 mb-5 text-sm text-[#5C554B]">
+                    <ul className="space-y-2 mb-6 text-sm text-[#5C554B]">
                       {lesson.summary.slice(0, 2).map((bullet, idx) => (
-                        <li key={idx} className="flex items-start gap-2">
-                          <span className="text-[#8C8375] mt-1 text-xs">•</span>
-                          <span>{bullet}</span>
+                        <li key={idx} className="flex items-start gap-2.5">
+                          <span className="text-[#BF753F] mt-1.5 text-xs select-none">•</span>
+                          <span className="leading-relaxed">{bullet}</span>
                         </li>
                       ))}
                       {lesson.summary.length > 2 && (
-                        <li className="text-xs text-[#8C8375] font-serif italic list-none pl-3.5">
+                        <li className="text-xs text-[#8C8375] font-serif italic list-none pl-4 mt-1">
                           + {lesson.summary.length - 2} điểm tóm tắt khác...
                         </li>
                       )}
                     </ul>
 
                     {/* Action trigger button */}
-                    <div className="flex justify-between items-center pt-3 border-t border-[#F0ECE4]">
-                      <span className="text-xs font-semibold text-[#8C8375] uppercase tracking-wide">
+                    <div className="flex justify-between items-center pt-4.5 border-t border-[#F0ECE4]">
+                      <span className="text-[10px] font-bold text-[#8C8375] uppercase tracking-wider">
                         Trình độ: {lesson.level}
                       </span>
                       <Link
                         href={`/lessons/${lesson.id}`}
-                        className={`px-4 py-1.5 rounded-lg text-xs font-semibold shadow-sm transition duration-200 focus:outline-none ${
+                        className={`px-4.5 py-2 rounded-lg text-xs font-bold shadow-sm transition-all duration-200 active:translate-y-[1px] focus:outline-none ${
                           lesson.completed
                             ? "bg-[#FAF8F5] text-[#8C8375] border border-[#D5CFC5]"
                             : "bg-[#4E4941] text-white hover:bg-[#3E3A35]"
@@ -343,21 +343,21 @@ export default function DashboardPage() {
             ) : (
               <>
                 <div className="grid grid-cols-2 gap-4">
-                  <div className="bg-white border border-[#EBE6DD] p-4 rounded-xl shadow-sm">
+                  <div className="bg-white border border-[#EBE6DD] p-5 rounded-xl shadow-sm">
                     <div className="text-[10px] font-bold text-[#8C8375] uppercase tracking-wider">Bài học hoàn thành</div>
-                    <div className="text-xl font-extrabold text-[#3E3A35] mt-1">{stats?.completedLessons || 0} bài</div>
+                    <div className="text-2xl font-extrabold text-[#3E3A35] mt-1.5 font-mono">{stats?.completedLessons || 0} bài</div>
                   </div>
-                  <div className="bg-white border border-[#EBE6DD] p-4 rounded-xl shadow-sm">
+                  <div className="bg-white border border-[#EBE6DD] p-5 rounded-xl shadow-sm">
                     <div className="text-[10px] font-bold text-[#8C8375] uppercase tracking-wider">Điểm Quiz trung bình</div>
-                    <div className="text-xl font-extrabold text-[#3E3A35] mt-1">{stats?.averageQuizScore || 0}%</div>
+                    <div className="text-2xl font-extrabold text-[#3E3A35] mt-1.5 font-mono">{stats?.averageQuizScore || 0}%</div>
                   </div>
-                  <div className="bg-white border border-[#EBE6DD] p-4 rounded-xl shadow-sm">
+                  <div className="bg-white border border-[#EBE6DD] p-5 rounded-xl shadow-sm">
                     <div className="text-[10px] font-bold text-[#8C8375] uppercase tracking-wider">Chuỗi học hiện tại</div>
-                    <div className="text-xl font-extrabold text-[#D35400] mt-1">🔥 {stats?.currentStreak || 0} ngày</div>
+                    <div className="text-2xl font-extrabold text-[#BF753F] mt-1.5 font-mono">🔥 {stats?.currentStreak || 0} ngày</div>
                   </div>
-                  <div className="bg-white border border-[#EBE6DD] p-4 rounded-xl shadow-sm">
+                  <div className="bg-white border border-[#EBE6DD] p-5 rounded-xl shadow-sm">
                     <div className="text-[10px] font-bold text-[#8C8375] uppercase tracking-wider">Chuỗi kỷ lục</div>
-                    <div className="text-xl font-extrabold text-[#8C8375] mt-1">🏆 {stats?.maxStreak || 0} ngày</div>
+                    <div className="text-2xl font-extrabold text-[#8C8375] mt-1.5 font-mono">🏆 {stats?.maxStreak || 0} ngày</div>
                   </div>
                 </div>
 
@@ -380,8 +380,8 @@ export default function DashboardPage() {
                       return (
                         <div
                           key={index}
-                          className={`px-6 py-3.5 flex items-center justify-between transition duration-150 ${
-                            isCurrentUser ? "bg-[#FAF2EB]/50" : "hover:bg-[#FAF8F5]"
+                          className={`px-6 py-3.5 flex items-center justify-between transition-all duration-150 ${
+                            isCurrentUser ? "bg-[#FAF2EB] border-l-2 border-l-[#BF753F]" : "hover:bg-[#FAF8F5]"
                           }`}
                         >
                           <div className="flex items-center gap-3">
@@ -401,7 +401,7 @@ export default function DashboardPage() {
                                   </span>
                                 )}
                                 {isCurrentUser && (
-                                  <span className="text-[8px] bg-emerald-50 text-emerald-700 border border-emerald-200 font-bold px-1 rounded uppercase tracking-wide">
+                                  <span className="text-[8px] bg-emerald-50 text-emerald-700 border border-emerald-250 font-bold px-1 rounded uppercase tracking-wide">
                                     Bạn
                                   </span>
                                 )}
@@ -412,7 +412,7 @@ export default function DashboardPage() {
                             </div>
                           </div>
 
-                          <div className="flex items-center gap-1 font-mono font-bold text-xs text-[#D35400] bg-[#FAF2EB] px-2.5 py-1 rounded-lg">
+                          <div className="flex items-center gap-1 font-mono font-bold text-xs text-[#BF753F] bg-[#FAF2EB] px-2.5 py-1 rounded-lg">
                             <span>🔥</span>
                             <span>{item.currentStreak} ngày</span>
                           </div>

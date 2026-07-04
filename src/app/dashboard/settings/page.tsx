@@ -198,7 +198,7 @@ export default function UserSettingsPage() {
                     required
                     value={name}
                     onChange={(e) => setName(e.target.value)}
-                    className="block w-full rounded-lg border border-[#D5CFC5] bg-white px-3 py-2 text-xs text-[#4E4941] placeholder-[#BFB8AC] shadow-sm transition duration-200 focus:border-[#8C8375] focus:outline-none"
+                    className="block w-full rounded-lg border border-[#D5CFC5] bg-white px-3 py-2 text-xs text-[#4E4941] placeholder-[#BFB8AC] shadow-sm transition duration-200 focus:border-[#BF753F] focus:outline-none"
                   />
                 </div>
 
@@ -299,7 +299,7 @@ export default function UserSettingsPage() {
                 <button
                   type="submit"
                   disabled={saveLoading}
-                  className="w-full flex justify-center py-2.5 rounded-lg bg-[#4E4941] text-white text-xs font-semibold hover:bg-[#3E3A35] disabled:opacity-50 transition duration-200"
+                  className="w-full flex justify-center py-3 rounded-xl bg-[#4E4941] text-white text-xs font-bold hover:bg-[#3E3A35] disabled:opacity-50 transition-all duration-200 active:translate-y-[1px] shadow-sm"
                 >
                   {saveLoading ? "Đang lưu thay đổi..." : "Lưu cấu hình & cập nhật bài học"}
                 </button>
@@ -339,7 +339,7 @@ export default function UserSettingsPage() {
             {user.role === "STUDENT" && (
               <Link
                 href="/checkout"
-                className="mt-4 block text-center py-2.5 rounded-lg bg-amber-600 text-white text-xs font-bold hover:bg-amber-700 transition duration-200 shadow-sm"
+                className="mt-4 block text-center py-3 rounded-xl bg-[#BF753F] text-white text-xs font-bold hover:bg-[#a05b2b] transition-all duration-200 active:translate-y-[1px] shadow-sm"
               >
                 Nâng cấp Premium ngay
               </Link>
@@ -372,12 +372,12 @@ export default function UserSettingsPage() {
                       </div>
                     </div>
                     <div className="text-right">
-                      <div className="font-bold text-[#3E3A35]">{(tx.amount).toLocaleString("vi-VN")} đ</div>
+                      <div className="font-bold text-[#3E3A35] font-mono">{(tx.amount).toLocaleString("vi-VN")} đ</div>
                       <span
-                        className={`font-semibold text-[8px] rounded px-1 mt-0.5 inline-block uppercase tracking-wide ${
+                        className={`font-bold text-[8px] rounded px-1.5 py-0.5 mt-1 inline-block uppercase tracking-wide ${
                           tx.status === "COMPLETED"
-                            ? "bg-emerald-50 text-emerald-700 border border-emerald-150"
-                            : "bg-amber-50 text-amber-700 border border-amber-150"
+                            ? "bg-emerald-50 text-emerald-700 border border-emerald-200"
+                            : "bg-amber-50 text-amber-700 border border-amber-200"
                         }`}
                       >
                         {tx.status === "COMPLETED" ? "Thành công" : "Chờ xử lý"}
