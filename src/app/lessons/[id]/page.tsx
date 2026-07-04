@@ -183,13 +183,21 @@ export default function LessonDetailPage({
                   </Link>
                 </div>
               ) : (
-                <button
-                  onClick={handleComplete}
-                  disabled={isSubmitting}
-                  className="w-full text-center py-3.5 rounded-lg bg-[#4E4941] text-white text-sm font-semibold hover:bg-[#3E3A35] transition duration-200 shadow-sm disabled:opacity-50 focus:outline-none"
-                >
-                  {isSubmitting ? "Đang cập nhật..." : "Tôi đã học xong"}
-                </button>
+                <div className="space-y-3">
+                  <Link
+                    href={`/lessons/${lessonId}/quiz`}
+                    className="block w-full text-center py-3.5 rounded-lg bg-[#4E4941] text-white text-sm font-semibold hover:bg-[#3E3A35] transition duration-200 shadow-sm"
+                  >
+                    Làm trắc nghiệm củng cố (Kiếm điểm)
+                  </Link>
+                  <button
+                    onClick={handleComplete}
+                    disabled={isSubmitting}
+                    className="w-full text-center py-3 rounded-lg border border-[#D5CFC5] bg-white text-xs font-semibold text-[#8C8375] hover:bg-[#F9F7F4] hover:text-[#3E3A35] transition duration-200 disabled:opacity-50 focus:outline-none"
+                  >
+                    {isSubmitting ? "Đang cập nhật..." : "Đọc xong (Không làm trắc nghiệm)"}
+                  </button>
+                </div>
               )}
             </div>
           </div>
