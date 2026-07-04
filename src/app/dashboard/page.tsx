@@ -104,9 +104,16 @@ export default function DashboardPage() {
     <div className="min-h-screen bg-[#FAF8F5] text-[#3E3A35] flex flex-col">
       {/* Header Layout */}
       <header className="border-b border-[#EBE6DD] bg-white px-6 py-4 flex justify-between items-center shadow-sm">
-        <div className="flex items-center gap-2">
-          <span className="h-2 w-2 rounded-full bg-[#8C8375]"></span>
-          <span className="font-serif font-bold text-lg tracking-wide">Daily Learn VN</span>
+        <div className="flex items-center gap-2.5">
+          <div className="h-9 w-9 rounded-xl bg-gradient-to-tr from-[#8C8375] to-[#4E4941] flex items-center justify-center shadow-sm">
+            <svg className="h-5 w-5 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25" />
+            </svg>
+          </div>
+          <div className="flex flex-col">
+            <span className="font-serif font-extrabold text-base tracking-tight text-[#3E3A35] leading-none">Daily Learn</span>
+            <span className="text-[9px] font-bold text-[#8C8375] tracking-widest uppercase mt-0.5">Việt Nam</span>
+          </div>
         </div>
         <div className="flex items-center gap-3">
           {user.role === "ADMIN" && (
