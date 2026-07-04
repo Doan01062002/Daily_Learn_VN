@@ -1,0 +1,23 @@
+{
+  "appName": "Daily Learn VN",
+  "supportPhone": "0987654321",
+  "maintenanceMode": false,
+  "premiumPrice": 199000,
+  "trialDays": 7,
+  "freeDailyLimit": 1,
+  "minQuizScoreToPass": 75,
+  "smtpSenderName": "Daily Learn VN",
+  "smtpSenderEmail": "support@dailylearn.vn",
+  "rolePermissions": {
+    "CTV": [
+      "manage_lessons",
+      "manage_quizzes",
+      "manage_grading"
+    ],
+    "OPERATOR": [
+      "manage_users",
+      "manage_payments",
+      "manage_notifications"
+    ]
+  }
+}

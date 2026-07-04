@@ -32,10 +32,15 @@ export default function NewLessonPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
+  // Assignment States
+  const [hasAssignment, setHasAssignment] = useState(false);
+  const [assignmentType, setAssignmentType] = useState("WRITING");
+  const [assignmentPrompt, setAssignmentPrompt] = useState("");
+
   if (!user) return null;
 
   // 1. Client-Side Authorization guard check
-  if (user.role !== "ADMIN") {
+  if (user.role !== "ADMIN" && user.role !== "CTV" && user.role !== "OPERATOR") {
     return (
       <div className="min-h-screen bg-[#FAF8F5] text-[#3E3A35] flex items-center justify-center p-6">
         <div className="rounded-2xl border border-rose-200 bg-rose-50/50 p-8 text-center max-w-sm w-full space-y-4 shadow-sm">
@@ -98,6 +103,12 @@ export default function NewLessonPage() {
             },
           ]
         : [],
+      assignment: hasAssignment && assignmentPrompt
+        ? {
+            type: assignmentType,
+            prompt: assignmentPrompt.trim(),
+          }
+        : null,
     };
 
     try {
@@ -174,7 +185,7 @@ export default function NewLessonPage() {
                 <select
                   value={level}
                   onChange={(e) => setLevel(e.target.value)}
-                  className="w-full px-3 py-2 rounded-lg border border-[#D5CFC5] bg-[#FCFAF7] text-sm focus:outline-none focus:border-[#8C8375] transition duration-150"
+                  className="w-full px-3 py-2 rounded-lg border border-[#D5CFC5] bg-[#FCFAF7] text-sm focus:outline-none focus:border-[#8C8375] transition duration-150 cursor-pointer"
                 >
                   <option value="Beginner">Beginner</option>
                   <option value="Experienced">Experienced</option>
@@ -305,7 +316,7 @@ export default function NewLessonPage() {
                 <select
                   value={correctOption}
                   onChange={(e) => setCorrectOption(e.target.value)}
-                  className="w-full px-3 py-2 rounded-lg border border-[#D5CFC5] bg-[#FCFAF7] text-sm focus:outline-none focus:border-[#8C8375] transition duration-150"
+                  className="w-full px-3 py-2 rounded-lg border border-[#D5CFC5] bg-[#FCFAF7] text-sm focus:outline-none focus:border-[#8C8375] transition duration-150 cursor-pointer"
                 >
                   <option value="A">Phương án A</option>
                   <option value="B">Phương án B</option>
@@ -326,6 +337,55 @@ export default function NewLessonPage() {
                 />
               </div>
             </div>
+          </div>
+
+          {/* SECTION 3: ASSIGNMENT PROMPT */}
+          <div className="rounded-2xl border border-[#EBE6DD] bg-white p-6 shadow-sm space-y-4">
+            <div className="flex items-center justify-between border-b border-[#F0ECE4] pb-2">
+              <h2 className="text-xs font-bold text-[#8C8375] uppercase tracking-wider">
+                3. Bài tập tự luận đi kèm (Không bắt buộc)
+              </h2>
+              <label className="flex items-center gap-1.5 cursor-pointer text-xs font-bold text-[#4E4941]">
+                <input
+                  type="checkbox"
+                  checked={hasAssignment}
+                  onChange={(e) => setHasAssignment(e.target.checked)}
+                  className="rounded border-[#D5CFC5] text-rose-800 focus:ring-rose-800 h-3.5 w-3.5"
+                />
+                Kích hoạt bài tập
+              </label>
+            </div>
+
+            {hasAssignment && (
+              <div className="space-y-4 animate-fade-in">
+                <div className="space-y-1.5">
+                  <label className="text-xs font-bold text-[#4E4941] uppercase tracking-wider block">
+                    Loại bài tập
+                  </label>
+                  <select
+                    value={assignmentType}
+                    onChange={(e) => setAssignmentType(e.target.value)}
+                    className="w-full px-3 py-2 rounded-lg border border-[#D5CFC5] bg-[#FCFAF7] text-sm focus:outline-none focus:border-[#8C8375] transition cursor-pointer"
+                  >
+                    <option value="WRITING">Viết đoạn văn ngắn (Writing)</option>
+                    <option value="SPEAKING">Phát âm / Nói (Speaking)</option>
+                  </select>
+                </div>
+
+                <div className="space-y-1.5">
+                  <label className="text-xs font-bold text-[#4E4941] uppercase tracking-wider block">
+                    Đề bài / Câu hỏi hướng dẫn
+                  </label>
+                  <textarea
+                    rows={3}
+                    placeholder="Nhập hướng dẫn chi tiết bài tập tự luận cho học viên..."
+                    value={assignmentPrompt}
+                    onChange={(e) => setAssignmentPrompt(e.target.value)}
+                    className="w-full px-3 py-2 rounded-lg border border-[#D5CFC5] bg-[#FCFAF7] text-sm focus:outline-none focus:border-[#8C8375] transition"
+                  />
+                </div>
+              </div>
+            )}
           </div>
 
           {/* ACTION BUTTONS */}

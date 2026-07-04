@@ -23,6 +23,7 @@ vi.mock("@/lib/prisma", () => ({
   default: {
     lesson: {
       findMany: vi.fn(),
+      count: vi.fn(),
       create: vi.fn(),
     },
   },
@@ -77,6 +78,7 @@ describe("GET /api/admin/lessons", () => {
       },
     ];
     vi.mocked(prisma.lesson.findMany).mockResolvedValue(mockLessons as any);
+    vi.mocked(prisma.lesson.count as any).mockResolvedValue(1);
 
     const req = new NextRequest("http://localhost/api/admin/lessons");
     const res = await GET(req);

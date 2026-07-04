@@ -32,6 +32,12 @@ vi.mock("@/lib/prisma", () => ({
     paymentTransaction: {
       deleteMany: vi.fn(),
     },
+    feedback: {
+      deleteMany: vi.fn(),
+    },
+    submission: {
+      deleteMany: vi.fn(),
+    },
   },
   __esModule: true,
 }));
@@ -100,6 +106,12 @@ describe("Admin Users Management APIs", () => {
         get: vi.fn().mockReturnValue({ value: "mock-token" }),
       } as any));
       vi.mocked(verifyToken).mockReturnValue({ userId: "admin-id", email: "admin@gmail.com", role: "ADMIN" });
+      vi.mocked(prisma.user.findUnique).mockResolvedValue({
+        id: "student-1",
+        email: "student1@gmail.com",
+        role: "STUDENT",
+        isLocked: false,
+      } as any);
       vi.mocked(prisma.user.update).mockResolvedValue({
         id: "student-1",
         email: "student1@gmail.com",

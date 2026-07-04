@@ -4,6 +4,7 @@ import React, { useEffect, useState, use } from "react";
 import { useAuth } from "@/components/layout/AuthProvider";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import FeedbackModal from "@/components/FeedbackModal";
 
 interface QuizItem {
   id: string;
@@ -36,6 +37,7 @@ export default function QuizPage({
   const [selectedOption, setSelectedOption] = useState<string>("");
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showFeedbackModal, setShowFeedbackModal] = useState(false);
 
   // Results tracking
   const [submittedAnswers, setSubmittedAnswers] = useState<
@@ -181,9 +183,17 @@ export default function QuizPage({
         >
           <span>←</span> Quay lại bài học
         </Link>
-        <span className="font-serif italic text-xs text-[#BFB8AC]">
-          {showSummary ? "Kết quả" : `Câu hỏi ${currentIndex + 1}/${totalQuestions}`}
-        </span>
+        <div className="flex items-center gap-3">
+          <button
+            onClick={() => setShowFeedbackModal(true)}
+            className="flex items-center gap-1 px-2.5 py-1 rounded-lg border border-amber-200 bg-amber-50 hover:bg-amber-100 text-amber-800 text-[11px] font-bold transition duration-150 cursor-pointer"
+          >
+            📬 Báo cáo lỗi
+          </button>
+          <span className="font-serif italic text-xs text-[#BFB8AC]">
+            {showSummary ? "Kết quả" : `Câu hỏi ${currentIndex + 1}/${totalQuestions}`}
+          </span>
+        </div>
       </header>
 
       {/* Main quiz view */}
@@ -335,6 +345,13 @@ export default function QuizPage({
         )}
 
       </main>
+
+      <FeedbackModal
+        isOpen={showFeedbackModal}
+        onClose={() => setShowFeedbackModal(false)}
+        lessonId={lessonId}
+        quizId={quizzes[currentIndex]?.id}
+      />
     </div>
   );
 }

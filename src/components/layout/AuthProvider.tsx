@@ -17,12 +17,13 @@ export interface UserSession {
     currentStreak: number;
     maxStreak: number;
   } | null;
+  permissions?: string[];
 }
 
 interface AuthContextType {
   user: UserSession | null;
   loading: boolean;
-  login: (credential: string, mockEmail?: string, mockName?: string) => Promise<boolean>;
+  login: (params: { credential?: string; email?: string; name?: string; password?: string }) => Promise<boolean>;
   logout: () => Promise<void>;
   refreshSession: () => Promise<void>;
 }
@@ -73,9 +74,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
     } else {
       // User is logged in
-      if (user.role === "ADMIN") {
+      if (user.role === "ADMIN" || user.role === "CTV" || user.role === "OPERATOR") {
         if (pathname === "/login" || pathname === "/onboarding" || pathname === "/") {
-          router.push("/admin");
+          if (user.role === "CTV") {
+            router.push("/admin/lessons");
+          } else {
+            router.push("/admin");
+          }
         }
       } else if (!user.isOnboarded) {
         // Not onboarded yet - force onboarding
@@ -91,13 +96,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }, [user, loading, pathname, router]);
 
-  const login = async (credential: string, mockEmail?: string, mockName?: string) => {
+  const login = async (params: { credential?: string; email?: string; name?: string; password?: string }) => {
+    const { credential = "", email, name = "", password } = params;
     try {
-      setLoading(true);
       const res = await fetch("/api/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ credential, mockEmail, mockName }),
+        body: JSON.stringify({ 
+          credential, 
+          mockEmail: !password ? email : undefined, 
+          mockName: name,
+          email: password ? email : undefined,
+          password
+        }),
       });
 
       if (res.ok) {
@@ -105,8 +116,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         setUser(data.user);
         
         // Redirect based on onboarding status and role
-        if (data.user.role === "ADMIN") {
-          router.push("/admin");
+        if (data.user.role === "ADMIN" || data.user.role === "CTV" || data.user.role === "OPERATOR") {
+          if (data.user.role === "CTV") {
+            router.push("/admin/lessons");
+          } else {
+            router.push("/admin");
+          }
         } else if (data.user.isOnboarded) {
           router.push("/dashboard");
         } else {
@@ -118,15 +133,29 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     } catch (error) {
       console.error("Login request failed:", error);
       return false;
-    } finally {
-      setLoading(false);
     }
   };
 
   const logout = async () => {
-    // For cookies based auth, we can clear it by calling an endpoint or mock clearing locally
+    try {
+      // 1. Call server logout endpoint to clear HttpOnly cookie
+      await fetch("/api/auth/logout", { method: "POST" });
+    } catch (err) {
+      console.error("Failed to clear cookie via API:", err);
+    }
+
+    try {
+      // 2. Sign out of Firebase if initialized
+      const { auth } = await import("@/lib/firebase");
+      if (auth) {
+        await auth.signOut();
+      }
+    } catch (err) {
+      console.error("Failed to sign out of Firebase:", err);
+    }
+
+    // 3. Clear local state and redirect
     setUser(null);
-    document.cookie = "token=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;";
     router.push("/login");
   };
 

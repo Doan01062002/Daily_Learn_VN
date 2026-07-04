@@ -22,7 +22,13 @@ const COMMITMENTS = [
   { id: 10, label: "10 Phút / ngày", desc: "Học sâu hơn, thực hành vừa phải" },
   { id: 15, label: "15 Phút / ngày", desc: "Tập trung cao độ, thực hành sâu" },
 ];
-
+const SELECTED_TAG_STYLES: { [key: string]: string } = {
+  Tech: "bg-blue-50 border-blue-500 text-blue-700",
+  Business: "bg-amber-50 border-amber-500 text-amber-700",
+  SoftSkills: "bg-purple-50 border-purple-500 text-purple-700",
+  Design: "bg-pink-50 border-pink-500 text-pink-700",
+  Health: "bg-teal-50 border-teal-500 text-teal-700",
+};
 
 interface TransactionItem {
   id: string;
@@ -198,7 +204,7 @@ export default function UserSettingsPage() {
                     required
                     value={name}
                     onChange={(e) => setName(e.target.value)}
-                    className="block w-full rounded-lg border border-[#D5CFC5] bg-white px-3 py-2 text-xs text-[#4E4941] placeholder-[#BFB8AC] shadow-sm transition duration-200 focus:border-[#BF753F] focus:outline-none"
+                    className="block w-full rounded-lg border border-[#D5CFC5] bg-white px-3 py-2 text-xs text-[#4E4941] placeholder-[#BFB8AC] shadow-sm transition duration-200 focus:border-[#6366F1] focus:outline-none"
                   />
                 </div>
 
@@ -226,12 +232,12 @@ export default function UserSettingsPage() {
                           onClick={() => toggleTopic(topic.id)}
                           className={`flex items-center justify-between p-3.5 rounded-xl border text-xs font-bold transition duration-200 text-left focus:outline-none ${
                             isSelected
-                              ? "bg-[#FAF2EB] border-[#BF753F] text-[#3E3A35]"
+                              ? SELECTED_TAG_STYLES[topic.id] || "bg-[#FAF2EB] border-[#6366F1] text-[#3E3A35]"
                               : "bg-[#FCFAF7] border-[#EBE6DD] text-[#8C8375] hover:border-[#BFB8AC]"
                           }`}
                         >
                           <span>{topic.label}</span>
-                          {isSelected && <span className="text-[#BF753F]">✓</span>}
+                          {isSelected && <span>✓</span>}
                         </button>
                       );
                     })}
@@ -251,12 +257,12 @@ export default function UserSettingsPage() {
                           onClick={() => setSelectedLevel(level.id)}
                           className={`flex flex-col p-3.5 rounded-xl border text-xs text-left transition duration-200 focus:outline-none ${
                             isSelected
-                              ? "bg-[#FAF2EB] border-[#BF753F] text-[#3E3A35]"
+                              ? "bg-indigo-50/50 border-[#6366F1] text-[#3E3A35]"
                               : "bg-[#FCFAF7] border-[#EBE6DD] text-[#8C8375] hover:border-[#BFB8AC]"
                           }`}
                         >
                           <span className="font-bold">{level.label}</span>
-                          <span className={`text-[10px] font-normal mt-0.5 ${isSelected ? "text-[#BF753F]" : "text-[#8C8375]"}`}>
+                          <span className={`text-[10px] font-normal mt-0.5 ${isSelected ? "text-[#6366F1]" : "text-[#8C8375]"}`}>
                             {level.desc}
                           </span>
                         </button>
@@ -278,17 +284,17 @@ export default function UserSettingsPage() {
                           onClick={() => setSelectedCommitment(com.id)}
                           className={`flex items-center justify-between p-3.5 rounded-xl border text-xs text-left transition duration-200 focus:outline-none ${
                             isSelected
-                              ? "bg-[#FAF2EB] border-[#BF753F] text-[#3E3A35]"
+                              ? "bg-indigo-50/50 border-[#6366F1] text-[#3E3A35]"
                               : "bg-[#FCFAF7] border-[#EBE6DD] text-[#8C8375] hover:border-[#BFB8AC]"
                           }`}
                         >
                           <div className="flex flex-col">
                             <span className="font-bold">{com.label}</span>
-                            <span className={`text-[10px] font-normal mt-0.5 ${isSelected ? "text-[#BF753F]" : "text-[#8C8375]"}`}>
+                            <span className={`text-[10px] font-normal mt-0.5 ${isSelected ? "text-[#6366F1]" : "text-[#8C8375]"}`}>
                               {com.desc}
                             </span>
                           </div>
-                          {isSelected && <span className="text-[#BF753F]">✓</span>}
+                          {isSelected && <span className="text-[#6366F1]">✓</span>}
                         </button>
                       );
                     })}
@@ -299,7 +305,7 @@ export default function UserSettingsPage() {
                 <button
                   type="submit"
                   disabled={saveLoading}
-                  className="w-full flex justify-center py-3 rounded-xl bg-[#4E4941] text-white text-xs font-bold hover:bg-[#3E3A35] disabled:opacity-50 transition-all duration-200 active:translate-y-[1px] shadow-sm"
+                  className="w-full flex justify-center py-3 rounded-xl bg-gradient-to-r from-[#FF6B35] to-[#FF9F1C] hover:from-[#e05621] hover:to-[#e58a10] text-white text-xs font-bold transition-all duration-200 active:translate-y-[1px] shadow-md uppercase tracking-wider"
                 >
                   {saveLoading ? "Đang lưu thay đổi..." : "Lưu cấu hình & cập nhật bài học"}
                 </button>
@@ -311,7 +317,11 @@ export default function UserSettingsPage() {
         {/* Right Side: Account Membership & Payment Invoices (1 col) */}
         <div className="space-y-6">
           {/* Membership status card */}
-          <div className="bg-white rounded-xl border border-[#EBE6DD] p-6 shadow-sm">
+          <div className={`bg-white rounded-xl border p-6 shadow-sm ${
+            user.role === "PREMIUM"
+              ? "border-[#D8B4FE] bg-gradient-to-br from-white to-[#8B5CF6]/5"
+              : "border-[#E5E7EB]"
+          }`}>
             <h3 className="font-serif text-sm font-bold border-b border-[#F0ECE4] pb-3 mb-4">Gói hội viên</h3>
             
             <div className="flex items-center gap-3">
@@ -339,7 +349,7 @@ export default function UserSettingsPage() {
             {user.role === "STUDENT" && (
               <Link
                 href="/checkout"
-                className="mt-4 block text-center py-3 rounded-xl bg-[#BF753F] text-white text-xs font-bold hover:bg-[#a05b2b] transition-all duration-200 active:translate-y-[1px] shadow-sm"
+                className="mt-4 block text-center py-3 rounded-xl bg-gradient-to-r from-[#8B5CF6] to-[#6366F1] hover:from-[#7c4fe0] hover:to-[#5457e5] text-white text-xs font-bold transition-all duration-200 active:translate-y-[1px] shadow-sm uppercase tracking-wider"
               >
                 Nâng cấp Premium ngay
               </Link>

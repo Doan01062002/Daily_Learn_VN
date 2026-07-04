@@ -10,6 +10,8 @@ enum Role {
   STUDENT
   PREMIUM
   ADMIN
+  CTV
+  OPERATOR
 }
 
 enum LessonStatus {
@@ -32,6 +34,8 @@ model User {
   id                  String               @id @default(uuid())
   name                String
   email               String               @unique
+  password            String?
+  isLocked            Boolean              @default(false)
   avatarUrl           String?
   role                Role                 @default(STUDENT)
   createdAt           DateTime             @default(now())
@@ -46,6 +50,10 @@ model User {
   progress            UserLessonProgress[]
   streaks             Streak[]
   payments            PaymentTransaction[]
+  premiumExpiresAt    DateTime?
+  feedbacks           Feedback[]
+  submissions         Submission[]         @relation("StudentSubmissions")
+  gradedSubmissions   Submission[]         @relation("GradedSubmissions")
 }
 
 model Lesson {
@@ -62,6 +70,9 @@ model Lesson {
   // Relations
   quizzes             Quiz[]
   progress            UserLessonProgress[]
+  feedbacks           Feedback[]
+  assignment          Assignment?
+  mediaFiles          MediaFile[]
 }
 
 model Quiz {
@@ -72,6 +83,7 @@ model Quiz {
   options             String[]
   correctAnswer       String
   explanation         String
+  feedbacks           Feedback[]
 }
 
 model UserLessonProgress {
@@ -105,4 +117,142 @@ model PaymentTransaction {
   txCode              String               @unique
   createdAt           DateTime             @default(now())
   updatedAt           DateTime             @updatedAt
+}
+
+model AuditLog {
+  id          String   @id @default(uuid())
+  userId      String
+  userEmail   String
+  userName    String
+  action      String   // e.g. "CREATE_LESSON", "APPROVE_PAYMENT", "UPDATE_SETTINGS"
+  target      String   // e.g. "Lesson: Vocabulary for Tech", "Payment: BANK123"
+  ipAddress   String?
+  createdAt   DateTime @default(now())
+}
+
+model Coupon {
+  id              String   @id @default(uuid())
+  code            String   @unique
+  discountPercent Int
+  maxUses         Int
+  usedCount       Int      @default(0)
+  expiresAt       DateTime
+  createdAt       DateTime @default(now())
+}
+
+model QuizAttempt {
+  id          String   @id @default(uuid())
+  userId      String
+  lessonId    String
+  score       Int
+  passed      Boolean
+  createdAt   DateTime @default(now())
+}
+
+model ScheduledNotification {
+  id           String   @id @default(uuid())
+  subject      String
+  content      String
+  target       String
+  scheduledFor DateTime
+  sent         Boolean  @default(false)
+  createdAt    DateTime @default(now())
+}
+
+enum FeedbackStatus {
+  PENDING
+  FIXING
+  APPROVED
+  DONE
+}
+
+enum FeedbackType {
+  TYPO
+  WRONG_QUIZ
+  TRANSLATION
+  OTHER
+}
+
+enum FeedbackPriority {
+  LOW
+  MEDIUM
+  HIGH
+}
+
+model Feedback {
+  id          String           @id @default(uuid())
+  userId      String
+  user        User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  lessonId    String?
+  lesson      Lesson?          @relation(fields: [lessonId], references: [id], onDelete: SetNull)
+  quizId      String?
+  quiz        Quiz?            @relation(fields: [quizId], references: [id], onDelete: SetNull)
+  type        FeedbackType     @default(OTHER)
+  content     String
+  priority    FeedbackPriority @default(LOW)
+  status      FeedbackStatus   @default(PENDING)
+  adminNote   String?
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+}
+
+model MediaFile {
+  id        String   @id @default(uuid())
+  fileName  String
+  fileUrl   String
+  fileSize  Int
+  mimeType  String
+  createdAt DateTime @default(now())
+  lessonId  String?
+  lesson    Lesson?  @relation(fields: [lessonId], references: [id], onDelete: SetNull)
+}
+
+enum AssignmentType {
+  WRITING
+  SPEAKING
+}
+
+model Assignment {
+  id          String        @id @default(uuid())
+  lessonId    String        @unique
+  lesson      Lesson        @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+  type        AssignmentType
+  prompt      String
+  maxScore    Int           @default(100)
+  createdAt   DateTime      @default(now())
+  submissions Submission[]
+}
+
+enum SubmissionStatus {
+  SUBMITTED
+  GRADING
+  GRADED
+}
+
+model Submission {
+  id           String           @id @default(uuid())
+  assignmentId String
+  assignment   Assignment       @relation(fields: [assignmentId], references: [id], onDelete: Cascade)
+  userId       String
+  user         User             @relation("StudentSubmissions", fields: [userId], references: [id], onDelete: Cascade)
+  content      String
+  status       SubmissionStatus @default(SUBMITTED)
+  score        Int?
+  comment      String?
+  grammarEdits String?
+  gradedAt     DateTime?
+  gradedById   String?
+  gradedBy     User?            @relation("GradedSubmissions", fields: [gradedById], references: [id], onDelete: SetNull)
+  createdAt    DateTime         @default(now())
+  updatedAt    DateTime         @updatedAt
+}
+
+model OtpVerification {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  otpCode   String
+  name      String
+  password  String   // Hashed password
+  expiresAt DateTime
+  createdAt DateTime @default(now())
 }

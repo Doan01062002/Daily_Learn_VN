@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import prisma from "@/lib/prisma";
 import { verifyToken } from "@/lib/jwt";
+import { promises as fs } from "fs";
+import path from "path";
 
 export async function GET(req: NextRequest) {
   try {
@@ -74,11 +76,23 @@ export async function GET(req: NextRequest) {
       completed: completedLessonIds.has(lesson.id),
     }));
 
-    // 5. Apply daily quota calculations
-    // commitmentTime: 5 mins -> 1 lesson, 10 mins -> 2 lessons, 15 mins -> 3 lessons
+    // 5. Apply daily quota calculations from settings
     let dailyLimit = 1;
-    if (commitmentTime === 10) dailyLimit = 2;
-    if (commitmentTime === 15) dailyLimit = 3;
+    try {
+      const filePath = path.join(process.cwd(), "src", "data", "settings.json");
+      const data = await fs.readFile(filePath, "utf-8");
+      const parsed = JSON.parse(data);
+      dailyLimit = Number(parsed.freeDailyLimit) || 1;
+    } catch (e) {
+      // Fallback
+      if (commitmentTime === 10) dailyLimit = 2;
+      if (commitmentTime === 15) dailyLimit = 3;
+    }
+
+    // Unlimited access for PREMIUM or administrative/operator roles
+    if (decoded.role === "PREMIUM" || decoded.role === "ADMIN" || decoded.role === "CTV" || decoded.role === "OPERATOR") {
+      dailyLimit = 9999;
+    }
 
     // Prioritize uncompleted lessons first
     const uncompleted = lessonsWithStatus.filter((l) => !l.completed);

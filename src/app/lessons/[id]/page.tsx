@@ -4,6 +4,7 @@ import React, { useEffect, useState, use } from "react";
 import { useAuth } from "@/components/layout/AuthProvider";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import FeedbackModal from "@/components/FeedbackModal";
 
 interface LessonDetail {
   id: string;
@@ -29,6 +30,14 @@ export default function LessonDetailPage({
   const [loading, setLoading] = useState(true);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showFeedbackModal, setShowFeedbackModal] = useState(false);
+
+  // Assignment states
+  const [assignment, setAssignment] = useState<any | null>(null);
+  const [submission, setSubmission] = useState<any | null>(null);
+  const [assignmentContent, setAssignmentContent] = useState("");
+  const [submittingAssignment, setSubmittingAssignment] = useState(false);
+  const [assignmentMessage, setAssignmentMessage] = useState<string | null>(null);
 
   useEffect(() => {
     if (!user) return;
@@ -55,7 +64,24 @@ export default function LessonDetailPage({
       }
     };
 
+    const fetchAssignment = async () => {
+      try {
+        const res = await fetch(`/api/lessons/${lessonId}/assignment`);
+        if (res.ok) {
+          const data = await res.json();
+          setAssignment(data.assignment);
+          setSubmission(data.submission);
+          if (data.submission) {
+            setAssignmentContent(data.submission.content);
+          }
+        }
+      } catch (e) {
+        console.error("Failed to fetch assignment:", e);
+      }
+    };
+
     fetchLessonDetail();
+    fetchAssignment();
   }, [lessonId, user]);
 
   const handleComplete = async () => {
@@ -83,6 +109,36 @@ export default function LessonDetailPage({
     }
   };
 
+  const handleSubmitAssignment = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!assignmentContent.trim()) {
+      setAssignmentMessage("Vui lòng điền câu trả lời.");
+      return;
+    }
+    setSubmittingAssignment(true);
+    setAssignmentMessage(null);
+    try {
+      const res = await fetch(`/api/lessons/${lessonId}/assignment`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ content: assignmentContent }),
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setSubmission(data.submission);
+        setAssignmentMessage("Đã nộp bài tập tự luận thành công!");
+      } else {
+        const data = await res.json();
+        setAssignmentMessage(data.error || "Gửi bài tập thất bại.");
+      }
+    } catch (e) {
+      console.error(e);
+      setAssignmentMessage("Lỗi kết nối máy chủ.");
+    } finally {
+      setSubmittingAssignment(false);
+    }
+  };
+
   if (!user) return null;
 
   return (
@@ -95,7 +151,15 @@ export default function LessonDetailPage({
         >
           <span>←</span> Quay lại Dashboard
         </Link>
-        <span className="font-serif italic text-xs text-[#BFB8AC]">Đọc tập trung</span>
+        <div className="flex items-center gap-3">
+          <button
+            onClick={() => setShowFeedbackModal(true)}
+            className="flex items-center gap-1 px-2.5 py-1 rounded-lg border border-amber-200 bg-amber-50 hover:bg-amber-100 text-amber-800 text-[11px] font-bold transition duration-150 cursor-pointer"
+          >
+            📬 Báo cáo lỗi
+          </button>
+          <span className="font-serif italic text-xs text-[#BFB8AC]">Đọc tập trung</span>
+        </div>
       </header>
 
       {/* Main Focus Reading Container */}
@@ -166,6 +230,91 @@ export default function LessonDetailPage({
                   &quot;{lesson.actionableStep}&quot;
                 </p>
               </div>
+
+              {/* Assignment widget */}
+              {assignment && (
+                <div className="rounded-xl border border-[#EBE6DD] bg-white p-5 space-y-4 shadow-sm mt-8 font-sans">
+                  <div className="flex items-center justify-between border-b border-[#F0ECE4] pb-2">
+                    <h3 className="text-xs font-bold text-[#8C8375] uppercase tracking-wider flex items-center gap-1.5">
+                      📝 Bài tập tự luận ({assignment.type === "WRITING" ? "Viết" : "Nói/Phát âm"})
+                    </h3>
+                    {submission && (
+                      <span className={`text-[9px] font-extrabold uppercase px-2 py-0.5 rounded-full border ${
+                        submission.status === "GRADED" 
+                          ? "bg-emerald-50 border-emerald-200 text-emerald-800" 
+                          : "bg-amber-50 border-amber-200 text-amber-800"
+                      }`}>
+                        {submission.status === "GRADED" ? `Đã chấm: ${submission.score}/100` : "Đã nộp bài"}
+                      </span>
+                    )}
+                  </div>
+                  
+                  <div className="space-y-1">
+                    <span className="text-[9px] font-bold text-[#8C8375] uppercase tracking-widest">Đề bài</span>
+                    <p className="text-xs text-[#4E4941] font-serif leading-relaxed italic">
+                      &quot;{assignment.prompt}&quot;
+                    </p>
+                  </div>
+
+                  {/* Submission Form */}
+                  {(!submission || submission.status === "SUBMITTED") ? (
+                    <form onSubmit={handleSubmitAssignment} className="space-y-3">
+                      <div className="space-y-1">
+                        <label className="block text-[9px] font-bold text-slate-500 uppercase tracking-widest">
+                          {assignment.type === "WRITING" 
+                            ? "Bài làm của bạn (Nhập đoạn văn)" 
+                            : "Bài nói của bạn (Nhập đoạn văn hoặc chèn link ghi âm)"}
+                        </label>
+                        <textarea
+                          rows={4}
+                          value={assignmentContent}
+                          onChange={(e) => setAssignmentContent(e.target.value)}
+                          placeholder={assignment.type === "WRITING" 
+                            ? "Viết câu trả lời của bạn ở đây..." 
+                            : "Viết nội dung bài nói hoặc dán link file ghi âm ở đây..."}
+                          className="w-full px-3 py-2 text-xs border border-[#D5CFC5] rounded-xl focus:outline-none focus:ring-1 focus:ring-[#8C8375] font-serif"
+                        />
+                      </div>
+
+                      {assignmentMessage && (
+                        <div className="p-2.5 rounded-xl bg-amber-50 border border-amber-100 text-[10px] font-semibold text-amber-800">
+                          {assignmentMessage}
+                        </div>
+                      )}
+
+                      <button
+                        type="submit"
+                        disabled={submittingAssignment}
+                        className="w-full text-center py-2.5 rounded-xl bg-[#4E4941] text-white text-xs font-semibold hover:bg-[#3E3A35] transition duration-200 shadow-sm disabled:opacity-50"
+                      >
+                        {submittingAssignment ? "Đang gửi..." : submission ? "Cập nhật bài nộp" : "Nộp bài làm tự luận"}
+                      </button>
+                    </form>
+                  ) : (
+                    // Graded Result Display
+                    <div className="space-y-4 pt-3 border-t border-[#F0ECE4] text-xs leading-relaxed">
+                      <div className="space-y-1">
+                        <span className="text-[9px] font-bold text-[#8C8375] uppercase tracking-widest">Bài làm của bạn</span>
+                        <p className="p-3 bg-slate-50 rounded-xl font-serif italic text-slate-700">{submission.content}</p>
+                      </div>
+
+                      {submission.grammarEdits && (
+                        <div className="space-y-1">
+                          <span className="text-[9px] font-bold text-rose-800 uppercase tracking-widest block">Sửa lỗi ngữ pháp & câu từ</span>
+                          <div className="p-3 bg-rose-50/40 border border-rose-100 rounded-xl font-serif text-[#991b1b] whitespace-pre-wrap">{submission.grammarEdits}</div>
+                        </div>
+                      )}
+
+                      {submission.comment && (
+                        <div className="space-y-1">
+                          <span className="text-[9px] font-bold text-blue-900 uppercase tracking-widest block">Nhận xét từ giáo viên</span>
+                          <p className="p-3 bg-blue-50/30 border border-blue-100 rounded-xl text-slate-700 italic">"{submission.comment}"</p>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
 
             {/* Bottom Actions */}
@@ -204,6 +353,12 @@ export default function LessonDetailPage({
         )}
 
       </main>
+
+      <FeedbackModal
+        isOpen={showFeedbackModal}
+        onClose={() => setShowFeedbackModal(false)}
+        lessonId={lessonId}
+      />
     </div>
   );
 }

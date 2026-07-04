@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import prisma from "@/lib/prisma";
 import { verifyToken } from "@/lib/jwt";
+import { promises as fs } from "fs";
+import path from "path";
 
 export async function POST(
   req: NextRequest,
@@ -80,6 +82,19 @@ export async function POST(
     const totalQuestions = dbQuizzes.length;
     const score = (correctCount / totalQuestions) * 100;
 
+    // Read minQuizScoreToPass from settings.json
+    let minScoreThreshold = 75;
+    try {
+      const filePath = path.join(process.cwd(), "src", "data", "settings.json");
+      const fileData = await fs.readFile(filePath, "utf-8");
+      const parsed = JSON.parse(fileData);
+      minScoreThreshold = Number(parsed.minQuizScoreToPass) || 75;
+    } catch (e) {
+      // fallback
+    }
+
+    const passed = score >= minScoreThreshold;
+
     // 5. Update UserLessonProgress score in PostgreSQL
     await prisma.userLessonProgress.upsert({
       where: {
@@ -90,20 +105,38 @@ export async function POST(
       },
       update: {
         score: Math.round(score),
+        status: passed ? "COMPLETED" : "IN_PROGRESS",
+        completedAt: passed ? new Date() : undefined,
       },
       create: {
         userId,
         lessonId,
         score: Math.round(score),
-        status: "IN_PROGRESS",
+        status: passed ? "COMPLETED" : "IN_PROGRESS",
+        completedAt: passed ? new Date() : undefined,
       },
     });
+
+    // Log the quiz attempt to DB
+    try {
+      await prisma.quizAttempt.create({
+        data: {
+          userId,
+          lessonId,
+          score: Math.round(score),
+          passed,
+        },
+      });
+    } catch (e) {
+      console.error("Failed to log quiz attempt:", e);
+    }
 
     return NextResponse.json({
       success: true,
       score: Math.round(score),
       totalQuestions,
       correctAnswersCount: correctCount,
+      passed,
       results,
     });
   } catch (error) {

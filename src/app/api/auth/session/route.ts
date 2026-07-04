@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import prisma from "@/lib/prisma";
 import { verifyToken } from "@/lib/jwt";
+import { promises as fs } from "fs";
+import path from "path";
 
 export async function GET(req: NextRequest) {
   try {
@@ -51,7 +53,46 @@ export async function GET(req: NextRequest) {
       );
     }
 
+    if (user.isLocked) {
+      return NextResponse.json(
+        { error: "Tài khoản đã bị khóa" },
+        { status: 403 }
+      );
+    }
+
     const isOnboarded = user.interestedTopics && user.interestedTopics.length > 0;
+
+    // Resolve permissions dynamically for administrative roles
+    let permissions: string[] = [];
+    if (user.role === "ADMIN") {
+      permissions = [
+        "manage_lessons",
+        "manage_quizzes",
+        "manage_users",
+        "manage_payments",
+        "manage_notifications",
+        "view_analytics",
+        "manage_settings",
+        "manage_coupons",
+        "manage_feedbacks",
+        "manage_media",
+        "manage_grading",
+      ];
+    } else if (user.role === "CTV" || user.role === "OPERATOR") {
+      try {
+        const filePath = path.join(process.cwd(), "src", "data", "settings.json");
+        const fileData = await fs.readFile(filePath, "utf-8");
+        const parsed = JSON.parse(fileData);
+        permissions = parsed.rolePermissions?.[user.role] || [];
+      } catch {
+        // Fallbacks
+        if (user.role === "CTV") {
+          permissions = ["manage_lessons", "manage_quizzes", "manage_feedbacks", "manage_media", "manage_grading"];
+        } else if (user.role === "OPERATOR") {
+          permissions = ["manage_users", "manage_payments", "manage_notifications", "manage_coupons", "manage_feedbacks", "manage_media"];
+        }
+      }
+    }
 
     return NextResponse.json({
       success: true,
@@ -66,6 +107,7 @@ export async function GET(req: NextRequest) {
         currentLevel: user.currentLevel,
         commitmentTime: user.commitmentTime,
         streak: user.streaks[0] || null, // Return the main user streak record
+        permissions,
       },
     });
   } catch (error) {
