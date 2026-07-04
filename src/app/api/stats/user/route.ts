@@ -3,7 +3,7 @@ import { cookies } from "next/headers";
 import { verifyToken } from "@/lib/jwt";
 import prisma from "@/lib/prisma";
 
-export async function GET() {
+export async function GET(req?: Request) {
   try {
     const cookieStore = await cookies();
     const token = cookieStore.get("token")?.value;
@@ -96,6 +96,35 @@ export async function GET() {
       }
     }
 
+    // Fetch recently completed lessons for activity timeline log
+    const timelineProgress = await prisma.userLessonProgress.findMany({
+      where: {
+        userId,
+        status: "COMPLETED",
+        completedAt: { not: null },
+      },
+      include: {
+        lesson: {
+          select: {
+            title: true,
+            tags: true,
+          },
+        },
+      },
+      orderBy: {
+        completedAt: "desc",
+      },
+      take: 10,
+    });
+
+    const timeline = timelineProgress.map((tp) => ({
+      lessonId: tp.lessonId,
+      title: tp.lesson.title,
+      tags: tp.lesson.tags,
+      score: tp.score,
+      completedAt: tp.completedAt,
+    }));
+
     return NextResponse.json({
       success: true,
       stats: {
@@ -105,6 +134,7 @@ export async function GET() {
         maxStreak,
       },
       streakFrozenUsed,
+      timeline,
     });
   } catch (error) {
     console.error("GET User Stats API Error:", error);

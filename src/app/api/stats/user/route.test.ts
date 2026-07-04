@@ -24,6 +24,7 @@ vi.mock("@/lib/prisma", () => ({
     userLessonProgress: {
       count: vi.fn(),
       aggregate: vi.fn(),
+      findMany: vi.fn(),
     },
     streak: {
       findUnique: vi.fn(),
@@ -69,6 +70,9 @@ describe("GET /api/stats/user - Stats Computation", () => {
     vi.mocked(prisma.userLessonProgress.aggregate).mockResolvedValue({
       _avg: { score: 85 },
     } as any);
+
+    // Mock findMany for timeline
+    vi.mocked(prisma.userLessonProgress.findMany).mockResolvedValue([]);
 
     // Mock user findUnique returning user and streak array
     vi.mocked(prisma.user.findUnique).mockResolvedValue({
