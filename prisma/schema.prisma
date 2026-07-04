@@ -1,0 +1,108 @@
+datasource db {
+  provider = "postgresql"
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+enum Role {
+  STUDENT
+  PREMIUM
+  ADMIN
+}
+
+enum LessonStatus {
+  DRAFT
+  PUBLISHED
+}
+
+enum ProgressStatus {
+  IN_PROGRESS
+  COMPLETED
+}
+
+enum PaymentStatus {
+  PENDING
+  COMPLETED
+  FAILED
+}
+
+model User {
+  id                  String               @id @default(uuid())
+  name                String
+  email               String               @unique
+  avatarUrl           String?
+  role                Role                 @default(STUDENT)
+  createdAt           DateTime             @default(now())
+  updatedAt           DateTime             @updatedAt
+  
+  // Onboarding
+  interestedTopics    String[]
+  currentLevel        String?
+  commitmentTime      Int?
+
+  // Relations
+  progress            UserLessonProgress[]
+  streaks             Streak[]
+  payments            PaymentTransaction[]
+}
+
+model Lesson {
+  id                  String               @id @default(uuid())
+  title               String
+  tags                String[]
+  sourceDomain        String
+  summary             String[]
+  actionableStep      String
+  level               String
+  status              LessonStatus         @default(DRAFT)
+  createdAt           DateTime             @default(now())
+
+  // Relations
+  quizzes             Quiz[]
+  progress            UserLessonProgress[]
+}
+
+model Quiz {
+  id                  String               @id @default(uuid())
+  lessonId            String
+  lesson              Lesson               @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+  question            String
+  options             String[]
+  correctAnswer       String
+  explanation         String
+}
+
+model UserLessonProgress {
+  id                  String               @id @default(uuid())
+  userId              String
+  user                User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
+  lessonId            String
+  lesson              Lesson               @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+  status              ProgressStatus       @default(IN_PROGRESS)
+  score               Int                  @default(0)
+  completedAt         DateTime?
+
+  @@unique([userId, lessonId])
+}
+
+model Streak {
+  id                  String               @id @default(uuid())
+  userId              String               @unique
+  user                User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
+  currentStreak       Int                  @default(0)
+  maxStreak           Int                  @default(0)
+  lastCompleted       DateTime?
+}
+
+model PaymentTransaction {
+  id                  String               @id @default(uuid())
+  userId              String
+  user                User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
+  amount              Int
+  status              PaymentStatus        @default(PENDING)
+  txCode              String               @unique
+  createdAt           DateTime             @default(now())
+  updatedAt           DateTime             @updatedAt
+}
