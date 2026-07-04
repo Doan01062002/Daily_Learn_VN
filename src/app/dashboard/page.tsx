@@ -39,6 +39,55 @@ const TAG_COLORS: { [key: string]: string } = {
   Health: "bg-teal-50 text-teal-600 border-teal-200",
 };
 
+const getLevelBadge = (level: string) => {
+  const lvl = level.toUpperCase();
+  if (lvl === "BEGINNER" || lvl === "CƠ BẢN" || lvl === "EASY") {
+    return "bg-emerald-50 text-emerald-700 border-emerald-250";
+  }
+  if (lvl === "INTERMEDIATE" || lvl === "TRUNG BÌNH" || lvl === "EXPERIENCED" || lvl === "MID") {
+    return "bg-sky-50 text-sky-700 border-sky-250";
+  }
+  return "bg-rose-50 text-rose-700 border-rose-250";
+};
+
+const getCategoryIcon = (tags: string[]) => {
+  const tag = tags[0]?.toLowerCase() || "";
+  if (tag === "tech") {
+    return (
+      <svg className="h-14 w-14 text-indigo-500/10 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
+        <path strokeLinecap="round" strokeLinejoin="round" d="M17.25 6.75L22.5 12l-5.25 5.25m-10.5 0L1.5 12l5.25-5.25m7.5-3l-4.5 16.5" />
+      </svg>
+    );
+  }
+  if (tag === "business") {
+    return (
+      <svg className="h-14 w-14 text-amber-500/10 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
+        <path strokeLinecap="round" strokeLinejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v5.25c0 .621-.504 1.125-1.125 1.125h-2.25A1.125 1.125 0 013 18.375v-5.25zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125v-9.75zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v14.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z" />
+      </svg>
+    );
+  }
+  if (tag === "design") {
+    return (
+      <svg className="h-14 w-14 text-pink-500/10 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
+        <path strokeLinecap="round" strokeLinejoin="round" d="M9.53 16.122l9.37-9.37a2.25 2.25 0 113.182 3.182l-9.37 9.37a4.5 4.5 0 01-1.636 1.055l-3.233 1.078a.75.75 0 01-.948-.948l1.077-3.233a4.5 4.5 0 011.055-1.636z" />
+        <path strokeLinecap="round" strokeLinejoin="round" d="M11.66 14l3.18 3.18" />
+      </svg>
+    );
+  }
+  if (tag === "softskills") {
+    return (
+      <svg className="h-14 w-14 text-purple-500/10 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
+        <path strokeLinecap="round" strokeLinejoin="round" d="M8.625 12a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H8.25m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H12m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0h-.375M21 12c0 4.556-4.03 8.25-9 8.25a9.764 9.764 0 01-2.555-.337A5.972 5.972 0 015.41 20.97a.75.75 0 01-1.074-.765 11.99 11.99 0 002.046-3.233C4.546 15.6 4.5 13.807 4.5 12c0-4.556 4.03-8.25 9-8.25s9 3.694 9 8.25z" />
+      </svg>
+    );
+  }
+  return (
+    <svg className="h-14 w-14 text-teal-500/10 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
+      <path strokeLinecap="round" strokeLinejoin="round" d="M12 21a9.004 9.004 0 008.716-6.747M12 21a9.004 9.004 0 01-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9S9.515 3 12 3m0 0a8.997 8.997 0 017.843 4.582M12 3a8.997 8.997 0 00-7.843 4.582m15.686 0A11.953 11.953 0 0112 10.5c-2.998 0-5.74-1.1-7.843-2.918m15.686 0A8.959 8.959 0 0121 12c0 .778-.099 1.533-.284 2.253m0 0A17.919 17.919 0 0112 16.5c-3.162 0-6.133-.815-8.716-2.247m0 0A9.015 9.015 0 013 12c0-.778.099-1.533.284-2.253" />
+    </svg>
+  );
+};
+
 const MOTIVATIONAL_QUOTES = [
   { text: "Học tập là con đường ngắn nhất để nâng cấp bản thân và mở ra những cánh cửa cơ hội mới.", author: "Daily Learn Việt Nam" },
   { text: "Kiến thức là vũ khí mạnh nhất mà bạn có thể dùng để thay đổi thế giới.", author: "Nelson Mandela" },
@@ -275,6 +324,20 @@ export default function DashboardPage() {
 
   const streakVal = stats?.currentStreak !== undefined ? stats.currentStreak : (user.streak?.currentStreak || 0);
 
+  // Leveling system computation
+  const totalPoints = user.knowledgePoints || 0;
+  const level = Math.floor(totalPoints / 100) + 1;
+  const xpInCurrentLevel = totalPoints % 100;
+
+  const getLevelTitle = (lvl: number) => {
+    if (lvl === 1) return "Tập sự";
+    if (lvl === 2) return "Người tìm tòi";
+    if (lvl === 3) return "Học giả";
+    if (lvl === 4) return "Hiền giả";
+    return "Nhà thông thái";
+  };
+  const levelTitle = getLevelTitle(level);
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#EEF2F6] via-[#FFFFFF] to-[#F5EFFF] text-slate-800 flex flex-col relative overflow-hidden">
       <style dangerouslySetInnerHTML={{ __html: `
@@ -390,36 +453,60 @@ export default function DashboardPage() {
           {/* On mobile: Rendered below the main lessons feed to keep mobile focal point clean */}
           <div className="md:col-span-1 space-y-6 order-2 md:order-1">
             
-            {/* Streak & Profile Info Card */}
-            <div className="rounded-2xl border border-slate-100 bg-white/70 backdrop-blur-md p-6 shadow-sm shadow-indigo-950/5 flex flex-col items-center text-center gap-4">
-              <div className="relative">
+            {/* Streak & Profile Info Card - Redesigned with premium banner & XP progression */}
+            <div className="rounded-2xl border border-slate-100 bg-white/70 backdrop-blur-md overflow-hidden shadow-sm shadow-indigo-950/5 flex flex-col items-center text-center pb-6">
+              {/* Colorful gradient header banner */}
+              <div className="h-16 w-full bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 relative">
+                {user.role === "PREMIUM" && (
+                  <span className="absolute top-3 right-3 text-[10px] font-black uppercase tracking-wider bg-white/20 backdrop-blur-md text-white border border-white/20 px-2 py-0.5 rounded-full">
+                    👑 VIP Member
+                  </span>
+                )}
+              </div>
+              
+              {/* Overlapping Avatar wrapper */}
+              <div className="relative mt-[-2.25rem] mb-2.5">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src={user.avatarUrl || "https://lh3.googleusercontent.com/a/default-user"}
                   alt="User"
-                  className="h-20 w-20 rounded-full border-4 border-white shadow-md"
+                  className="h-20 w-20 rounded-full border-4 border-white shadow-md relative z-10"
                 />
-                {user.role === "PREMIUM" && (
-                  <span className="absolute bottom-0 right-0 text-xs bg-gradient-to-r from-[#4F46E5] to-[#EC4899] text-white p-1 rounded-full shadow-sm">
-                    👑
-                  </span>
-                )}
-              </div>
-              <div>
-                <h2 className="font-serif text-lg font-bold text-slate-800 flex items-center justify-center gap-1.5">
-                  {user.name}
-                </h2>
-                <p className="text-xs text-slate-400 mt-1">{user.email}</p>
               </div>
 
-              {/* Dynamic Swaying Flame widget */}
-              <div className="flex items-center gap-2.5 bg-slate-50 border border-slate-100 px-5 py-2.5 rounded-xl w-full justify-center">
-                <FlameIcon className={getFlameClass(streakVal)} />
-                <div className="text-left">
-                  <div className="text-sm font-bold text-slate-800">{streakVal} ngày liên tiếp</div>
-                  <span className="text-[9px] text-slate-400 uppercase tracking-wider font-semibold block">
-                    Kỷ lục: {stats?.maxStreak || 0} ngày
-                  </span>
+              <div className="px-6 w-full space-y-4">
+                <div>
+                  <h2 className="font-serif text-lg font-bold text-slate-800 leading-snug">
+                    {user.name}
+                  </h2>
+                  <p className="text-[10px] font-semibold text-slate-400 mt-0.5">{user.email}</p>
+                </div>
+
+                {/* Level progression bar */}
+                <div className="w-full text-left space-y-1.5 pt-3.5 border-t border-slate-100">
+                  <div className="flex justify-between items-center text-[10px] font-bold text-slate-500">
+                    <span className="bg-indigo-50 text-indigo-700 px-2 py-0.5 rounded border border-indigo-100 uppercase tracking-wider">
+                      Cấp {level}: {levelTitle}
+                    </span>
+                    <span className="font-mono text-slate-400 font-bold">{xpInCurrentLevel}/100 XP</span>
+                  </div>
+                  <div className="h-1.5 w-full bg-slate-100 rounded-full overflow-hidden">
+                    <div
+                      className="h-full bg-gradient-to-r from-[#4F46E5] to-[#EC4899] transition-all duration-500 rounded-full"
+                      style={{ width: `${xpInCurrentLevel}%` }}
+                    />
+                  </div>
+                </div>
+
+                {/* Dynamic Swaying Flame widget */}
+                <div className="flex items-center gap-2.5 bg-slate-50 border border-slate-100/80 px-4 py-2.5 rounded-xl w-full justify-center">
+                  <FlameIcon className={getFlameClass(streakVal)} />
+                  <div className="text-left">
+                    <div className="text-xs font-black text-slate-800">{streakVal} ngày liên tiếp</div>
+                    <span className="text-[9px] text-slate-400 uppercase tracking-wider font-semibold block">
+                      Kỷ lục cá nhân: {stats?.maxStreak || 0} ngày
+                    </span>
+                  </div>
                 </div>
               </div>
             </div>
@@ -462,6 +549,48 @@ export default function DashboardPage() {
               {buyError && (
                 <p className="text-red-300 text-[10px] font-bold mt-2 text-center">{buyError}</p>
               )}
+            </div>
+
+            {/* Daily Quests Gamification Card */}
+            <div className="bg-white/80 border border-slate-100 p-5 rounded-2xl shadow-sm space-y-3">
+              <h3 className="font-serif text-sm font-bold text-slate-800 flex items-center gap-1.5">
+                🎯 Nhiệm vụ hôm nay
+              </h3>
+              <div className="space-y-2.5">
+                <div className="flex items-center justify-between text-xs p-2.5 rounded-xl bg-slate-50 border border-slate-100/50">
+                  <div className="flex items-center gap-2">
+                    <span className={lessons.some(l => l.completed) ? "text-emerald-500 font-bold" : "text-slate-350 font-bold"}>
+                      {lessons.some(l => l.completed) ? "✓" : "○"}
+                    </span>
+                    <span className={lessons.some(l => l.completed) ? "line-through text-slate-400 font-medium" : "text-slate-650 font-semibold"}>
+                      Đọc bài học đầu tiên
+                    </span>
+                  </div>
+                  <span className="text-[10px] font-bold text-indigo-600 font-mono">+10 XP</span>
+                </div>
+                <div className="flex items-center justify-between text-xs p-2.5 rounded-xl bg-slate-50 border border-slate-100/50">
+                  <div className="flex items-center gap-2">
+                    <span className={stats && stats.averageQuizScore === 100 ? "text-emerald-500 font-bold" : "text-slate-350 font-bold"}>
+                      {stats && stats.averageQuizScore === 100 ? "✓" : "○"}
+                    </span>
+                    <span className={stats && stats.averageQuizScore === 100 ? "line-through text-slate-400 font-medium" : "text-slate-650 font-semibold"}>
+                      Đạt 100% điểm Quiz
+                    </span>
+                  </div>
+                  <span className="text-[10px] font-bold text-indigo-600 font-mono">+20 XP</span>
+                </div>
+                <div className="flex items-center justify-between text-xs p-2.5 rounded-xl bg-slate-50 border border-slate-100/50">
+                  <div className="flex items-center gap-2">
+                    <span className={streakVal >= 3 ? "text-emerald-500 font-bold" : "text-slate-350 font-bold"}>
+                      {streakVal >= 3 ? "✓" : "○"}
+                    </span>
+                    <span className={streakVal >= 3 ? "line-through text-slate-400 font-medium" : "text-slate-650 font-semibold"}>
+                      Duy trì chuỗi Streak 3 ngày
+                    </span>
+                  </div>
+                  <span className="text-[10px] font-bold text-indigo-600 font-mono">+30 XP</span>
+                </div>
+              </div>
             </div>
 
             {/* Contribution Graph Heatmap */}
@@ -725,24 +854,29 @@ export default function DashboardPage() {
                             {lesson.title}
                           </h3>
 
-                          {/* Summary takeaways list */}
-                          <ul className="space-y-2 mb-6 text-sm text-slate-600">
-                            {lesson.summary.slice(0, 2).map((bullet, idx) => (
-                              <li key={idx} className="flex items-start gap-2.5">
-                                <span className="text-orange-500 mt-1.5 text-xs select-none">•</span>
-                                <span className="leading-relaxed">{bullet}</span>
-                              </li>
-                            ))}
-                            {lesson.summary.length > 2 && (
-                              <li className="text-xs text-slate-400 font-serif italic list-none pl-4 mt-1">
-                                + {lesson.summary.length - 2} điểm tóm tắt khác...
-                              </li>
-                            )}
-                          </ul>
+                          {/* Summary takeaways list with side category watermark SVG */}
+                          <div className="flex justify-between items-start gap-5 mb-6">
+                            <ul className="space-y-2.5 text-sm text-slate-600 flex-1">
+                              {lesson.summary.slice(0, 2).map((bullet, idx) => (
+                                <li key={idx} className="flex items-start gap-2.5">
+                                  <span className="text-orange-500 mt-1.5 text-xs select-none">•</span>
+                                  <span className="leading-relaxed">{bullet}</span>
+                                </li>
+                              ))}
+                              {lesson.summary.length > 2 && (
+                                <li className="text-xs text-slate-400 font-serif italic list-none pl-5 mt-1">
+                                  + {lesson.summary.length - 2} điểm tóm tắt khác...
+                                </li>
+                              )}
+                            </ul>
+                            <div className="hidden sm:block shrink-0 pt-1 select-none pointer-events-none bg-slate-50 p-2 rounded-2xl border border-slate-100/50">
+                              {getCategoryIcon(lesson.tags)}
+                            </div>
+                          </div>
 
                           {/* Action trigger button */}
                           <div className="flex justify-between items-center pt-4 border-t border-slate-100">
-                            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+                            <span className={`text-[9px] font-extrabold uppercase tracking-wider px-2.5 py-0.5 rounded-full border ${getLevelBadge(lesson.level)}`}>
                               Trình độ: {lesson.level}
                             </span>
                             <Link
@@ -840,24 +974,29 @@ export default function DashboardPage() {
                           {lesson.title}
                         </h3>
 
-                        {/* Summary takeaways list */}
-                        <ul className="space-y-2 mb-6 text-sm text-slate-600">
-                          {lesson.summary.slice(0, 2).map((bullet, idx) => (
-                            <li key={idx} className="flex items-start gap-2.5">
-                              <span className="text-orange-500 mt-1.5 text-xs select-none">•</span>
-                              <span className="leading-relaxed">{bullet}</span>
-                            </li>
-                          ))}
-                          {lesson.summary.length > 2 && (
-                            <li className="text-xs text-slate-400 font-serif italic list-none pl-4 mt-1">
-                              + {lesson.summary.length - 2} điểm tóm tắt khác...
-                            </li>
-                          )}
-                        </ul>
+                        {/* Summary takeaways list with side category watermark SVG */}
+                        <div className="flex justify-between items-start gap-5 mb-6">
+                          <ul className="space-y-2.5 text-sm text-slate-600 flex-1">
+                            {lesson.summary.slice(0, 2).map((bullet, idx) => (
+                              <li key={idx} className="flex items-start gap-2.5">
+                                <span className="text-orange-500 mt-1.5 text-xs select-none">•</span>
+                                <span className="leading-relaxed">{bullet}</span>
+                              </li>
+                            ))}
+                            {lesson.summary.length > 2 && (
+                              <li className="text-xs text-slate-400 font-serif italic list-none pl-5 mt-1">
+                                + {lesson.summary.length - 2} điểm tóm tắt khác...
+                              </li>
+                            )}
+                          </ul>
+                          <div className="hidden sm:block shrink-0 pt-1 select-none pointer-events-none bg-slate-50 p-2 rounded-2xl border border-slate-100/50">
+                            {getCategoryIcon(lesson.tags)}
+                          </div>
+                        </div>
 
                         {/* Action trigger button */}
                         <div className="flex justify-between items-center pt-4 border-t border-slate-100">
-                          <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+                          <span className={`text-[9px] font-extrabold uppercase tracking-wider px-2.5 py-0.5 rounded-full border ${getLevelBadge(lesson.level)}`}>
                             Trình độ: {lesson.level}
                           </span>
                           <Link
