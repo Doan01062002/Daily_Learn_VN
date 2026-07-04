@@ -299,13 +299,28 @@ const LESSONS = [
 async function main() {
   console.log("Cleaning Database...");
   await prisma.userLessonProgress.deleteMany({});
+  await prisma.streak.deleteMany({});
   await prisma.quiz.deleteMany({});
   await prisma.lesson.deleteMany({});
+  await prisma.user.deleteMany({
+    where: {
+      email: {
+        in: [
+          "student1@gmail.com",
+          "student2@gmail.com",
+          "student3@gmail.com",
+          "student4@gmail.com",
+          "student5@gmail.com",
+        ],
+      },
+    },
+  });
 
   console.log("Seeding Lessons and Quizzes...");
+  const createdLessons = [];
   for (const lessonData of LESSONS) {
     const { quizzes, ...lessonFields } = lessonData;
-    await prisma.lesson.create({
+    const l = await prisma.lesson.create({
       data: {
         ...lessonFields,
         quizzes: {
@@ -313,9 +328,96 @@ async function main() {
         },
       },
     });
+    createdLessons.push(l);
+  }
+  console.log(`Successfully seeded ${createdLessons.length} lessons and quizzes.`);
+
+  const virtualUsers = [
+    {
+      email: "student1@gmail.com",
+      name: "Nguyễn Hoàng Nam",
+      role: "STUDENT" as const,
+      currentStreak: 3,
+      maxStreak: 5,
+      completedCount: 3,
+      quizScore: 80,
+      avatarUrl: "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150",
+    },
+    {
+      email: "student2@gmail.com",
+      name: "Trần Thị Lan",
+      role: "STUDENT" as const,
+      currentStreak: 7,
+      maxStreak: 10,
+      completedCount: 5,
+      quizScore: 90,
+      avatarUrl: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150",
+    },
+    {
+      email: "student3@gmail.com",
+      name: "Lê Văn Đạt",
+      role: "STUDENT" as const,
+      currentStreak: 12,
+      maxStreak: 12,
+      completedCount: 8,
+      quizScore: 85,
+      avatarUrl: "https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?w=150",
+    },
+    {
+      email: "student4@gmail.com",
+      name: "Phạm Hồng Nhung",
+      role: "PREMIUM" as const,
+      currentStreak: 15,
+      maxStreak: 20,
+      completedCount: 11,
+      quizScore: 95,
+      avatarUrl: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150",
+    },
+    {
+      email: "student5@gmail.com",
+      name: "Đỗ Minh Đức",
+      role: "PREMIUM" as const,
+      currentStreak: 2,
+      maxStreak: 3,
+      completedCount: 2,
+      quizScore: 70,
+      avatarUrl: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150",
+    },
+  ];
+
+  console.log("Seeding Virtual Users, Streaks, and Progress...");
+  for (const vu of virtualUsers) {
+    const user = await prisma.user.create({
+      data: {
+        email: vu.email,
+        name: vu.name,
+        role: vu.role,
+        avatarUrl: vu.avatarUrl,
+        streaks: {
+          create: {
+            currentStreak: vu.currentStreak,
+            maxStreak: vu.maxStreak,
+            lastCompleted: new Date(),
+          },
+        },
+      },
+    });
+
+    const lessonsToComplete = createdLessons.slice(0, vu.completedCount);
+    for (const lesson of lessonsToComplete) {
+      await prisma.userLessonProgress.create({
+        data: {
+          userId: user.id,
+          lessonId: lesson.id,
+          status: "COMPLETED",
+          score: vu.quizScore,
+          completedAt: new Date(),
+        },
+      });
+    }
   }
 
-  console.log(`Successfully seeded ${LESSONS.length} lessons and quizzes.`);
+  console.log("Successfully seeded database with virtual students and leaderboard data.");
 }
 
 main()
