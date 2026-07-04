@@ -124,6 +124,12 @@ export default function DashboardPage() {
               ⚙ Quản trị
             </Link>
           )}
+          <Link
+            href="/dashboard/settings"
+            className="text-xs font-semibold text-[#8C8375] border border-[#D5CFC5] px-3 py-1.5 rounded-lg hover:bg-[#FAF8F5] transition duration-200"
+          >
+            ⚙ Cài đặt
+          </Link>
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={user.avatarUrl || "https://lh3.googleusercontent.com/a/default-user"}

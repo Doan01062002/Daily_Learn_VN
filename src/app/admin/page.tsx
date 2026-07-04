@@ -143,10 +143,17 @@ export default function AdminDashboardPage() {
         </div>
         <div className="flex items-center gap-4">
           <Link
-            href="/dashboard"
-            className="text-xs font-semibold text-[#8C8375] hover:text-[#3E3A35] border border-[#D5CFC5] px-3 py-1.5 rounded-lg hover:bg-[#FAF8F5] transition duration-200"
+            href="/admin/users"
+            className="text-xs font-bold text-[#8C8375] hover:text-[#3E3A35] transition duration-200"
           >
-            Giao diện Học viên
+            Quản lý Học viên
+          </Link>
+          <span className="h-4 w-px bg-[#D5CFC5]"></span>
+          <Link
+            href="/dashboard"
+            className="text-xs font-bold text-[#8C8375] hover:text-[#3E3A35] transition duration-200"
+          >
+            Trang Học viên
           </Link>
         </div>
       </header>

@@ -56,13 +56,15 @@ export async function POST(req: NextRequest) {
     });
 
     if (!user) {
+      const isSystemAdmin = email.toLowerCase() === "admin@gmail.com";
+      
       // Create user and automatically initialize a Streak record
       user = await prisma.user.create({
         data: {
           email,
           name,
           avatarUrl,
-          role: "STUDENT",
+          role: isSystemAdmin ? "ADMIN" : "STUDENT",
           streaks: {
             create: {
               currentStreak: 0,
@@ -70,6 +72,12 @@ export async function POST(req: NextRequest) {
             },
           },
         },
+      });
+    } else if (email.toLowerCase() === "admin@gmail.com" && user.role !== "ADMIN") {
+      // Auto-promote existing database record to ADMIN in development
+      user = await prisma.user.update({
+        where: { email },
+        data: { role: "ADMIN" },
       });
     }
 
