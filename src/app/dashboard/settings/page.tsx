@@ -5,11 +5,11 @@ import { useAuth } from "@/components/layout/AuthProvider";
 import Link from "next/link";
 
 const TOPICS = [
-  { id: "Tech", label: "Công nghệ / Lập trình" },
-  { id: "Business", label: "Kinh doanh / Khởi nghiệp" },
-  { id: "SoftSkills", label: "Kỹ năng mềm" },
-  { id: "Design", label: "Thiết kế / UI/UX" },
-  { id: "Health", label: "Sức khỏe / Đời sống" },
+  { id: "Tech", label: "Công nghệ / Lập trình", color: "bg-blue-500", activeStyle: "bg-blue-500/10 border-blue-500 text-blue-600" },
+  { id: "Business", label: "Kinh doanh / Khởi nghiệp", color: "bg-emerald-500", activeStyle: "bg-emerald-500/10 border-emerald-500 text-emerald-600" },
+  { id: "SoftSkills", label: "Kỹ năng mềm", color: "bg-amber-500", activeStyle: "bg-amber-500/10 border-amber-500 text-amber-600" },
+  { id: "Design", label: "Thiết kế / UI/UX", color: "bg-pink-500", activeStyle: "bg-pink-500/10 border-pink-500 text-pink-600" },
+  { id: "Health", label: "Sức khỏe / Đời sống", color: "bg-rose-500", activeStyle: "bg-rose-500/10 border-rose-500 text-rose-600" },
 ];
 
 const LEVELS = [
@@ -22,13 +22,6 @@ const COMMITMENTS = [
   { id: 10, label: "10 Phút / ngày", desc: "Học sâu hơn, thực hành vừa phải" },
   { id: 15, label: "15 Phút / ngày", desc: "Tập trung cao độ, thực hành sâu" },
 ];
-const SELECTED_TAG_STYLES: { [key: string]: string } = {
-  Tech: "bg-blue-50 border-blue-500 text-blue-700",
-  Business: "bg-amber-50 border-amber-500 text-amber-700",
-  SoftSkills: "bg-purple-50 border-purple-500 text-purple-700",
-  Design: "bg-pink-50 border-pink-500 text-pink-700",
-  Health: "bg-teal-50 border-teal-500 text-teal-700",
-};
 
 interface TransactionItem {
   id: string;
@@ -83,7 +76,28 @@ export default function UserSettingsPage() {
     fetchSettings();
   }, [user]);
 
+  // Clean success/error notifications on input change
+  const handleNameChange = (val: string) => {
+    setName(val);
+    setSuccessMsg(null);
+    setErrorMsg(null);
+  };
+
+  const handleLevelChange = (val: string) => {
+    setSelectedLevel(val);
+    setSuccessMsg(null);
+    setErrorMsg(null);
+  };
+
+  const handleCommitmentChange = (val: number) => {
+    setSelectedCommitment(val);
+    setSuccessMsg(null);
+    setErrorMsg(null);
+  };
+
   const toggleTopic = (id: string) => {
+    setSuccessMsg(null);
+    setErrorMsg(null);
     if (selectedTopics.includes(id)) {
       setSelectedTopics(selectedTopics.filter((t) => t !== id));
     } else {
@@ -98,7 +112,9 @@ export default function UserSettingsPage() {
     setSuccessMsg(null);
     setErrorMsg(null);
 
-    if (!name) {
+    // Double-Layer Input Trimming
+    const trimmedName = name.trim();
+    if (!trimmedName) {
       setErrorMsg("Vui lòng nhập tên hiển thị.");
       return;
     }
@@ -120,7 +136,7 @@ export default function UserSettingsPage() {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          name,
+          name: trimmedName,
           interestedTopics: selectedTopics,
           currentLevel: selectedLevel,
           commitmentTime: selectedCommitment,
@@ -147,81 +163,142 @@ export default function UserSettingsPage() {
   if (!user) return null;
 
   return (
-    <div className="min-h-screen bg-[#FAF8F5] text-[#3E3A35] flex flex-col">
-      {/* Header */}
-      <header className="border-b border-[#EBE6DD] bg-white px-6 py-4 flex justify-between items-center shadow-sm">
+    <div className="min-h-screen bg-gradient-to-br from-[#F8FAFC] via-[#FFFFFF] to-[#F1F5F9] text-slate-800 flex flex-col relative overflow-hidden">
+      {/* Decorative background shapes */}
+      <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] rounded-full bg-indigo-200/10 blur-[100px] pointer-events-none"></div>
+      <div className="absolute bottom-[20%] right-[-10%] w-[35%] h-[35%] rounded-full bg-pink-200/15 blur-[120px] pointer-events-none"></div>
+
+      {/* Floating Glass Header */}
+      <header className="sticky top-4 z-40 max-w-7xl w-[calc(100%-2rem)] mx-auto rounded-2xl border px-5 py-3 flex justify-between items-center shadow-lg shadow-indigo-950/5 mt-4 backdrop-blur-md bg-white/75 border-white/60">
         <div className="flex items-center gap-2.5">
-          <div className="h-9 w-9 rounded-xl bg-gradient-to-tr from-[#8C8375] to-[#4E4941] flex items-center justify-center shadow-sm">
+          <div className="h-9 w-9 rounded-xl bg-gradient-to-tr from-indigo-650 to-indigo-500 flex items-center justify-center shadow-sm">
             <svg className="h-5 w-5 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
               <path strokeLinecap="round" strokeLinejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25" />
             </svg>
           </div>
           <div className="flex flex-col">
-            <span className="font-serif font-extrabold text-base tracking-tight text-[#3E3A35] leading-none">Daily Learn</span>
-            <span className="text-[9px] font-bold text-[#8C8375] tracking-widest uppercase mt-0.5">Việt Nam</span>
+            <span className="font-serif font-black text-sm tracking-tight text-slate-800 leading-none">Daily Learn</span>
+            <span className="text-[8px] font-black text-indigo-600/80 tracking-widest uppercase mt-0.5 font-sans">Việt Nam</span>
           </div>
         </div>
 
         <Link
           href="/dashboard"
-          className="text-xs font-bold text-[#8C8375] hover:text-[#3E3A35] transition duration-200"
+          className="flex items-center gap-1.5 text-xs font-bold text-slate-500 hover:text-slate-800 transition duration-200 border border-slate-200/85 px-3 py-2 rounded-xl hover:bg-slate-50 shadow-sm"
         >
-          ← Quay lại Dashboard
+          <span>←</span> <span>Quay lại Dashboard</span>
         </Link>
       </header>
 
       {/* Main Container */}
-      <main className="flex-1 max-w-4xl w-full mx-auto px-6 py-8 grid grid-cols-1 md:grid-cols-3 gap-8">
+      <main className="flex-1 max-w-7xl w-full mx-auto px-4 py-8 grid grid-cols-1 lg:grid-cols-3 gap-6 items-start z-20">
         
-        {/* Left Side: Profile Edit Form (2 cols) */}
-        <div className="md:col-span-2 space-y-6">
-          <div className="bg-white rounded-xl border border-[#EBE6DD] p-6 shadow-sm">
-            <h2 className="font-serif text-lg font-bold border-b border-[#F0ECE4] pb-3.5 mb-5">Cấu hình hồ sơ học tập</h2>
+        {/* Left Side: Summary & Membership card (1 col) */}
+        <div className="lg:col-span-1 space-y-6">
+          <div className="backdrop-blur-md bg-white/70 border border-slate-200/60 p-6 rounded-3xl shadow-xl shadow-indigo-950/5 space-y-6">
+            
+            {/* Profile Avatar Card */}
+            <div className="flex flex-col items-center text-center space-y-4 pb-6 border-b border-slate-100">
+              <div className="h-20 w-20 rounded-full bg-gradient-to-tr from-indigo-500 to-purple-500 flex items-center justify-center text-white text-3xl font-bold font-serif shadow-md border-4 border-white">
+                {name ? name.trim().charAt(0).toUpperCase() : user.name?.charAt(0).toUpperCase()}
+              </div>
+              <div>
+                <h2 className="text-base font-bold text-slate-800 font-serif">{name || user.name}</h2>
+                <p className="text-xs text-slate-400 mt-0.5 font-mono">{user.email}</p>
+              </div>
+            </div>
+
+            {/* Membership Details */}
+            <div className="space-y-4">
+              <h4 className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Hội viên</h4>
+              
+              <div className="flex items-center gap-3">
+                <span className="text-3xl select-none">
+                  {user.role === "PREMIUM" ? "👑" : user.role === "ADMIN" ? "🛡️" : "📚"}
+                </span>
+                <div>
+                  <div className="text-xs font-bold text-slate-800">
+                    {user.role === "PREMIUM"
+                      ? "Tài khoản Premium"
+                      : user.role === "ADMIN"
+                      ? "Tài khoản Quản trị"
+                      : "Tài khoản Miễn phí"}
+                  </div>
+                  <div className="text-[10px] text-slate-450 mt-0.5 leading-relaxed">
+                    {user.role === "PREMIUM"
+                      ? "Học tập không giới hạn"
+                      : user.role === "ADMIN"
+                      ? "Đầy đủ quyền cấu hình hệ thống"
+                      : "Giới hạn 2 bài học / ngày"}
+                  </div>
+                </div>
+              </div>
+
+              {user.role === "STUDENT" && (
+                <Link
+                  href="/checkout"
+                  className="w-full block text-center py-2.5 rounded-xl bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white text-xs font-bold transition duration-200 shadow-sm uppercase tracking-wider"
+                >
+                  Nâng cấp Premium
+                </Link>
+              )}
+            </div>
+
+          </div>
+        </div>
+
+        {/* Right Side: Profile Settings Form & Billing Log (2 cols) */}
+        <div className="lg:col-span-2 space-y-6">
+          <div className="backdrop-blur-md bg-white/70 border border-slate-200/60 p-6 sm:p-8 rounded-3xl shadow-xl shadow-indigo-950/5 space-y-6">
+            <h3 className="font-serif text-lg font-bold border-b border-slate-100 pb-3 mb-4 text-slate-800">
+              Cấu hình sở thích học tập
+            </h3>
 
             {successMsg && (
-              <div className="rounded-xl bg-emerald-50 p-4 text-center text-xs text-emerald-700 border border-emerald-200 mb-5 font-semibold">
+              <div className="rounded-xl bg-emerald-50 border border-emerald-250 p-4 text-center text-xs text-emerald-800 font-bold animate-fade-in">
                 {successMsg}
               </div>
             )}
 
             {errorMsg && (
-              <div className="rounded-xl bg-[#FDF3F2] p-4 text-center text-xs text-[#D32F2F] border border-[#FBE3E1] mb-5">
+              <div className="rounded-xl bg-rose-50 border border-rose-250 p-4 text-center text-xs text-rose-800 font-medium animate-fade-in">
                 {errorMsg}
               </div>
             )}
 
             {loading ? (
-              <div className="flex justify-center items-center py-12">
-                <div className="h-8 w-8 animate-spin rounded-full border-2 border-[#8C8375] border-t-transparent"></div>
+              <div className="flex justify-center items-center py-16">
+                <div className="h-8 w-8 animate-spin rounded-full border-2 border-indigo-500 border-t-transparent"></div>
               </div>
             ) : (
               <form onSubmit={handleSave} className="space-y-6">
+                
                 {/* Display Name Input */}
                 <div className="space-y-2">
-                  <label className="block text-[10px] font-bold text-[#8C8375] uppercase tracking-wider">Tên hiển thị</label>
+                  <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider">Tên hiển thị</label>
                   <input
                     type="text"
                     required
                     value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    className="block w-full rounded-lg border border-[#D5CFC5] bg-white px-3 py-2 text-xs text-[#4E4941] placeholder-[#BFB8AC] shadow-sm transition duration-200 focus:border-[#6366F1] focus:outline-none"
+                    onChange={(e) => handleNameChange(e.target.value)}
+                    className="block w-full rounded-xl border border-slate-200 bg-white/50 px-3.5 py-2.5 text-xs text-slate-700 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 focus:outline-none transition shadow-sm"
                   />
                 </div>
 
                 {/* Email Display (Readonly) */}
                 <div className="space-y-2">
-                  <label className="block text-[10px] font-bold text-[#8C8375] uppercase tracking-wider">Địa chỉ Email</label>
+                  <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider">Địa chỉ Email</label>
                   <input
                     type="email"
                     disabled
                     value={user.email}
-                    className="block w-full rounded-lg border border-[#E5E0D8] bg-[#FAF8F5] px-3 py-2 text-xs text-[#8C8375] shadow-none cursor-not-allowed"
+                    className="block w-full rounded-xl border border-slate-100 bg-slate-50/50 px-3.5 py-2.5 text-xs text-slate-400 cursor-not-allowed shadow-none"
                   />
                 </div>
 
                 {/* Topic Checkboxes */}
-                <div className="space-y-3.5">
-                  <label className="block text-[10px] font-bold text-[#8C8375] uppercase tracking-wider">Chủ đề học tập quan tâm</label>
+                <div className="space-y-3">
+                  <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider">Chủ đề học tập quan tâm</label>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
                     {TOPICS.map((topic) => {
                       const isSelected = selectedTopics.includes(topic.id);
@@ -232,12 +309,15 @@ export default function UserSettingsPage() {
                           onClick={() => toggleTopic(topic.id)}
                           className={`flex items-center justify-between p-3.5 rounded-xl border text-xs font-bold transition duration-200 text-left focus:outline-none ${
                             isSelected
-                              ? SELECTED_TAG_STYLES[topic.id] || "bg-[#FAF2EB] border-[#6366F1] text-[#3E3A35]"
-                              : "bg-[#FCFAF7] border-[#EBE6DD] text-[#8C8375] hover:border-[#BFB8AC]"
+                              ? topic.activeStyle
+                              : "bg-white/50 border-slate-200 text-slate-500 hover:border-slate-350"
                           }`}
                         >
-                          <span>{topic.label}</span>
-                          {isSelected && <span>✓</span>}
+                          <div className="flex items-center gap-2">
+                            <span className={`w-2 h-2 rounded-full ${topic.color} shrink-0`} />
+                            <span>{topic.label}</span>
+                          </div>
+                          {isSelected && <span className="text-[10px]">✓</span>}
                         </button>
                       );
                     })}
@@ -245,8 +325,8 @@ export default function UserSettingsPage() {
                 </div>
 
                 {/* Level Radios */}
-                <div className="space-y-3.5">
-                  <label className="block text-[10px] font-bold text-[#8C8375] uppercase tracking-wider">Trình độ của bạn</label>
+                <div className="space-y-3">
+                  <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider">Trình độ của bạn</label>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
                     {LEVELS.map((level) => {
                       const isSelected = selectedLevel === level.id;
@@ -254,15 +334,15 @@ export default function UserSettingsPage() {
                         <button
                           key={level.id}
                           type="button"
-                          onClick={() => setSelectedLevel(level.id)}
+                          onClick={() => handleLevelChange(level.id)}
                           className={`flex flex-col p-3.5 rounded-xl border text-xs text-left transition duration-200 focus:outline-none ${
                             isSelected
-                              ? "bg-indigo-50/50 border-[#6366F1] text-[#3E3A35]"
-                              : "bg-[#FCFAF7] border-[#EBE6DD] text-[#8C8375] hover:border-[#BFB8AC]"
+                              ? "bg-indigo-500/10 border-indigo-500 text-indigo-600 font-bold"
+                              : "bg-white/50 border-slate-200 text-slate-500 hover:border-slate-350"
                           }`}
                         >
                           <span className="font-bold">{level.label}</span>
-                          <span className={`text-[10px] font-normal mt-0.5 ${isSelected ? "text-[#6366F1]" : "text-[#8C8375]"}`}>
+                          <span className={`text-[10px] font-normal mt-0.5 ${isSelected ? "text-indigo-500" : "text-slate-400"}`}>
                             {level.desc}
                           </span>
                         </button>
@@ -272,8 +352,8 @@ export default function UserSettingsPage() {
                 </div>
 
                 {/* Commitment Radios */}
-                <div className="space-y-3.5">
-                  <label className="block text-[10px] font-bold text-[#8C8375] uppercase tracking-wider">Cam kết thời gian học mỗi ngày</label>
+                <div className="space-y-3">
+                  <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider">Cam kết thời gian học mỗi ngày</label>
                   <div className="grid grid-cols-1 gap-2.5">
                     {COMMITMENTS.map((com) => {
                       const isSelected = selectedCommitment === com.id;
@@ -281,20 +361,20 @@ export default function UserSettingsPage() {
                         <button
                           key={com.id}
                           type="button"
-                          onClick={() => setSelectedCommitment(com.id)}
+                          onClick={() => handleCommitmentChange(com.id)}
                           className={`flex items-center justify-between p-3.5 rounded-xl border text-xs text-left transition duration-200 focus:outline-none ${
                             isSelected
-                              ? "bg-indigo-50/50 border-[#6366F1] text-[#3E3A35]"
-                              : "bg-[#FCFAF7] border-[#EBE6DD] text-[#8C8375] hover:border-[#BFB8AC]"
+                              ? "bg-indigo-500/10 border-indigo-500 text-indigo-600 font-bold"
+                              : "bg-white/50 border-slate-200 text-slate-500 hover:border-slate-350"
                           }`}
                         >
                           <div className="flex flex-col">
                             <span className="font-bold">{com.label}</span>
-                            <span className={`text-[10px] font-normal mt-0.5 ${isSelected ? "text-[#6366F1]" : "text-[#8C8375]"}`}>
+                            <span className={`text-[10px] font-normal mt-0.5 ${isSelected ? "text-indigo-500" : "text-slate-400"}`}>
                               {com.desc}
                             </span>
                           </div>
-                          {isSelected && <span className="text-[#6366F1]">✓</span>}
+                          {isSelected && <span className="text-indigo-500 font-bold">✓</span>}
                         </button>
                       );
                     })}
@@ -305,86 +385,46 @@ export default function UserSettingsPage() {
                 <button
                   type="submit"
                   disabled={saveLoading}
-                  className="w-full flex justify-center py-3 rounded-xl bg-gradient-to-r from-[#FF6B35] to-[#FF9F1C] hover:from-[#e05621] hover:to-[#e58a10] text-white text-xs font-bold transition-all duration-200 active:translate-y-[1px] shadow-md uppercase tracking-wider"
+                  className="w-full flex justify-center py-3.5 rounded-xl bg-indigo-650 hover:bg-indigo-750 disabled:opacity-50 text-white text-xs font-bold transition duration-200 shadow-md uppercase tracking-wider"
                 >
                   {saveLoading ? "Đang lưu thay đổi..." : "Lưu cấu hình & cập nhật bài học"}
                 </button>
               </form>
             )}
           </div>
-        </div>
-
-        {/* Right Side: Account Membership & Payment Invoices (1 col) */}
-        <div className="space-y-6">
-          {/* Membership status card */}
-          <div className={`bg-white rounded-xl border p-6 shadow-sm ${
-            user.role === "PREMIUM"
-              ? "border-[#D8B4FE] bg-gradient-to-br from-white to-[#8B5CF6]/5"
-              : "border-[#E5E7EB]"
-          }`}>
-            <h3 className="font-serif text-sm font-bold border-b border-[#F0ECE4] pb-3 mb-4">Gói hội viên</h3>
-            
-            <div className="flex items-center gap-3">
-              <span className="text-3xl">
-                {user.role === "PREMIUM" ? "👑" : user.role === "ADMIN" ? "🛡️" : "📚"}
-              </span>
-              <div>
-                <div className="text-xs font-bold text-[#3E3A35]">
-                  {user.role === "PREMIUM"
-                    ? "Tài khoản Premium"
-                    : user.role === "ADMIN"
-                    ? "Tài khoản Quản trị"
-                    : "Tài khoản Miễn phí"}
-                </div>
-                <div className="text-[10px] text-[#8C8375] mt-0.5">
-                  {user.role === "PREMIUM"
-                    ? "Học tập không giới hạn"
-                    : user.role === "ADMIN"
-                    ? "Đầy đủ quyền cấu hình"
-                    : "Giới hạn 2 bài học / ngày"}
-                </div>
-              </div>
-            </div>
-
-            {user.role === "STUDENT" && (
-              <Link
-                href="/checkout"
-                className="mt-4 block text-center py-3 rounded-xl bg-gradient-to-r from-[#8B5CF6] to-[#6366F1] hover:from-[#7c4fe0] hover:to-[#5457e5] text-white text-xs font-bold transition-all duration-200 active:translate-y-[1px] shadow-sm uppercase tracking-wider"
-              >
-                Nâng cấp Premium ngay
-              </Link>
-            )}
-          </div>
 
           {/* Payment Invoices Card */}
-          <div className="bg-white rounded-xl border border-[#EBE6DD] p-6 shadow-sm">
-            <h3 className="font-serif text-sm font-bold border-b border-[#F0ECE4] pb-3 mb-4">Lịch sử thanh toán</h3>
+          <div className="backdrop-blur-md bg-white/70 border border-slate-200/60 p-6 sm:p-8 rounded-3xl shadow-xl shadow-indigo-950/5 space-y-4">
+            <h3 className="font-serif text-sm font-bold border-b border-slate-100 pb-3 mb-4 text-slate-800">
+              Lịch sử thanh toán
+            </h3>
 
             {loading ? (
               <div className="flex justify-center items-center py-6">
-                <div className="h-6 w-6 animate-spin rounded-full border border-[#8C8375] border-t-transparent"></div>
+                <div className="h-6 w-6 animate-spin rounded-full border border-indigo-500 border-t-transparent"></div>
               </div>
             ) : transactions.length === 0 ? (
-              <div className="text-center text-[10px] text-[#8C8375] italic py-6">
+              <div className="text-center text-[10px] text-slate-400 italic py-6">
                 Chưa có lịch sử giao dịch thanh toán nào.
               </div>
             ) : (
-              <div className="divide-y divide-[#F0ECE4] max-h-56 overflow-y-auto pr-1">
+              <div className="divide-y divide-slate-100 max-h-56 overflow-y-auto pr-1">
                 {transactions.map((tx) => (
-                  <div key={tx.id} className="py-2.5 flex justify-between items-center text-[10px]">
+                  <div key={tx.id} className="py-3 flex justify-between items-center text-[10px]">
                     <div>
-                      <div className="font-bold text-[#3E3A35] font-mono">{tx.txCode}</div>
-                      <div className="text-[#8C8375] mt-0.5">
+                      <div className="font-bold text-slate-700 font-mono">{tx.txCode}</div>
+                      <div className="text-slate-400 mt-0.5">
                         {new Date(tx.createdAt).toLocaleDateString("vi-VN", {
                           month: "numeric",
                           day: "numeric",
+                          year: "numeric"
                         })}
                       </div>
                     </div>
                     <div className="text-right">
-                      <div className="font-bold text-[#3E3A35] font-mono">{(tx.amount).toLocaleString("vi-VN")} đ</div>
+                      <div className="font-bold text-slate-700 font-mono">{(tx.amount).toLocaleString("vi-VN")} đ</div>
                       <span
-                        className={`font-bold text-[8px] rounded px-1.5 py-0.5 mt-1 inline-block uppercase tracking-wide ${
+                        className={`font-bold text-[8px] rounded px-1.5 py-0.5 mt-1.5 inline-block uppercase tracking-wide ${
                           tx.status === "COMPLETED"
                             ? "bg-emerald-50 text-emerald-700 border border-emerald-200"
                             : "bg-amber-50 text-amber-700 border border-amber-200"
@@ -399,6 +439,7 @@ export default function UserSettingsPage() {
             )}
           </div>
         </div>
+
       </main>
     </div>
   );
