@@ -110,6 +110,7 @@ export default function DashboardPage() {
   // Stats and Leaderboard states
   const [activeTab, setActiveTab] = useState<"today" | "bookmarks" | "leaderboard" | "stats" | "groups">("today");
   const [stats, setStats] = useState<UserStats | null>(null);
+  const [competencies, setCompetencies] = useState<any[]>([]);
   const [leaderboard, setLeaderboard] = useState<LeaderboardUser[]>([]);
   const [timeline, setTimeline] = useState<any[]>([]);
   const [loadingStats, setLoadingStats] = useState(false);
@@ -335,6 +336,7 @@ export default function DashboardPage() {
           const dataHeatmap = await resHeatmap.json();
           setStats(dataStats.stats);
           setTimeline(dataStats.timeline || []);
+          setCompetencies(dataStats.competencies || []);
           setLeaderboard(dataLeaderboard.leaderboard);
           setHeatmapData(dataHeatmap.heatmap);
         }
@@ -1531,7 +1533,218 @@ export default function DashboardPage() {
             ) : (
               /* Expanded Stats & Contribution Heatmap + Timeline combined */
               <div className="space-y-6">
-                
+
+                {/* RPG Skills Radar Chart & Category details */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {/* Radar Chart Visual */}
+                  <div className="bg-white/80 border border-slate-100 p-6 rounded-2xl shadow-sm space-y-4 flex flex-col items-center justify-center">
+                    <div className="w-full text-left">
+                      <h3 className="font-serif text-sm font-bold text-slate-800">Biểu đồ kỹ năng RPG</h3>
+                      <p className="text-[10px] text-slate-455 mt-0.5">Trực quan hóa trình độ tri thức của bạn qua các chủ đề.</p>
+                    </div>
+
+                    {loadingStats ? (
+                      <div className="h-[220px] flex items-center justify-center">
+                        <div className="h-6 w-6 animate-spin rounded-full border-2 border-indigo-500 border-t-transparent"></div>
+                      </div>
+                    ) : competencies.length === 0 ? (
+                      <div className="h-[220px] flex items-center justify-center text-xs text-slate-405 italic">
+                        Chưa có dữ liệu bài học để đánh giá.
+                      </div>
+                    ) : (
+                      /* SVG Radar Chart code */
+                      <svg width="250" height="250" viewBox="0 0 300 300" className="w-full max-w-[250px] overflow-visible select-none">
+                        {(() => {
+                          const cx = 150;
+                          const cy = 150;
+                          const rMax = 100;
+                          const categoriesCount = 5;
+
+                          // Helper to get coordinates
+                          const getCoordinates = (index: number, value: number) => {
+                            const angle = (index * 2 * Math.PI) / categoriesCount - Math.PI / 2;
+                            const r = (value / 100) * rMax;
+                            return {
+                              x: cx + r * Math.cos(angle),
+                              y: cy + r * Math.sin(angle),
+                            };
+                          };
+
+                          // Labels translation and icons
+                          const labelMap: Record<string, { name: string; icon: string }> = {
+                            Tech: { name: "Công nghệ", icon: "💻" },
+                            Business: { name: "Kinh doanh", icon: "📈" },
+                            SoftSkills: { name: "Kỹ năng mềm", icon: "🤝" },
+                            Design: { name: "Thiết kế", icon: "🎨" },
+                            Health: { name: "Sức khỏe", icon: "🍎" },
+                          };
+
+                          // Render grid concentric polygons
+                          const gridLevels = [20, 40, 60, 80, 100];
+                          
+                          // User stats polygon path points
+                          const points = competencies.map((c, i) => {
+                            const { x, y } = getCoordinates(i, Math.max(10, c.progress));
+                            return `${x},${y}`;
+                          }).join(" ");
+
+                          return (
+                            <>
+                              {/* Draw grid lines */}
+                              {gridLevels.map((level) => {
+                                const gridPoints = Array.from({ length: categoriesCount }).map((_, i) => {
+                                  const { x, y } = getCoordinates(i, level);
+                                  return `${x},${y}`;
+                                }).join(" ");
+                                return (
+                                  <polygon
+                                    key={level}
+                                    points={gridPoints}
+                                    fill="none"
+                                    stroke="rgba(99, 102, 241, 0.08)"
+                                    strokeWidth="1"
+                                  />
+                                );
+                              })}
+
+                              {/* Draw axes lines */}
+                              {competencies.map((_, i) => {
+                                const outer = getCoordinates(i, 100);
+                                return (
+                                  <line
+                                    key={i}
+                                    x1={cx}
+                                    y1={cy}
+                                    x2={outer.x}
+                                    y2={outer.y}
+                                    stroke="rgba(99, 102, 241, 0.12)"
+                                    strokeWidth="1"
+                                    strokeDasharray="3,3"
+                                  />
+                                );
+                              })}
+
+                              {/* Draw user data polygon */}
+                              <polygon
+                                points={points}
+                                fill="rgba(99, 102, 241, 0.2)"
+                                stroke="rgba(99, 102, 241, 0.8)"
+                                strokeWidth="2.5"
+                                className="transition-all duration-500 ease-out"
+                              />
+
+                              {/* Draw data points */}
+                              {competencies.map((c, i) => {
+                                const { x, y } = getCoordinates(i, Math.max(10, c.progress));
+                                return (
+                                  <circle
+                                    key={i}
+                                    cx={x}
+                                    cy={y}
+                                    r="4"
+                                    fill="#4f46e5"
+                                    stroke="#fff"
+                                    strokeWidth="1.5"
+                                    className="cursor-pointer hover:scale-125 transition-transform"
+                                  >
+                                    <title>{`${c.category}: ${c.progress}%`}</title>
+                                  </circle>
+                                );
+                              })}
+
+                              {/* Labels */}
+                              {competencies.map((c, i) => {
+                                const outer = getCoordinates(i, 118);
+                                const item = labelMap[c.category] || { name: c.category, icon: "🏷️" };
+                                
+                                // Text anchor alignment
+                                let textAnchor: "middle" | "end" | "start" = "middle";
+                                if (outer.x < cx - 10) textAnchor = "end";
+                                else if (outer.x > cx + 10) textAnchor = "start";
+
+                                return (
+                                  <g key={i} className="text-[10px] font-bold fill-slate-600">
+                                    <text
+                                      x={outer.x}
+                                      y={outer.y}
+                                      textAnchor={textAnchor}
+                                      className="font-sans font-bold"
+                                    >
+                                      {item.icon} {item.name}
+                                    </text>
+                                    <text
+                                      x={outer.x}
+                                      y={outer.y + 12}
+                                      textAnchor={textAnchor}
+                                      className="font-mono text-[9px] fill-indigo-600 font-extrabold"
+                                    >
+                                      {c.progress}%
+                                    </text>
+                                  </g>
+                                );
+                              })}
+                            </>
+                          );
+                        })()}
+                      </svg>
+                    )}
+                  </div>
+
+                  {/* Competency detail card list */}
+                  <div className="bg-white/80 border border-slate-100 p-6 rounded-2xl shadow-sm space-y-4">
+                    <div>
+                      <h3 className="font-serif text-sm font-bold text-slate-800">Chi tiết phân tích kỹ năng</h3>
+                      <p className="text-[10px] text-slate-455 mt-0.5">Tiến độ bài học đã hoàn thành và điểm số kiểm tra trắc nghiệm của từng chủ đề.</p>
+                    </div>
+
+                    {loadingStats ? (
+                      <div className="flex justify-center items-center py-10">
+                        <div className="h-6 w-6 animate-spin rounded-full border-2 border-indigo-500 border-t-transparent"></div>
+                      </div>
+                    ) : competencies.length === 0 ? (
+                      <p className="text-xs text-slate-405 italic text-center py-6">Chưa có bài học trong tuần.</p>
+                    ) : (
+                      <div className="space-y-4">
+                        {competencies.map((c) => {
+                          const labelMap: Record<string, { name: string; icon: string; color: string }> = {
+                            Tech: { name: "Công nghệ", icon: "💻", color: "bg-blue-500" },
+                            Business: { name: "Kinh doanh", icon: "📈", color: "bg-emerald-500" },
+                            SoftSkills: { name: "Kỹ năng mềm", icon: "🤝", color: "bg-amber-500" },
+                            Design: { name: "Thiết kế", icon: "🎨", color: "bg-pink-500" },
+                            Health: { name: "Sức khỏe", icon: "🍎", color: "bg-rose-500" },
+                          };
+                          const item = labelMap[c.category] || { name: c.category, icon: "🏷️", color: "bg-slate-500" };
+                          
+                          return (
+                            <div key={c.category} className="space-y-2">
+                              <div className="flex justify-between items-center text-xs font-semibold">
+                                <div className="flex items-center gap-1.5 font-bold text-slate-800">
+                                  <span>{item.icon}</span>
+                                  <span>{item.name}</span>
+                                </div>
+                                <span className="font-mono font-bold text-indigo-650">
+                                  {c.completed} / {c.total} bài học ({c.progress}%)
+                                </span>
+                              </div>
+                              <div className="h-2 w-full bg-slate-100 rounded-full overflow-hidden relative">
+                                <div
+                                  className={`h-full ${item.color} rounded-full transition-all duration-500`}
+                                  style={{ width: `${c.progress}%` }}
+                                />
+                              </div>
+                              {c.completed > 0 && (
+                                <div className="flex justify-end text-[9px] font-mono text-slate-455 font-bold">
+                                  Điểm Quiz TB: {c.avgScore}%
+                                </div>
+                              )}
+                            </div>
+                          );
+                        })}
+                      </div>
+                    )}
+                  </div>
+                </div>
+
                 {/* Heatmap graph Card - stretched beautifully */}
                 <div className="bg-white/80 border border-slate-100 p-6 rounded-2xl shadow-sm space-y-4">
                   <div>

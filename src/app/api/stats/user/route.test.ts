@@ -34,6 +34,9 @@ vi.mock("@/lib/prisma", () => ({
       findUnique: vi.fn(),
       update: vi.fn(),
     },
+    lesson: {
+      findMany: vi.fn(),
+    },
   },
   __esModule: true,
 }));
@@ -73,6 +76,9 @@ describe("GET /api/stats/user - Stats Computation", () => {
 
     // Mock findMany for timeline
     vi.mocked(prisma.userLessonProgress.findMany).mockResolvedValue([]);
+
+    // Mock lesson findMany for competency calculation
+    vi.mocked(prisma.lesson.findMany).mockResolvedValue([]);
 
     // Mock user findUnique returning user and streak array
     vi.mocked(prisma.user.findUnique).mockResolvedValue({

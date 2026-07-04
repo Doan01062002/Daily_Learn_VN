@@ -125,6 +125,50 @@ export async function GET(req?: Request) {
       completedAt: tp.completedAt,
     }));
 
+    // 4. Calculate competency category progress (Tech, Business, SoftSkills, Design, Health)
+    const allLessons = await prisma.lesson.findMany({
+      select: {
+        id: true,
+        tags: true,
+      },
+    });
+
+    const userCompleted = await prisma.userLessonProgress.findMany({
+      where: {
+        userId,
+        status: "COMPLETED",
+      },
+      include: {
+        lesson: {
+          select: {
+            tags: true,
+          },
+        },
+      },
+    });
+
+    const CATEGORIES = ["Tech", "Business", "SoftSkills", "Design", "Health"];
+    const competencyData = CATEGORIES.map((cat) => {
+      const catLessons = allLessons.filter((l) => l.tags.includes(cat));
+      const total = catLessons.length;
+
+      const catCompleted = userCompleted.filter((uc) => uc.lesson.tags.includes(cat));
+      const completed = catCompleted.length;
+
+      const scores = catCompleted.filter((uc) => uc.score !== null).map((uc) => uc.score as number);
+      const avgScore = scores.length > 0 ? scores.reduce((a, b) => a + b, 0) / scores.length : 0;
+
+      const progress = total > 0 ? Math.round((completed / total) * 100) : 0;
+
+      return {
+        category: cat,
+        completed,
+        total,
+        progress,
+        avgScore: Math.round(avgScore),
+      };
+    });
+
     return NextResponse.json({
       success: true,
       stats: {
@@ -135,6 +179,7 @@ export async function GET(req?: Request) {
       },
       streakFrozenUsed,
       timeline,
+      competencies: competencyData,
     });
   } catch (error) {
     console.error("GET User Stats API Error:", error);
