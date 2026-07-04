@@ -59,6 +59,21 @@ export default function QuizPage({
   const [finalScore, setFinalScore] = useState(0);
   const [correctAnswersCount, setCorrectAnswersCount] = useState(0);
 
+  // Reading theme switcher states
+  const [theme, setTheme] = useState<"light" | "dark" | "sepia">("light");
+
+  useEffect(() => {
+    const savedTheme = localStorage.getItem("reading-theme");
+    if (savedTheme === "light" || savedTheme === "dark" || savedTheme === "sepia") {
+      setTheme(savedTheme);
+    }
+  }, []);
+
+  const changeTheme = (newTheme: "light" | "dark" | "sepia") => {
+    setTheme(newTheme);
+    localStorage.setItem("reading-theme", newTheme);
+  };
+
   useEffect(() => {
     if (!user) return;
 
@@ -265,7 +280,7 @@ export default function QuizPage({
   const currentResult = currentQuiz ? checkedResults[currentQuiz.id] : null;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#EEF2F6] via-[#FFFFFF] to-[#F5EFFF] text-slate-800 flex flex-col relative overflow-hidden">
+    <div className={`min-h-screen flex flex-col relative overflow-hidden theme-container ${theme}`}>
       <style dangerouslySetInnerHTML={{ __html: `
         @keyframes fall {
           0% {
@@ -313,21 +328,48 @@ export default function QuizPage({
       <div className="absolute bottom-[20%] right-[-10%] w-[35%] h-[35%] rounded-full bg-pink-200/15 blur-[120px] pointer-events-none"></div>
 
       {/* Focused Navigation Header - Floating design */}
-      <header className="sticky top-4 z-40 max-w-7xl w-[calc(100%-2rem)] mx-auto rounded-2xl border border-white/60 bg-white/75 backdrop-blur-md px-5 py-3 flex justify-between items-center shadow-lg shadow-indigo-950/5 mt-4 transition-all duration-300">
+      <header className="sticky top-4 z-40 max-w-7xl w-[calc(100%-2rem)] mx-auto rounded-2xl border px-5 py-3 flex justify-between items-center shadow-lg shadow-indigo-950/5 mt-4 transition-all duration-300 theme-header">
         <Link
           href={`/lessons/${lessonId}`}
-          className="flex items-center gap-1.5 text-xs font-bold text-slate-500 hover:text-slate-800 transition duration-200 border border-slate-200/85 px-3 py-2 rounded-xl hover:bg-slate-50"
+          className="flex items-center gap-1.5 text-xs font-bold transition duration-200 border border-slate-200/85 px-3 py-2 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800/50 theme-muted"
         >
           <span>←</span> <span className="hidden sm:inline">Quay lại bài học</span>
         </Link>
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2">
+          {/* Theme Switcher Dropdown */}
+          <div className="relative group">
+            <button className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border theme-input text-[11px] font-bold transition duration-150 cursor-pointer shadow-sm">
+              <span>{theme === "light" ? "☀️ Sáng" : theme === "dark" ? "🌙 Tối" : "📜 Cổ điển"}</span>
+            </button>
+            <div className="absolute right-0 mt-1.5 w-32 theme-card border rounded-xl shadow-lg opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto transition-all duration-150 z-50 p-1 space-y-1">
+              <button
+                onClick={() => changeTheme("light")}
+                className="w-full text-left px-3 py-2 text-xs font-semibold rounded-lg hover:bg-slate-100/50 flex items-center gap-1.5 cursor-pointer"
+              >
+                <span>☀️</span> Sáng
+              </button>
+              <button
+                onClick={() => changeTheme("dark")}
+                className="w-full text-left px-3 py-2 text-xs font-semibold rounded-lg hover:bg-slate-150/20 flex items-center gap-1.5 cursor-pointer"
+              >
+                <span>🌙</span> Tối
+              </button>
+              <button
+                onClick={() => changeTheme("sepia")}
+                className="w-full text-left px-3 py-2 text-xs font-semibold rounded-lg hover:bg-slate-150/20 flex items-center gap-1.5 cursor-pointer"
+              >
+                <span>📜</span> Cổ điển
+              </button>
+            </div>
+          </div>
+
           <button
             onClick={() => setShowFeedbackModal(true)}
             className="flex items-center gap-1 px-2.5 py-1.5 rounded-xl border border-amber-250 bg-amber-50 hover:bg-amber-100 text-amber-800 text-[11px] font-bold transition duration-150 cursor-pointer"
           >
             📬 Báo cáo lỗi
           </button>
-          <span className="font-serif italic text-xs text-slate-400 bg-slate-50 px-2.5 py-1.5 rounded-xl border border-slate-150">
+          <span className="font-serif italic text-xs bg-slate-50 px-2.5 py-1.5 rounded-xl border border-slate-150 theme-muted">
             {showSummary ? "Kết quả" : `Câu hỏi ${currentIndex + 1}/${totalQuestions}`}
           </span>
         </div>
@@ -354,33 +396,33 @@ export default function QuizPage({
           </div>
         ) : showSummary ? (
           // SUMMARY SCREEN
-          <div className="bg-white/80 backdrop-blur-md border border-slate-100 rounded-3xl p-8 shadow-xl shadow-indigo-950/5 space-y-8 text-center">
+          <div className="backdrop-blur-md border rounded-3xl p-8 shadow-xl shadow-indigo-950/5 space-y-8 text-center theme-card">
             <div className="space-y-4">
               <span className="text-5xl block animate-bounce">🏆</span>
-              <h1 className="font-serif text-3xl font-bold tracking-tight text-slate-800 mt-4">
+              <h1 className="font-serif text-3xl font-bold tracking-tight mt-4 theme-text">
                 Hoàn thành thử thách!
               </h1>
               
-              <div className="py-6 px-4 bg-indigo-50/50 border border-indigo-100 rounded-2xl max-w-xs mx-auto shadow-inner space-y-2">
+              <div className="py-6 px-4 bg-indigo-500/5 border border-indigo-500/20 rounded-2xl max-w-xs mx-auto shadow-inner space-y-2">
                 <div className="text-[10px] font-bold text-indigo-500 uppercase tracking-wider">
                   Điểm số của bạn
                 </div>
-                <div className="text-4xl font-extrabold text-slate-800 font-mono">
+                <div className="text-4xl font-extrabold font-mono theme-text">
                   {finalScore}%
                 </div>
-                <div className="text-xs text-slate-500">
+                <div className="text-xs theme-muted">
                   Chính xác: <strong>{correctAnswersCount} / {totalQuestions}</strong> câu hỏi
                 </div>
               </div>
 
-              <p className="text-sm text-slate-600 max-w-xs mx-auto italic pt-2">
+              <p className="text-sm max-w-xs mx-auto italic pt-2 theme-muted">
                 {finalScore === 100 
                   ? "Tuyệt vời! Bạn đã xuất sắc trả lời đúng tất cả các câu hỏi hôm nay. 💎 +10 Điểm tri thức đã được cộng!"
                   : "Khá tốt! Hãy đọc kỹ tóm tắt để đạt điểm tối đa ở lần sau nhé."}
               </p>
             </div>
 
-            <div className="pt-6 border-t border-slate-100 mt-6">
+            <div className="pt-6 border-t border-slate-100 dark:border-slate-800 mt-6">
               <button
                 onClick={handleFinishQuiz}
                 disabled={isFinishing}
@@ -392,13 +434,13 @@ export default function QuizPage({
           </div>
         ) : (
           // ACTIVE QUIZ INTERFACE
-          <div className="bg-white/85 backdrop-blur-md border border-slate-100 rounded-3xl p-6 sm:p-8 shadow-xl shadow-indigo-950/5 space-y-6 flex flex-col justify-between">
+          <div className="backdrop-blur-md border rounded-3xl p-6 sm:p-8 shadow-xl shadow-indigo-950/5 space-y-6 flex flex-col justify-between theme-card">
             <div className="space-y-6">
               
               {/* Question Countdown Timer Progress Bar */}
               {!isSubmitted && (
                 <div>
-                  <div className="w-full bg-slate-100 h-2 rounded-full overflow-hidden mb-2">
+                  <div className="w-full bg-slate-200 dark:bg-slate-800 h-2 rounded-full overflow-hidden mb-2">
                     <div
                       className={`h-full transition-all duration-1000 ease-linear rounded-full ${
                         timeLeft <= 10 ? "bg-red-500 animate-pulse" : "bg-indigo-600"
@@ -406,9 +448,9 @@ export default function QuizPage({
                       style={{ width: `${(timeLeft / 30) * 100}%` }}
                     />
                   </div>
-                  <div className="flex justify-between items-center text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+                  <div className="flex justify-between items-center text-[10px] font-bold uppercase tracking-wider theme-muted">
                     <span>Thời gian làm câu hỏi</span>
-                    <span className={timeLeft <= 10 ? "text-red-500 font-mono text-xs animate-pulse" : "font-mono text-xs text-slate-500"}>
+                    <span className={timeLeft <= 10 ? "text-red-500 font-mono text-xs animate-pulse" : "font-mono text-xs theme-text"}>
                       {timeLeft} giây
                     </span>
                   </div>
@@ -416,17 +458,17 @@ export default function QuizPage({
               )}
 
               {/* Question Text */}
-              <h2 className="font-serif text-xl sm:text-2xl font-bold tracking-tight text-slate-800 leading-tight">
+              <h2 className="font-serif text-xl sm:text-2xl font-bold tracking-tight leading-tight theme-text">
                 {currentQuiz.question}
               </h2>
 
               {/* Options buttons */}
-              <div className="grid grid-cols-1 gap-3 pt-4 border-t border-slate-100">
+              <div className="grid grid-cols-1 gap-3 pt-4 border-t border-slate-100 dark:border-slate-800">
                 {currentQuiz.options.map((option) => {
                   const isSelected = selectedOption === option;
                   
                   // Default option styling
-                  let btnStyle = "bg-white border-slate-200 text-slate-700 hover:border-indigo-300 hover:bg-slate-50";
+                  let btnStyle = "theme-card border hover:border-indigo-300 hover:bg-indigo-500/5";
                   
                   if (isSelected) {
                     btnStyle = "bg-indigo-600 text-white border-indigo-600 shadow-md shadow-indigo-600/10";
@@ -437,13 +479,13 @@ export default function QuizPage({
                     
                     if (isCorrectAnswer) {
                       // Correct option - always highlight green
-                      btnStyle = "bg-emerald-50 border-emerald-500 text-emerald-800 font-semibold";
+                      btnStyle = "bg-emerald-500/10 border-emerald-500 text-emerald-600 font-semibold";
                     } else if (isSelected && !currentResult.isCorrect) {
                       // Selected incorrect option - highlight red
-                      btnStyle = "bg-rose-50 border-rose-500 text-rose-800 font-semibold";
+                      btnStyle = "bg-rose-500/10 border-rose-500 text-rose-600 font-semibold";
                     } else {
                       // Other options
-                      btnStyle = "bg-white border-slate-100 text-slate-300 opacity-60";
+                      btnStyle = "border-transparent text-slate-350 opacity-40";
                     }
                   }
 
@@ -471,15 +513,13 @@ export default function QuizPage({
               {isSubmitted && currentResult && (
                 <div className={`rounded-2xl border p-5 mt-6 space-y-2.5 shadow-sm animate-fade-in ${
                   currentResult.isCorrect 
-                    ? "bg-emerald-50/50 border-emerald-100 text-emerald-800" 
-                    : "bg-rose-50/50 border-rose-100 text-rose-800"
+                    ? "bg-emerald-500/10 border-emerald-500/30 text-emerald-605" 
+                    : "bg-rose-500/10 border-rose-500/30 text-rose-605"
                 }`}>
                   <h3 className="text-xs font-bold uppercase tracking-wider flex items-center gap-1.5">
                     {currentResult.isCorrect ? "✅ Chính xác" : "❌ Chưa chính xác"} • Giải thích chi tiết
                   </h3>
-                  <p className={`text-sm leading-relaxed font-serif italic ${
-                    currentResult.isCorrect ? "text-emerald-700" : "text-rose-700"
-                  }`}>
+                  <p className="text-sm leading-relaxed font-serif italic">
                     {currentResult.explanation}
                   </p>
                 </div>
@@ -487,7 +527,7 @@ export default function QuizPage({
             </div>
 
             {/* Next/Submit Button Trigger */}
-            <div className="pt-6 border-t border-slate-100 mt-6">
+            <div className="pt-6 border-t border-slate-100 dark:border-slate-800 mt-6">
               {!isSubmitted ? (
                 <button
                   onClick={handleSubmitAnswer}

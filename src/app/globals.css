@@ -10,3 +10,74 @@ body {
   color: #3E3A35;
   font-family: var(--font-sans);
 }
+
+/* Reading Themes System */
+.theme-container {
+  --theme-bg: linear-gradient(135deg, #EEF2F6 0%, #FFFFFF 50%, #F5EFFF 100%);
+  --theme-text: #1E293B;
+  --theme-text-muted: #64748B;
+  --theme-card-bg: rgba(255, 255, 255, 0.85);
+  --theme-card-border: #F1F5F9;
+  --theme-header-bg: rgba(255, 255, 255, 0.75);
+  --theme-header-border: rgba(255, 255, 255, 0.6);
+  --theme-input-bg: #F8FAFC;
+  --theme-input-border: #E2E8F0;
+
+  background: var(--theme-bg);
+  color: var(--theme-text);
+  transition: background 0.3s ease, color 0.3s ease;
+}
+
+.theme-container.dark {
+  --theme-bg: linear-gradient(135deg, #0B0F19 0%, #0F172A 50%, #1E1B4B 100%);
+  --theme-text: #F1F5F9;
+  --theme-text-muted: #94A3B8;
+  --theme-card-bg: rgba(15, 23, 42, 0.6);
+  --theme-card-border: rgba(30, 41, 59, 0.8);
+  --theme-header-bg: rgba(15, 23, 42, 0.75);
+  --theme-header-border: rgba(30, 41, 59, 0.8);
+  --theme-input-bg: rgba(30, 41, 59, 0.4);
+  --theme-input-border: rgba(30, 41, 59, 0.8);
+}
+
+.theme-container.sepia {
+  --theme-bg: #FAF4E8;
+  --theme-text: #4E3629;
+  --theme-text-muted: #7A6150;
+  --theme-card-bg: #F1E7D0;
+  --theme-card-border: #E5DAC3;
+  --theme-header-bg: rgba(241, 231, 208, 0.85);
+  --theme-header-border: rgba(229, 218, 195, 0.8);
+  --theme-input-bg: #EAE0C8;
+  --theme-input-border: #DFD3BB;
+}
+
+.theme-card {
+  background-color: var(--theme-card-bg);
+  border-color: var(--theme-card-border);
+  color: var(--theme-text);
+  transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+}
+
+.theme-header {
+  background-color: var(--theme-header-bg);
+  border-color: var(--theme-header-border);
+  color: var(--theme-text);
+  transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+}
+
+.theme-input {
+  background-color: var(--theme-input-bg);
+  border-color: var(--theme-input-border);
+  color: var(--theme-text);
+  transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+}
+
+.theme-text {
+  color: var(--theme-text);
+}
+
+.theme-muted {
+  color: var(--theme-text-muted);
+}
+

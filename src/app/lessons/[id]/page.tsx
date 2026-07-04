@@ -46,6 +46,21 @@ export default function LessonDetailPage({
   const [submittingAssignment, setSubmittingAssignment] = useState(false);
   const [assignmentMessage, setAssignmentMessage] = useState<string | null>(null);
 
+  // Reading theme switcher states
+  const [theme, setTheme] = useState<"light" | "dark" | "sepia">("light");
+
+  useEffect(() => {
+    const savedTheme = localStorage.getItem("reading-theme");
+    if (savedTheme === "light" || savedTheme === "dark" || savedTheme === "sepia") {
+      setTheme(savedTheme);
+    }
+  }, []);
+
+  const changeTheme = (newTheme: "light" | "dark" | "sepia") => {
+    setTheme(newTheme);
+    localStorage.setItem("reading-theme", newTheme);
+  };
+
   // Load lesson details & notes
   useEffect(() => {
     if (!user) return;
@@ -191,27 +206,54 @@ export default function LessonDetailPage({
   const isQuizUnlocked = readingProgress === 100 || (lesson?.completed || false);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#EEF2F6] via-[#FFFFFF] to-[#F5EFFF] text-slate-800 flex flex-col relative overflow-hidden">
+    <div className={`min-h-screen flex flex-col relative overflow-hidden theme-container ${theme}`}>
       {/* Decorative background shapes */}
       <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] rounded-full bg-indigo-200/10 blur-[100px] pointer-events-none"></div>
       <div className="absolute bottom-[20%] right-[-10%] w-[35%] h-[35%] rounded-full bg-pink-200/15 blur-[120px] pointer-events-none"></div>
 
       {/* Focused Navigation Header - Floating design */}
-      <header className="sticky top-4 z-40 max-w-7xl w-[calc(100%-2rem)] mx-auto rounded-2xl border border-white/60 bg-white/75 backdrop-blur-md px-5 py-3 flex justify-between items-center shadow-lg shadow-indigo-950/5 mt-4 transition-all duration-300">
+      <header className="sticky top-4 z-40 max-w-7xl w-[calc(100%-2rem)] mx-auto rounded-2xl border px-5 py-3 flex justify-between items-center shadow-lg shadow-indigo-950/5 mt-4 transition-all duration-300 theme-header">
         <Link
           href="/dashboard"
-          className="flex items-center gap-1.5 text-xs font-bold text-slate-500 hover:text-slate-800 transition duration-200 border border-slate-200/85 px-3 py-2 rounded-xl hover:bg-slate-50"
+          className="flex items-center gap-1.5 text-xs font-bold transition duration-200 border border-slate-200/85 px-3 py-2 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800/50 theme-muted"
         >
           <span>←</span> <span className="hidden sm:inline">Quay lại Dashboard</span>
         </Link>
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2">
+          {/* Theme Switcher Dropdown */}
+          <div className="relative group">
+            <button className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border theme-input text-[11px] font-bold transition duration-150 cursor-pointer shadow-sm">
+              <span>{theme === "light" ? "☀️ Sáng" : theme === "dark" ? "🌙 Tối" : "📜 Cổ điển"}</span>
+            </button>
+            <div className="absolute right-0 mt-1.5 w-32 theme-card border rounded-xl shadow-lg opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto transition-all duration-150 z-50 p-1 space-y-1">
+              <button
+                onClick={() => changeTheme("light")}
+                className="w-full text-left px-3 py-2 text-xs font-semibold rounded-lg hover:bg-slate-100/50 flex items-center gap-1.5 cursor-pointer"
+              >
+                <span>☀️</span> Sáng
+              </button>
+              <button
+                onClick={() => changeTheme("dark")}
+                className="w-full text-left px-3 py-2 text-xs font-semibold rounded-lg hover:bg-slate-150/20 flex items-center gap-1.5 cursor-pointer"
+              >
+                <span>🌙</span> Tối
+              </button>
+              <button
+                onClick={() => changeTheme("sepia")}
+                className="w-full text-left px-3 py-2 text-xs font-semibold rounded-lg hover:bg-slate-150/20 flex items-center gap-1.5 cursor-pointer"
+              >
+                <span>📜</span> Cổ điển
+              </button>
+            </div>
+          </div>
+
           <button
             onClick={() => setShowFeedbackModal(true)}
             className="flex items-center gap-1 px-2.5 py-1.5 rounded-xl border border-amber-250 bg-amber-50 hover:bg-amber-100 text-amber-800 text-[11px] font-bold transition duration-150 cursor-pointer"
           >
             📬 Báo cáo lỗi
           </button>
-          <span className="font-serif italic text-xs text-slate-400 bg-slate-50 px-2.5 py-1.5 rounded-xl border border-slate-150">Đọc tập trung</span>
+          <span className="font-serif italic text-xs bg-slate-50 px-2.5 py-1.5 rounded-xl border border-slate-150 theme-muted">Đọc tập trung</span>
         </div>
       </header>
 
@@ -240,7 +282,7 @@ export default function LessonDetailPage({
             {/* Left Column (2/3 Width) - Lesson takeaways, details & essay submission */}
             <div className="lg:col-span-2 space-y-6 order-1">
               
-              <div className="bg-white/85 backdrop-blur-md border border-slate-100 rounded-3xl p-6 sm:p-8 shadow-xl shadow-indigo-950/5 space-y-6">
+              <div className="backdrop-blur-md border rounded-3xl p-6 sm:p-8 shadow-xl shadow-indigo-950/5 space-y-6 theme-card">
                 {/* Lesson meta tags */}
                 <div className="flex flex-wrap gap-2 items-center">
                   {lesson.tags.map((tag) => (
@@ -251,24 +293,24 @@ export default function LessonDetailPage({
                       #{tag}
                     </span>
                   ))}
-                  <span className="text-xs text-slate-400 font-serif italic ml-auto">
+                  <span className="text-xs font-serif italic ml-auto theme-muted">
                     nguồn: {lesson.sourceDomain}
                   </span>
                 </div>
 
                 {/* Title */}
-                <h1 className="font-serif text-2xl sm:text-3.5xl font-bold tracking-tight text-slate-800 leading-tight">
+                <h1 className="font-serif text-2xl sm:text-3.5xl font-bold tracking-tight leading-tight theme-text">
                   {lesson.title}
                 </h1>
 
                 {/* Progress bar today */}
                 {!lesson.completed && (
-                  <div className="mt-4 pt-4 border-t border-slate-50">
-                    <div className="flex justify-between items-center text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">
+                  <div className="mt-4 pt-4 border-t border-slate-50 dark:border-slate-800">
+                    <div className="flex justify-between items-center text-[10px] font-bold uppercase tracking-wider mb-2 theme-muted">
                       <span>Tiến độ đọc hiểu bài viết</span>
-                      <span className="font-mono text-xs text-slate-600">{checkedCount} / {totalTakeaways} ý đã tích chọn</span>
+                      <span className="font-mono text-xs theme-text">{checkedCount} / {totalTakeaways} ý đã tích chọn</span>
                     </div>
-                    <div className="h-2 w-full bg-slate-100 rounded-full overflow-hidden">
+                    <div className="h-2 w-full bg-slate-100 dark:bg-slate-850 rounded-full overflow-hidden">
                       <div
                         className="h-full bg-indigo-600 transition-all duration-300 ease-out rounded-full"
                         style={{ width: `${readingProgress}%` }}
@@ -278,11 +320,11 @@ export default function LessonDetailPage({
                 )}
 
                 {/* Takeaways bullet points list */}
-                <div className="space-y-4 pt-4 border-t border-slate-100">
-                  <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider">
+                <div className="space-y-4 pt-4 border-t border-slate-100 dark:border-slate-800">
+                  <h3 className="text-xs font-bold uppercase tracking-wider theme-muted">
                     Điểm tóm tắt quan trọng (Tích chọn để đánh dấu đã đọc)
                   </h3>
-                  <ul className="space-y-3 text-base leading-relaxed text-slate-700 font-serif">
+                  <ul className="space-y-3 text-base leading-relaxed font-serif theme-text">
                     {lesson.summary.map((point, index) => {
                       const isChecked = checkedTakeaways[index];
                       return (
@@ -296,8 +338,8 @@ export default function LessonDetailPage({
                           }}
                           className={`flex items-start gap-4 p-4 rounded-2xl border transition-all duration-200 cursor-pointer ${
                             isChecked 
-                              ? "bg-indigo-50/20 border-indigo-100 text-slate-700" 
-                              : "bg-white border-slate-100 text-slate-600 hover:border-slate-300 hover:bg-slate-50"
+                              ? "bg-indigo-500/10 border-indigo-500/50" 
+                              : "theme-card border hover:bg-indigo-500/5"
                           }`}
                         >
                           <button
@@ -321,11 +363,11 @@ export default function LessonDetailPage({
                 </div>
 
                 {/* Actionable Step widget */}
-                <div className="rounded-2xl border border-amber-100 bg-amber-50/50 p-5 space-y-2 shadow-sm mt-8">
+                <div className="rounded-2xl border border-amber-500/20 bg-amber-500/5 p-5 space-y-2 shadow-sm mt-8">
                   <h3 className="text-[10px] font-bold text-amber-800 uppercase tracking-wider flex items-center gap-1.5">
                     ⚡ Hành động gợi ý hôm nay
                   </h3>
-                  <p className="text-sm text-slate-700 font-serif italic leading-relaxed">
+                  <p className="text-sm font-serif italic leading-relaxed theme-text">
                     &quot;{lesson.actionableStep}&quot;
                   </p>
                 </div>
@@ -334,9 +376,9 @@ export default function LessonDetailPage({
 
               {/* Assignment widget */}
               {assignment && (
-                <div className="bg-white/85 border border-slate-100 rounded-3xl p-6 sm:p-8 shadow-xl shadow-indigo-950/5 space-y-4 font-sans">
-                  <div className="flex items-center justify-between border-b border-slate-100 pb-2">
-                    <h3 className="text-xs font-bold text-slate-500 uppercase tracking-wider flex items-center gap-1.5">
+                <div className="border rounded-3xl p-6 sm:p-8 shadow-xl shadow-indigo-950/5 space-y-4 font-sans theme-card">
+                  <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-2">
+                    <h3 className="text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 theme-muted">
                       📝 Bài tập tự luận ({assignment.type === "WRITING" ? "Viết" : "Nói/Phát âm"})
                     </h3>
                     {submission && (
@@ -351,8 +393,8 @@ export default function LessonDetailPage({
                   </div>
                   
                   <div className="space-y-1">
-                    <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Đề bài</span>
-                    <p className="text-xs text-slate-700 font-serif leading-relaxed italic">
+                    <span className="text-[9px] font-bold uppercase tracking-widest theme-muted">Đề bài</span>
+                    <p className="text-xs font-serif leading-relaxed italic theme-text">
                       &quot;{assignment.prompt}&quot;
                     </p>
                   </div>
@@ -361,7 +403,7 @@ export default function LessonDetailPage({
                   {(!submission || submission.status === "SUBMITTED") ? (
                     <form onSubmit={handleSubmitAssignment} className="space-y-3">
                       <div className="space-y-1">
-                        <label className="block text-[9px] font-bold text-slate-400 uppercase tracking-widest">
+                        <label className="block text-[9px] font-bold uppercase tracking-widest theme-muted">
                           {assignment.type === "WRITING" 
                             ? "Bài làm của bạn (Nhập đoạn văn)" 
                             : "Bài nói của bạn (Nhập đoạn văn hoặc chèn link ghi âm)"}
@@ -373,7 +415,7 @@ export default function LessonDetailPage({
                           placeholder={assignment.type === "WRITING" 
                             ? "Viết câu trả lời của bạn ở đây..." 
                             : "Viết nội dung bài nói hoặc dán link file ghi âm ở đây..."}
-                          className="w-full px-3 py-2 text-xs border border-slate-200 rounded-xl focus:outline-none focus:ring-1 focus:ring-indigo-500 font-serif bg-white/50 text-slate-700"
+                          className="w-full px-3 py-2 text-xs border rounded-xl focus:outline-none focus:ring-1 focus:ring-indigo-500 font-serif theme-input"
                         />
                       </div>
 
@@ -393,10 +435,10 @@ export default function LessonDetailPage({
                     </form>
                   ) : (
                     // Graded Result Display
-                    <div className="space-y-4 pt-3 border-t border-slate-100 text-xs leading-relaxed">
+                    <div className="space-y-4 pt-3 border-t border-slate-100 dark:border-slate-800 text-xs leading-relaxed">
                       <div className="space-y-1">
-                        <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Bài làm của bạn</span>
-                        <p className="p-3 bg-slate-50 rounded-xl font-serif italic text-slate-600">{submission.content}</p>
+                        <span className="text-[9px] font-bold uppercase tracking-widest theme-muted">Bài làm của bạn</span>
+                        <p className="p-3 bg-slate-100/50 dark:bg-slate-850/50 rounded-xl font-serif italic theme-text">{submission.content}</p>
                       </div>
 
                       {submission.grammarEdits && (
@@ -418,15 +460,15 @@ export default function LessonDetailPage({
               )}
 
               {/* Bottom Actions */}
-              <div className="pt-6 border-t border-slate-100 mt-6">
+              <div className="pt-6 border-t border-slate-100 dark:border-slate-800 mt-6">
                 {lesson.completed ? (
                   <div className="space-y-4">
-                    <div className="text-center text-xs font-serif italic text-slate-500">
+                    <div className="text-center text-xs font-serif italic theme-muted">
                       Bạn đã hoàn thành bài học này hôm nay. Hãy tiếp tục ôn tập và ghi chú nhé!
                     </div>
                     <Link
                       href="/dashboard"
-                      className="block w-full text-center py-3 rounded-xl border border-slate-200 bg-white text-sm font-semibold text-slate-600 hover:bg-slate-50 hover:text-slate-800 transition duration-200"
+                      className="block w-full text-center py-3 rounded-xl border text-sm font-semibold transition duration-200 theme-input hover:scale-[1.01]"
                     >
                       Quay lại Dashboard
                     </Link>
@@ -450,11 +492,11 @@ export default function LessonDetailPage({
                     >
                       {isQuizUnlocked ? "Làm trắc nghiệm củng cố (Kiếm điểm)" : "🔒 Tích chọn đủ Takeaways để mở khóa Quiz"}
                     </Link>
-
+ 
                     <button
                       onClick={handleComplete}
                       disabled={isSubmitting}
-                      className="w-full text-center py-3 rounded-xl border border-slate-200 bg-white text-xs font-semibold text-slate-500 hover:bg-slate-50 hover:text-slate-800 transition duration-200 disabled:opacity-50 focus:outline-none"
+                      className="w-full text-center py-3 rounded-xl border text-xs font-semibold transition duration-200 disabled:opacity-50 focus:outline-none theme-input hover:scale-[1.01]"
                     >
                       {isSubmitting ? "Đang cập nhật..." : "Đọc xong (Không làm trắc nghiệm)"}
                     </button>
@@ -466,12 +508,12 @@ export default function LessonDetailPage({
 
             {/* Right Column (1/3 Width) - Floating Ghi Chép cá nhân Notepad */}
             <div className="lg:col-span-1 space-y-6 order-2">
-              <div className="bg-white/85 backdrop-blur-md border border-slate-100 rounded-3xl p-6 shadow-xl shadow-indigo-950/5 space-y-4">
-                <div className="flex justify-between items-center border-b border-slate-100 pb-2.5">
-                  <h3 className="text-xs font-bold text-slate-700 uppercase tracking-wider flex items-center gap-1.5">
+              <div className="backdrop-blur-md border rounded-3xl p-6 shadow-xl shadow-indigo-950/5 space-y-4 theme-card">
+                <div className="flex justify-between items-center border-b border-slate-100 dark:border-slate-800 pb-2.5">
+                  <h3 className="text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 theme-text">
                     📝 Ghi chép cá nhân
                   </h3>
-                  <span className="text-[10px] font-bold text-slate-400 font-mono transition-all duration-200">
+                  <span className="text-[10px] font-bold font-mono transition-all duration-200 theme-muted">
                     {savingNotes ? "🔄 Đang lưu..." : "✓ Đã lưu"}
                   </span>
                 </div>
@@ -481,10 +523,10 @@ export default function LessonDetailPage({
                   value={notes}
                   onChange={(e) => setNotes(e.target.value)}
                   placeholder="Ghi chú nhanh các từ vựng mới, bài học thực tế rút ra, hoặc kế hoạch áp dụng bài học này của riêng bạn ở đây..."
-                  className="w-full px-3.5 py-3.5 text-xs border border-slate-200 rounded-xl focus:outline-none focus:ring-1 focus:ring-indigo-500 font-serif leading-relaxed text-slate-700 bg-white/50"
+                  className="w-full px-3.5 py-3.5 text-xs border rounded-xl focus:outline-none focus:ring-1 focus:ring-indigo-500 font-serif leading-relaxed theme-input"
                 />
                 
-                <p className="text-[10px] text-slate-400 leading-normal italic">
+                <p className="text-[10px] leading-normal italic theme-muted">
                   Nội dung ghi chép của bạn được tự động sao lưu an toàn trên hệ thống đám mây để ôn tập lại bất kỳ lúc nào.
                 </p>
               </div>
