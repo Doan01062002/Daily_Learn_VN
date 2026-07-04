@@ -48,6 +48,9 @@ export async function GET() {
         commitmentTime: user.commitmentTime,
         streak: user.streaks[0]?.currentStreak || 0,
         maxStreak: user.streaks[0]?.maxStreak || 0,
+        streakFreezes: user.streakFreezes,
+        knowledgePoints: user.knowledgePoints,
+        savedLessonIds: user.savedLessonIds,
       },
       transactions: transactions.map((t) => ({
         id: t.id,

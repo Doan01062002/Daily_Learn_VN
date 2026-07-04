@@ -46,6 +46,11 @@ model User {
   currentLevel        String?
   commitmentTime      Int?
 
+  // Gamification & Bookmarks
+  streakFreezes       Int                  @default(0)
+  knowledgePoints     Int                  @default(0)
+  savedLessonIds      String[]             @default([])
+
   // Relations
   progress            UserLessonProgress[]
   streaks             Streak[]

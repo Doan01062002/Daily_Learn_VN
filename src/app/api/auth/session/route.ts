@@ -107,6 +107,9 @@ export async function GET(req: NextRequest) {
         currentLevel: user.currentLevel,
         commitmentTime: user.commitmentTime,
         streak: user.streaks[0] || null, // Return the main user streak record
+        streakFreezes: user.streakFreezes,
+        knowledgePoints: user.knowledgePoints,
+        savedLessonIds: user.savedLessonIds,
         permissions,
       },
     });

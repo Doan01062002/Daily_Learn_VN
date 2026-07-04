@@ -27,6 +27,11 @@ vi.mock("@/lib/prisma", () => ({
     },
     streak: {
       findUnique: vi.fn(),
+      update: vi.fn(),
+    },
+    user: {
+      findUnique: vi.fn(),
+      update: vi.fn(),
     },
   },
   __esModule: true,
@@ -65,10 +70,17 @@ describe("GET /api/stats/user - Stats Computation", () => {
       _avg: { score: 85 },
     } as any);
 
-    // Mock streak
-    vi.mocked(prisma.streak.findUnique).mockResolvedValue({
-      currentStreak: 3,
-      maxStreak: 6,
+    // Mock user findUnique returning user and streak array
+    vi.mocked(prisma.user.findUnique).mockResolvedValue({
+      id: "user-123",
+      streakFreezes: 0,
+      streaks: [
+        {
+          currentStreak: 3,
+          maxStreak: 6,
+          lastCompleted: new Date(),
+        }
+      ],
     } as any);
 
     const req = new NextRequest("http://localhost/api/stats/user");

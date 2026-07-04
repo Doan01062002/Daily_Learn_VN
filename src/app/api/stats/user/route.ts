@@ -39,12 +39,62 @@ export async function GET() {
     });
     const averageQuizScore = scoreAggregation._avg.score || 0;
 
-    // 3. Streak details
-    const streakRecord = await prisma.streak.findUnique({
-      where: { userId },
+    // Helper to format date in Vietnam timezone
+    const getVNDateString = (date: Date) => {
+      return date.toLocaleDateString("en-US", { timeZone: "Asia/Ho_Chi_Minh" });
+    };
+
+    // 3. Streak details & automatic freeze consumption
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      include: { streaks: true },
     });
-    const currentStreak = streakRecord?.currentStreak || 0;
-    const maxStreak = streakRecord?.maxStreak || 0;
+
+    let currentStreak = 0;
+    let maxStreak = 0;
+    let streakFrozenUsed = false;
+
+    if (user && user.streaks[0]) {
+      const streakRecord = user.streaks[0];
+      currentStreak = streakRecord.currentStreak;
+      maxStreak = streakRecord.maxStreak;
+
+      if (currentStreak > 0 && streakRecord.lastCompleted) {
+        const now = new Date();
+        const todayStr = getVNDateString(now);
+
+        const yesterday = new Date();
+        yesterday.setDate(yesterday.getDate() - 1);
+        const yesterdayStr = getVNDateString(yesterday);
+
+        const lastCompletedStr = getVNDateString(streakRecord.lastCompleted);
+
+        if (lastCompletedStr !== todayStr && lastCompletedStr !== yesterdayStr) {
+          // Streak is broken!
+          if (user.streakFreezes > 0) {
+            // Consume a freeze!
+            await prisma.user.update({
+              where: { id: userId },
+              data: { streakFreezes: { decrement: 1 } },
+            });
+
+            await prisma.streak.update({
+              where: { userId },
+              data: { lastCompleted: yesterday },
+            });
+
+            streakFrozenUsed = true;
+          } else {
+            // Reset streak to 0
+            await prisma.streak.update({
+              where: { userId },
+              data: { currentStreak: 0 },
+            });
+            currentStreak = 0;
+          }
+        }
+      }
+    }
 
     return NextResponse.json({
       success: true,
@@ -54,6 +104,7 @@ export async function GET() {
         currentStreak,
         maxStreak,
       },
+      streakFrozenUsed,
     });
   } catch (error) {
     console.error("GET User Stats API Error:", error);

@@ -17,6 +17,9 @@ export interface UserSession {
     currentStreak: number;
     maxStreak: number;
   } | null;
+  streakFreezes: number;
+  knowledgePoints: number;
+  savedLessonIds: string[];
   permissions?: string[];
 }
 

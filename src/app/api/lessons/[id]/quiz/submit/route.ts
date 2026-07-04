@@ -95,6 +95,18 @@ export async function POST(
 
     const passed = score >= minScoreThreshold;
 
+    // Check if they already completed this lesson
+    const existingProgress = await prisma.userLessonProgress.findUnique({
+      where: {
+        userId_lessonId: {
+          userId,
+          lessonId,
+        },
+      },
+    });
+
+    const isFirstTimeCompletion = passed && (!existingProgress || existingProgress.status !== "COMPLETED");
+
     // 5. Update UserLessonProgress score in PostgreSQL
     await prisma.userLessonProgress.upsert({
       where: {
@@ -106,7 +118,7 @@ export async function POST(
       update: {
         score: Math.round(score),
         status: passed ? "COMPLETED" : "IN_PROGRESS",
-        completedAt: passed ? new Date() : undefined,
+        completedAt: passed ? (existingProgress?.completedAt || new Date()) : undefined,
       },
       create: {
         userId,
@@ -116,6 +128,20 @@ export async function POST(
         completedAt: passed ? new Date() : undefined,
       },
     });
+
+    // Award 10 Knowledge Points if passing for the first time
+    if (isFirstTimeCompletion) {
+      try {
+        await prisma.user.update({
+          where: { id: userId },
+          data: {
+            knowledgePoints: { increment: 10 },
+          },
+        });
+      } catch (err) {
+        console.error("Failed to award knowledge points:", err);
+      }
+    }
 
     // Log the quiz attempt to DB
     try {
