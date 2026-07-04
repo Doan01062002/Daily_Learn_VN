@@ -34,7 +34,6 @@ describe("GET /api/stats/leaderboard - Authentication", () => {
       get: vi.fn().mockReturnValue(undefined),
     } as any));
 
-    const req = new NextRequest("http://localhost/api/stats/leaderboard");
     const res = await GET();
 
     expect(res.status).toBe(401);
