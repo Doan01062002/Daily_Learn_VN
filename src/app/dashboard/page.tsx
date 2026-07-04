@@ -78,6 +78,26 @@ export default function DashboardPage() {
       {/* Main Container */}
       <main className="flex-1 max-w-2xl w-full mx-auto px-4 py-8 space-y-6">
         
+        {/* Banner Upgrade Premium */}
+        {user.role === "STUDENT" && (
+          <div className="rounded-2xl border border-[#EBE6DD] bg-[#FAF2EB] p-5 flex items-center justify-between gap-4 shadow-sm">
+            <div>
+              <h3 className="text-xs font-bold text-[#8C8375] uppercase tracking-wider flex items-center gap-1.5">
+                👑 Mở khóa giới hạn Premium
+              </h3>
+              <p className="text-sm text-[#4E4941] font-serif italic mt-1 leading-normal">
+                Học không giới hạn bài học hằng ngày, tự tạo chủ đề nâng cao và làm trắc nghiệm chuyên sâu.
+              </p>
+            </div>
+            <Link
+              href="/checkout"
+              className="bg-[#4E4941] text-white hover:bg-[#3E3A35] px-4 py-2.5 rounded-xl text-xs font-semibold shadow-sm transition duration-200 shrink-0"
+            >
+              Nâng cấp
+            </Link>
+          </div>
+        )}
+
         {/* Streak & Header Section */}
         <div className="rounded-2xl border border-[#EBE6DD] bg-[#FCFAF7] p-6 shadow-[0_8px_30px_rgb(0,0,0,0.01)] flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-4 text-center sm:text-left">
@@ -88,8 +108,13 @@ export default function DashboardPage() {
               className="h-14 w-14 rounded-full border-2 border-[#8C8375]"
             />
             <div>
-              <h1 className="font-serif text-xl font-bold text-[#3E3A35]">
+              <h1 className="font-serif text-xl font-bold text-[#3E3A35] flex items-center gap-2 justify-center sm:justify-start">
                 Chào {user.name.split(" ").pop()}!
+                {user.role === "PREMIUM" && (
+                  <span className="text-[10px] bg-[#F5EBE6] text-[#8C8375] border border-[#E3D5C5] font-bold px-1.5 py-0.5 rounded flex items-center gap-0.5 shadow-sm uppercase tracking-wide">
+                    ★ Premium
+                  </span>
+                )}
               </h1>
               <p className="text-xs text-[#8C8375] italic">
                 {isFinishedToday 
