@@ -386,17 +386,49 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        {/* Quick Stats indicators in Header (Visible on tablet/desktop) */}
-        <div className="hidden sm:flex items-center gap-3 select-none">
-          <div className="flex items-center gap-1.5 bg-gradient-to-r from-orange-500/10 to-amber-500/10 border border-orange-200/40 text-orange-700 px-3 py-1 rounded-full text-[10px] font-bold shadow-sm animate-pulse">
-            <span className="text-xs">🔥</span>
-            <span>{streakVal} ngày</span>
-          </div>
-          <div className="flex items-center gap-1.5 bg-indigo-50 border border-indigo-100 text-indigo-700 px-3 py-1 rounded-full text-[10px] font-bold shadow-sm">
-            <span className="text-xs">💎</span>
-            <span>{user.knowledgePoints || 0} điểm</span>
-          </div>
-        </div>
+        {/* Global navigation tabs inside Header */}
+        <nav className="hidden md:flex items-center gap-1 bg-slate-100/80 border border-slate-200/60 p-1 rounded-xl select-none">
+          <button
+            onClick={() => setActiveTab("today")}
+            className={`px-3.5 py-1.5 text-[11px] font-extrabold uppercase tracking-wider rounded-lg transition duration-200 focus:outline-none flex items-center gap-1.5 cursor-pointer ${
+              activeTab === "today"
+                ? "bg-white text-indigo-600 shadow-sm"
+                : "text-slate-500 hover:text-slate-800"
+            }`}
+          >
+            📖 Bài học
+          </button>
+          <button
+            onClick={() => setActiveTab("bookmarks")}
+            className={`px-3.5 py-1.5 text-[11px] font-extrabold uppercase tracking-wider rounded-lg transition duration-200 focus:outline-none flex items-center gap-1.5 cursor-pointer ${
+              activeTab === "bookmarks"
+                ? "bg-white text-indigo-600 shadow-sm"
+                : "text-slate-500 hover:text-slate-800"
+            }`}
+          >
+            🔖 Đã lưu
+          </button>
+          <button
+            onClick={() => setActiveTab("leaderboard")}
+            className={`px-3.5 py-1.5 text-[11px] font-extrabold uppercase tracking-wider rounded-lg transition duration-200 focus:outline-none flex items-center gap-1.5 cursor-pointer ${
+              activeTab === "leaderboard"
+                ? "bg-white text-indigo-600 shadow-sm"
+                : "text-slate-500 hover:text-slate-800"
+            }`}
+          >
+            🏆 Xếp hạng
+          </button>
+          <button
+            onClick={() => setActiveTab("stats")}
+            className={`px-3.5 py-1.5 text-[11px] font-extrabold uppercase tracking-wider rounded-lg transition duration-200 focus:outline-none flex items-center gap-1.5 cursor-pointer ${
+              activeTab === "stats"
+                ? "bg-white text-indigo-600 shadow-sm"
+                : "text-slate-500 hover:text-slate-800"
+            }`}
+          >
+            📊 Tiến trình
+          </button>
+        </nav>
 
         <div className="flex items-center gap-2.5">
           {user.role === "ADMIN" && (
@@ -633,44 +665,44 @@ export default function DashboardPage() {
               ))}
             </div>
 
-            {/* Tab Navigation Feed Switcher */}
-            <div className="flex border-b border-slate-100 gap-6 px-1">
+            {/* Mobile Tab Navigation Feed Switcher - Hidden on desktop */}
+            <div className="flex md:hidden border-b border-slate-100 gap-5 px-1 pb-1 overflow-x-auto select-none scrollbar-none">
               <button
                 onClick={() => setActiveTab("today")}
-                className={`pb-2 text-xs font-bold uppercase tracking-wider border-b-2 transition duration-200 focus:outline-none ${
+                className={`pb-2 text-xs font-bold uppercase tracking-wider border-b-2 transition duration-200 focus:outline-none shrink-0 ${
                   activeTab === "today"
-                    ? "border-indigo-600 text-indigo-600"
-                    : "border-transparent text-slate-400 hover:text-slate-700"
+                    ? "border-indigo-600 text-indigo-600 font-extrabold"
+                    : "border-transparent text-slate-450 hover:text-slate-700"
                 }`}
               >
                 📖 Bài học
               </button>
               <button
                 onClick={() => setActiveTab("bookmarks")}
-                className={`pb-2 text-xs font-bold uppercase tracking-wider border-b-2 transition duration-200 focus:outline-none ${
+                className={`pb-2 text-xs font-bold uppercase tracking-wider border-b-2 transition duration-200 focus:outline-none shrink-0 ${
                   activeTab === "bookmarks"
-                    ? "border-indigo-600 text-indigo-600"
-                    : "border-transparent text-slate-400 hover:text-slate-700"
+                    ? "border-indigo-600 text-indigo-600 font-extrabold"
+                    : "border-transparent text-slate-450 hover:text-slate-700"
                 }`}
               >
                 🔖 Đã lưu
               </button>
               <button
                 onClick={() => setActiveTab("leaderboard")}
-                className={`pb-2 text-xs font-bold uppercase tracking-wider border-b-2 transition duration-200 focus:outline-none ${
+                className={`pb-2 text-xs font-bold uppercase tracking-wider border-b-2 transition duration-200 focus:outline-none shrink-0 ${
                   activeTab === "leaderboard"
-                    ? "border-indigo-600 text-indigo-600"
-                    : "border-transparent text-slate-400 hover:text-slate-700"
+                    ? "border-indigo-600 text-indigo-600 font-extrabold"
+                    : "border-transparent text-slate-450 hover:text-slate-700"
                 }`}
               >
                 🏆 Xếp hạng
               </button>
               <button
                 onClick={() => setActiveTab("stats")}
-                className={`pb-2 text-xs font-bold uppercase tracking-wider border-b-2 transition duration-200 focus:outline-none ${
+                className={`pb-2 text-xs font-bold uppercase tracking-wider border-b-2 transition duration-200 focus:outline-none shrink-0 ${
                   activeTab === "stats"
-                    ? "border-indigo-600 text-indigo-600"
-                    : "border-transparent text-slate-400 hover:text-slate-700"
+                    ? "border-indigo-600 text-indigo-600 font-extrabold"
+                    : "border-transparent text-slate-450 hover:text-slate-700"
                 }`}
               >
                 📊 Tiến trình
