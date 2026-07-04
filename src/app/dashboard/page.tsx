@@ -108,7 +108,7 @@ export default function DashboardPage() {
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
   // Stats and Leaderboard states
-  const [activeTab, setActiveTab] = useState<"today" | "bookmarks" | "leaderboard" | "stats">("today");
+  const [activeTab, setActiveTab] = useState<"today" | "bookmarks" | "leaderboard" | "stats" | "groups">("today");
   const [stats, setStats] = useState<UserStats | null>(null);
   const [leaderboard, setLeaderboard] = useState<LeaderboardUser[]>([]);
   const [timeline, setTimeline] = useState<any[]>([]);
@@ -135,6 +135,26 @@ export default function DashboardPage() {
   // Daily Quote state
   const [dailyQuote, setDailyQuote] = useState({ text: "", author: "" });
 
+  // Study Group states
+  const [groups, setGroups] = useState<any[]>([]);
+  const [activeGroupIndex, setActiveGroupIndex] = useState<number>(0);
+  const [loadingGroups, setLoadingGroups] = useState(false);
+  const [newGroupName, setNewGroupName] = useState("");
+  const [joinGroupCode, setJoinGroupCode] = useState("");
+  const [creatingGroup, setCreatingGroup] = useState(false);
+  const [joiningGroup, setJoiningGroup] = useState(false);
+  const [groupError, setGroupError] = useState<string | null>(null);
+  const [groupSuccess, setGroupSuccess] = useState<string | null>(null);
+  const [kudoboxNotification, setKudoboxNotification] = useState<string | null>(null);
+
+  // Badge Cabinet states
+  const [badges, setBadges] = useState<any[]>([]);
+  const [loadingBadges, setLoadingBadges] = useState(false);
+
+  // Weekly Challenge Arena states
+  const [activeChallenge, setActiveChallenge] = useState<any>(null);
+  const [loadingChallenge, setLoadingChallenge] = useState(false);
+
   const fetchBookmarksData = async () => {
     setLoadingBookmarks(true);
     try {
@@ -147,6 +167,130 @@ export default function DashboardPage() {
       console.error("Error loading bookmarks:", error);
     } finally {
       setLoadingBookmarks(false);
+    }
+  };
+
+  const fetchGroupsData = async () => {
+    setLoadingGroups(true);
+    try {
+      const res = await fetch("/api/groups");
+      if (res.ok) {
+        const data = await res.json();
+        setGroups(data.groups || []);
+        if (data.reactions && data.reactions.length > 0) {
+          const latest = data.reactions[0];
+          setKudoboxNotification(`Bạn học ${latest.senderName} vừa gửi tặng bạn sticker ${latest.emoji}!`);
+          setTimeout(() => setKudoboxNotification(null), 8000);
+        }
+      }
+    } catch (error) {
+      console.error("Error loading groups:", error);
+    } finally {
+      setLoadingGroups(false);
+    }
+  };
+
+  const fetchBadgesData = async () => {
+    setLoadingBadges(true);
+    try {
+      const res = await fetch("/api/badges");
+      if (res.ok) {
+        const data = await res.json();
+        setBadges(data.badges || []);
+      }
+    } catch (error) {
+      console.error("Error loading badges:", error);
+    } finally {
+      setLoadingBadges(false);
+    }
+  };
+
+  const fetchChallengeData = async () => {
+    setLoadingChallenge(true);
+    try {
+      const res = await fetch("/api/challenges/active");
+      if (res.ok) {
+        const data = await res.json();
+        if (data.success && data.challenge) {
+          setActiveChallenge({
+            ...data.challenge,
+            alreadyAttempted: data.alreadyAttempted,
+            attemptScore: data.attemptScore,
+          });
+        }
+      }
+    } catch (error) {
+      console.error("Error loading challenge:", error);
+    } finally {
+      setLoadingChallenge(false);
+    }
+  };
+
+  const createGroup = async () => {
+    if (!newGroupName.trim()) return;
+    setCreatingGroup(true);
+    setGroupError(null);
+    setGroupSuccess(null);
+    try {
+      const res = await fetch("/api/groups/create", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name: newGroupName }),
+      });
+      const data = await res.json();
+      if (res.ok && data.success) {
+        setGroupSuccess(`Tạo nhóm "${data.group.name}" thành công! Mã mời: ${data.group.code}`);
+        setNewGroupName("");
+        fetchGroupsData();
+      } else {
+        setGroupError(data.error || "Không thể tạo nhóm học tập.");
+      }
+    } catch (error) {
+      setGroupError("Lỗi mạng, vui lòng thử lại.");
+    } finally {
+      setCreatingGroup(false);
+    }
+  };
+
+  const joinGroup = async () => {
+    if (!joinGroupCode.trim()) return;
+    setJoiningGroup(true);
+    setGroupError(null);
+    setGroupSuccess(null);
+    try {
+      const res = await fetch("/api/groups/join", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ code: joinGroupCode }),
+      });
+      const data = await res.json();
+      if (res.ok && data.success) {
+        setGroupSuccess(`Gia nhập nhóm "${data.group.name}" thành công!`);
+        setJoinGroupCode("");
+        fetchGroupsData();
+      } else {
+        setGroupError(data.error || "Không thể tham gia nhóm học tập.");
+      }
+    } catch (error) {
+      setGroupError("Lỗi mạng, vui lòng thử lại.");
+    } finally {
+      setJoiningGroup(false);
+    }
+  };
+
+  const sendReaction = async (groupId: string, receiverId: string, emoji: string) => {
+    try {
+      const res = await fetch("/api/groups/react", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ groupId, receiverId, emoji }),
+      });
+      if (res.ok) {
+        setGroupSuccess(`Đã gửi sticker ${emoji} cổ vũ bạn học!`);
+        setTimeout(() => setGroupSuccess(null), 3000);
+      }
+    } catch (error) {
+      console.error("Error sending reaction:", error);
     }
   };
 
@@ -203,12 +347,18 @@ export default function DashboardPage() {
 
     fetchTodayLessons();
     fetchStatsData();
+    fetchChallengeData();
+    fetchGroupsData();
   }, [user]);
 
   useEffect(() => {
     if (!user) return;
     if (activeTab === "bookmarks") {
       fetchBookmarksData();
+    } else if (activeTab === "groups") {
+      fetchGroupsData();
+    } else if (activeTab === "stats") {
+      fetchBadgesData();
     }
   }, [activeTab, user]);
 
@@ -407,6 +557,16 @@ export default function DashboardPage() {
             }`}
           >
             🔖 Đã lưu
+          </button>
+          <button
+            onClick={() => setActiveTab("groups")}
+            className={`px-3.5 py-1.5 text-[11px] font-extrabold uppercase tracking-wider rounded-lg transition duration-200 focus:outline-none flex items-center gap-1.5 cursor-pointer ${
+              activeTab === "groups"
+                ? "bg-white text-indigo-600 shadow-sm"
+                : "text-slate-500 hover:text-slate-800"
+            }`}
+          >
+            👥 Học nhóm
           </button>
           <button
             onClick={() => setActiveTab("leaderboard")}
@@ -688,6 +848,16 @@ export default function DashboardPage() {
                 🔖 Đã lưu
               </button>
               <button
+                onClick={() => setActiveTab("groups")}
+                className={`pb-2 text-xs font-bold uppercase tracking-wider border-b-2 transition duration-200 focus:outline-none shrink-0 ${
+                  activeTab === "groups"
+                    ? "border-indigo-600 text-indigo-600 font-extrabold"
+                    : "border-transparent text-slate-450 hover:text-slate-700"
+                }`}
+              >
+                👥 Nhóm
+              </button>
+              <button
                 onClick={() => setActiveTab("leaderboard")}
                 className={`pb-2 text-xs font-bold uppercase tracking-wider border-b-2 transition duration-200 focus:outline-none shrink-0 ${
                   activeTab === "leaderboard"
@@ -725,6 +895,43 @@ export default function DashboardPage() {
                         style={{ width: `${(completedCount / totalCount) * 100}%` }}
                       ></div>
                     </div>
+                  </div>
+                )}
+
+                {/* Weekly Challenge Banner */}
+                {activeChallenge && (
+                  <div className="bg-gradient-to-r from-purple-900 to-indigo-950 text-white rounded-2xl border border-indigo-950 p-5 shadow-lg shadow-indigo-950/10 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 overflow-hidden relative">
+                    <div className="absolute -top-12 -right-12 w-36 h-36 bg-white/5 rounded-full blur-2xl pointer-events-none"></div>
+                    <div className="space-y-1 relative z-10 flex-1">
+                      <div className="flex items-center gap-1.5">
+                        <span className="animate-bounce">🥊</span>
+                        <span className="text-[10px] font-black uppercase tracking-wider text-purple-300">Đấu trường trí tuệ hằng tuần</span>
+                      </div>
+                      <h4 className="text-sm font-extrabold">{activeChallenge.title}</h4>
+                      <p className="text-xs text-indigo-200/90 leading-relaxed max-w-xl">
+                        {activeChallenge.description}
+                      </p>
+                      {activeChallenge.alreadyAttempted && (
+                        <div className="pt-1.5 flex items-center gap-1.5">
+                          <span className="text-emerald-400 text-xs font-bold">✓ Đã tham gia:</span>
+                          <span className="text-xs font-mono font-bold bg-white/10 px-2 py-0.5 rounded">
+                            {activeChallenge.attemptScore} / 10 Điểm
+                          </span>
+                        </div>
+                      )}
+                    </div>
+                    {!activeChallenge.alreadyAttempted ? (
+                      <Link
+                        href="/challenges/arena"
+                        className="bg-white text-indigo-900 hover:bg-purple-100 px-5 py-2.5 rounded-xl text-xs font-extrabold shadow-md transition-all duration-200 shrink-0 text-center relative z-10 hover:scale-[1.02]"
+                      >
+                        Thi đấu ngay (+100💎)
+                      </Link>
+                    ) : (
+                      <span className="text-slate-400 text-xs font-semibold select-none shrink-0 text-center py-2 px-4 border border-slate-800 rounded-xl bg-slate-900/30">
+                        Đã kết thúc lượt
+                      </span>
+                    )}
                   </div>
                 )}
 
@@ -845,6 +1052,265 @@ export default function DashboardPage() {
                         </div>
                       );
                     })}
+                  </div>
+                )}
+              </div>
+            ) : activeTab === "groups" ? (
+              /* Study Groups Component Content */
+              <div className="space-y-6">
+                
+                {/* Alert Notification Toast for Kudobox */}
+                {kudoboxNotification && (
+                  <div className="bg-emerald-500 text-white border border-emerald-600 px-5 py-3.5 rounded-2xl shadow-lg flex items-center justify-between animate-fade-in relative z-20">
+                    <div className="flex items-center gap-2">
+                      <span className="text-lg">🎉</span>
+                      <p className="text-xs font-bold">{kudoboxNotification}</p>
+                    </div>
+                    <button onClick={() => setKudoboxNotification(null)} className="text-white hover:text-emerald-100 font-bold text-xs select-none">
+                      Đóng
+                    </button>
+                  </div>
+                )}
+
+                {/* Status message alerts */}
+                {groupError && (
+                  <div className="bg-rose-50 text-rose-700 border border-rose-100 px-4 py-3 rounded-xl text-xs font-bold text-center">
+                    ⚠️ {groupError}
+                  </div>
+                )}
+                {groupSuccess && (
+                  <div className="bg-emerald-50 text-emerald-700 border border-emerald-100 px-4 py-3 rounded-xl text-xs font-bold text-center">
+                    🎉 {groupSuccess}
+                  </div>
+                )}
+
+                {/* Create / Join Group widgets */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {/* Join Group card */}
+                  <div className="bg-white/80 border border-slate-100 p-5 rounded-2xl shadow-sm space-y-4">
+                    <div>
+                      <h3 className="font-serif text-sm font-bold text-slate-800">Gia nhập nhóm học tập</h3>
+                      <p className="text-[10px] text-slate-400 mt-0.5">Nhập mã Code 6 ký tự để gia nhập nhóm học của bạn bè.</p>
+                    </div>
+                    <div className="flex gap-2">
+                      <input
+                        type="text"
+                        placeholder="Mã nhóm (Ví dụ: AB12YZ)"
+                        value={joinGroupCode}
+                        onChange={(e) => setJoinGroupCode(e.target.value.toUpperCase())}
+                        maxLength={6}
+                        className="bg-slate-50 border border-slate-200/80 rounded-xl px-4 py-2.5 text-xs font-mono font-bold uppercase tracking-wider text-slate-800 focus:outline-none focus:border-indigo-400 flex-1"
+                      />
+                      <button
+                        onClick={joinGroup}
+                        disabled={joiningGroup || !joinGroupCode.trim()}
+                        className="bg-indigo-600 text-white disabled:bg-slate-200 disabled:text-slate-450 hover:bg-indigo-700 px-5 rounded-xl text-xs font-bold transition duration-200"
+                      >
+                        {joiningGroup ? "Đang gửi..." : "Tham gia"}
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Create Group card */}
+                  <div className="bg-white/80 border border-slate-100 p-5 rounded-2xl shadow-sm space-y-4">
+                    <div>
+                      <h3 className="font-serif text-sm font-bold text-slate-800">Tạo nhóm học tập mới</h3>
+                      <p className="text-[10px] text-slate-400 mt-0.5">Lập nhóm thi đua học tập riêng cùng bạn bè của bạn.</p>
+                    </div>
+                    <div className="flex gap-2">
+                      <input
+                        type="text"
+                        placeholder="Tên nhóm của bạn..."
+                        value={newGroupName}
+                        onChange={(e) => setNewGroupName(e.target.value)}
+                        maxLength={25}
+                        className="bg-slate-50 border border-slate-200/80 rounded-xl px-4 py-2.5 text-xs font-bold text-slate-800 focus:outline-none focus:border-indigo-400 flex-1"
+                      />
+                      <button
+                        onClick={createGroup}
+                        disabled={creatingGroup || !newGroupName.trim()}
+                        className="bg-indigo-600 text-white disabled:bg-slate-200 disabled:text-slate-450 hover:bg-indigo-700 px-5 rounded-xl text-xs font-bold transition duration-200"
+                      >
+                        {creatingGroup ? "Đang tạo..." : "Tạo nhóm"}
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                {loadingGroups ? (
+                  <div className="flex justify-center items-center py-16">
+                    <div className="h-8 w-8 animate-spin rounded-full border-2 border-indigo-500 border-t-transparent"></div>
+                  </div>
+                ) : groups.length === 0 ? (
+                  <div className="text-center py-16 border border-dashed border-slate-200 rounded-2xl bg-white/40 flex flex-col items-center justify-center p-6 space-y-3">
+                    <span className="text-3xl select-none">👥</span>
+                    <div className="space-y-1 max-w-xs">
+                      <h3 className="text-sm font-bold text-slate-700">Chưa tham gia nhóm nào</h3>
+                      <p className="text-xs text-slate-400 leading-normal">
+                        Hãy tự tạo nhóm hoặc nhập mã mời của bạn bè để bắt đầu thi đua và chia sẻ tiến độ học tập.
+                      </p>
+                    </div>
+                  </div>
+                ) : (
+                  /* Active group info and list view */
+                  <div className="space-y-6">
+                    {/* Groups tabs switcher if member of multiple */}
+                    {groups.length > 1 && (
+                      <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-none select-none">
+                        {groups.map((g, idx) => (
+                          <button
+                            key={g.id}
+                            onClick={() => setActiveGroupIndex(idx)}
+                            className={`px-4 py-2 rounded-xl text-xs font-bold transition duration-200 ${
+                              activeGroupIndex === idx
+                                ? "bg-indigo-50 text-indigo-700 border border-indigo-200"
+                                : "bg-white/60 text-slate-500 border border-slate-100 hover:bg-white"
+                            }`}
+                          >
+                            {g.name}
+                          </button>
+                        ))}
+                      </div>
+                    )}
+
+                    {/* Active Group Details */}
+                    {groups[activeGroupIndex] && (() => {
+                      const group = groups[activeGroupIndex];
+                      return (
+                        <div className="space-y-6">
+                          <div className="bg-white/80 border border-slate-100 rounded-3xl p-6 shadow-sm space-y-5">
+                            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between border-b border-slate-100/70 pb-4 gap-3">
+                              <div>
+                                <h3 className="font-serif text-lg font-bold text-slate-800">{group.name}</h3>
+                                <p className="text-[10px] text-slate-400 mt-0.5">Ngày lập: {new Date(group.createdAt).toLocaleDateString("vi-VN")}</p>
+                              </div>
+                              <div className="flex items-center gap-2 bg-slate-50 border border-slate-200/80 px-3.5 py-1.5 rounded-2xl max-w-max">
+                                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Mã mời nhóm:</span>
+                                <span className="text-sm font-mono font-black text-indigo-600 select-all cursor-pointer" title="Nhấn để bôi đen và copy">{group.code}</span>
+                              </div>
+                            </div>
+
+                            {/* List members with progress status and Kudobox */}
+                            <div className="space-y-4">
+                              <h4 className="text-[10px] font-black uppercase tracking-wider text-slate-400 mb-1">Thành viên ({group.members.length})</h4>
+                              <div className="grid grid-cols-1 gap-3">
+                                {group.members.map((member: any) => {
+                                  const isSelf = member.id === user.id;
+                                  return (
+                                    <div
+                                      key={member.id}
+                                      className={`flex flex-col sm:flex-row sm:items-center sm:justify-between border p-4.5 rounded-2xl transition duration-150 gap-4 ${
+                                        isSelf ? "bg-indigo-50/20 border-indigo-100" : "bg-slate-50/30 border-slate-100 hover:bg-slate-50/50"
+                                      }`}
+                                    >
+                                      <div className="flex items-center gap-3">
+                                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                                        <img
+                                          src={member.avatarUrl || "https://lh3.googleusercontent.com/a/default-user"}
+                                          alt={member.name}
+                                          className="h-10 w-10 rounded-full border border-slate-200 shadow-sm"
+                                        />
+                                        <div>
+                                          <div className="text-xs font-bold text-slate-800 flex items-center gap-1.5">
+                                            {member.name}
+                                            {isSelf && <span className="text-[8px] bg-indigo-50 text-indigo-700 font-bold px-1.5 py-0.5 rounded">Bạn</span>}
+                                          </div>
+                                          <span className="text-[10px] text-slate-450 block font-mono">Streak hiện tại: 🔥 {member.streak} ngày</span>
+                                        </div>
+                                      </div>
+
+                                      <div className="flex flex-wrap items-center gap-4.5">
+                                        {/* Daily Completion Checkmark */}
+                                        <div className="flex items-center gap-1.5">
+                                          <span className={`h-5 w-5 rounded-full flex items-center justify-center text-xs font-bold ${
+                                            member.completedToday
+                                              ? "bg-emerald-50 border border-emerald-200 text-emerald-600"
+                                              : "bg-slate-100 border border-slate-200 text-slate-400"
+                                          }`}>
+                                            {member.completedToday ? "✓" : "○"}
+                                          </span>
+                                          <span className={`text-xs font-bold ${
+                                            member.completedToday ? "text-emerald-700" : "text-slate-450"
+                                          }`}>
+                                            {member.completedToday ? "Đã học hôm nay" : "Chưa học hôm nay"}
+                                          </span>
+                                        </div>
+
+                                        {/* Kudobox Reaction Stickers */}
+                                        {!isSelf && member.completedToday && (
+                                          <div className="flex items-center gap-2 border-l border-slate-200/80 pl-4.5">
+                                            <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest mr-1">Cổ vũ:</span>
+                                            {["🔥", "👏", "💪"].map((emoji) => (
+                                              <button
+                                                key={emoji}
+                                                onClick={() => sendReaction(group.id, member.id, emoji)}
+                                                className="h-8 w-8 rounded-xl bg-white border border-slate-150 hover:bg-indigo-50 hover:border-indigo-200 transition duration-150 flex items-center justify-center text-sm shadow-sm select-none"
+                                              >
+                                                {emoji}
+                                              </button>
+                                            ))}
+                                          </div>
+                                        )}
+                                      </div>
+                                    </div>
+                                  );
+                                })}
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* Group Heatmap activity graph */}
+                          <div className="bg-white/80 border border-slate-100 p-6 rounded-3xl shadow-sm space-y-4">
+                            <div>
+                              <h3 className="font-serif text-sm font-bold text-slate-800">Hoạt động chung của nhóm</h3>
+                              <p className="text-[10px] text-slate-455 mt-0.5">Tần suất tích lũy bài học hoàn thành của cả nhóm học tập 6 tháng qua.</p>
+                            </div>
+                            
+                            <div className="flex gap-2 items-end justify-start py-2 overflow-x-auto select-none">
+                              <div className="flex flex-col justify-between text-[8px] text-slate-400 h-[105px] pr-2 pb-1.5 shrink-0">
+                                <span>CN</span>
+                                <span>T3</span>
+                                <span>T5</span>
+                                <span>T7</span>
+                              </div>
+                              <div className="grid grid-flow-col grid-rows-7 gap-1.2 h-[105px]">
+                                {(() => {
+                                  const groupHeatmap = group.heatmap || {};
+                                  return getHeatmapGrid().map((d, index) => {
+                                    const dateStr = d.toLocaleDateString("en-CA", { timeZone: "Asia/Ho_Chi_Minh" });
+                                    const count = groupHeatmap[dateStr] || 0;
+                                    const formattedDate = d.toLocaleDateString("vi-VN", { day: "numeric", month: "short" });
+                                    const titleText = `${formattedDate}: Cả nhóm học ${count} bài học`;
+                                    
+                                    // Custom colors for group heatmap counts
+                                    let cellColor = "bg-slate-100 hover:bg-slate-200";
+                                    if (count === 1) cellColor = "bg-indigo-100 hover:bg-indigo-200";
+                                    else if (count === 2) cellColor = "bg-indigo-300 hover:bg-indigo-400";
+                                    else if (count >= 3) cellColor = "bg-indigo-600 hover:bg-indigo-700";
+
+                                    return (
+                                      <div
+                                        key={index}
+                                        className={`h-3.2 w-3.2 rounded-sm transition-all duration-150 cursor-pointer ${cellColor}`}
+                                        title={titleText}
+                                      />
+                                    );
+                                  });
+                                })()}
+                              </div>
+                            </div>
+                            <div className="flex items-center justify-end gap-1.5 text-[8px] text-slate-400 pr-1">
+                              <span>Ít</span>
+                              <div className="h-2 w-2 rounded-sm bg-slate-100" />
+                              <div className="h-2 w-2 rounded-sm bg-indigo-100" />
+                              <div className="h-2 w-2 rounded-sm bg-indigo-300" />
+                              <div className="h-2 w-2 rounded-sm bg-indigo-600" />
+                              <span>Nhiều</span>
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })()}
                   </div>
                 )}
               </div>
@@ -1105,6 +1571,52 @@ export default function DashboardPage() {
                     <div className="h-2 w-2 rounded-sm bg-indigo-600" />
                     <span>Nhiều</span>
                   </div>
+                </div>
+
+                {/* Achievements Badges Cabinet */}
+                <div className="bg-white/80 border border-slate-100 p-6 rounded-2xl shadow-sm space-y-4">
+                  <div>
+                    <h3 className="font-serif text-sm font-bold text-slate-800">Tủ trưng bày Huy hiệu</h3>
+                    <p className="text-[10px] text-slate-450 mt-0.5">Các cột mốc học tập và danh hiệu cao quý bạn đã mở khóa thành công.</p>
+                  </div>
+
+                  {loadingBadges ? (
+                    <div className="flex justify-center items-center py-6">
+                      <div className="h-6 w-6 animate-spin rounded-full border-2 border-indigo-500 border-t-transparent"></div>
+                    </div>
+                  ) : badges.length === 0 ? (
+                    <p className="text-xs text-slate-400 italic text-center py-4">Chưa tải được thông tin huy hiệu.</p>
+                  ) : (
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                      {badges.map((badge) => (
+                        <div
+                          key={badge.id}
+                          className={`relative border rounded-2xl p-4.5 flex items-center gap-3.5 transition-all duration-300 ${
+                            badge.isUnlocked
+                              ? "bg-gradient-to-br from-indigo-50/50 to-white/70 border-indigo-200 shadow-md shadow-indigo-500/5"
+                              : "bg-slate-50 border-slate-200/60 opacity-50 select-none grayscale"
+                          }`}
+                        >
+                          <div className={`h-11 w-11 rounded-full flex items-center justify-center text-xl shadow-sm shrink-0 ${
+                            badge.isUnlocked ? "bg-indigo-100" : "bg-slate-200"
+                          }`}>
+                            <span>{badge.isUnlocked ? badge.icon : "🔒"}</span>
+                          </div>
+                          <div className="space-y-0.5">
+                            <h4 className={`text-xs font-bold ${badge.isUnlocked ? "text-indigo-900" : "text-slate-500"}`}>
+                              {badge.title}
+                            </h4>
+                            <p className="text-[9px] text-slate-455 leading-normal">{badge.description}</p>
+                            {badge.isUnlocked && badge.unlockedAt && (
+                              <span className="text-[8px] font-mono text-indigo-500 font-bold block pt-0.5">
+                                Đạt được: {new Date(badge.unlockedAt).toLocaleDateString("vi-VN")}
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
 
                 {/* Timeline Card */}

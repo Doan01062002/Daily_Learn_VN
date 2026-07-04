@@ -59,6 +59,9 @@ model User {
   feedbacks           Feedback[]
   submissions         Submission[]         @relation("StudentSubmissions")
   gradedSubmissions   Submission[]         @relation("GradedSubmissions")
+  groupMemberships    GroupMembership[]
+  badges              UserBadge[]
+  weeklyAttempts      WeeklyChallengeAttempt[]
 }
 
 model Lesson {
@@ -261,4 +264,71 @@ model OtpVerification {
   password  String   // Hashed password
   expiresAt DateTime
   createdAt DateTime @default(now())
+}
+
+model StudyGroup {
+  id          String            @id @default(uuid())
+  name        String
+  code        String            @unique
+  createdById String
+  createdAt   DateTime          @default(now())
+  memberships GroupMembership[]
+  reactions   GroupReaction[]
+}
+
+model GroupMembership {
+  id        String     @id @default(uuid())
+  groupId   String
+  group     StudyGroup @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  joinedAt  DateTime   @default(now())
+
+  @@unique([groupId, userId])
+}
+
+model GroupReaction {
+  id         String     @id @default(uuid())
+  groupId    String
+  group      StudyGroup @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  senderId   String
+  senderName String
+  receiverId String
+  emoji      String     // "🔥", "👏", "💪"
+  createdAt  DateTime   @default(now())
+}
+
+model UserBadge {
+  id         String   @id @default(uuid())
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  badgeId    String   // e.g. "FIRST_LESSON", "14_STREAK", "TECH_CHAMP"
+  unlockedAt DateTime @default(now())
+
+  @@unique([userId, badgeId])
+}
+
+model WeeklyChallenge {
+  id           String                   @id @default(uuid())
+  title        String
+  description  String
+  weekNumber   Int                      @unique
+  questions    Json                     // Array of { question, options, correctAnswer, explanation }
+  startTime    DateTime
+  endTime      DateTime
+  rewardPoints Int                      @default(100)
+  createdAt    DateTime                 @default(now())
+  attempts     WeeklyChallengeAttempt[]
+}
+
+model WeeklyChallengeAttempt {
+  id          String          @id @default(uuid())
+  challengeId String
+  challenge   WeeklyChallenge @relation(fields: [challengeId], references: [id], onDelete: Cascade)
+  userId      String
+  user        User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  score       Int             // e.g. 0 to 10
+  completedAt DateTime        @default(now())
+
+  @@unique([challengeId, userId])
 }
