@@ -73,7 +73,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
     } else {
       // User is logged in
-      if (!user.isOnboarded) {
+      if (user.role === "ADMIN") {
+        if (pathname === "/login" || pathname === "/onboarding" || pathname === "/") {
+          router.push("/admin");
+        }
+      } else if (!user.isOnboarded) {
         // Not onboarded yet - force onboarding
         if (pathname !== "/onboarding") {
           router.push("/onboarding");
@@ -100,8 +104,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         const data = await res.json();
         setUser(data.user);
         
-        // Redirect based on onboarding status
-        if (data.user.isOnboarded) {
+        // Redirect based on onboarding status and role
+        if (data.user.role === "ADMIN") {
+          router.push("/admin");
+        } else if (data.user.isOnboarded) {
           router.push("/dashboard");
         } else {
           router.push("/onboarding");
