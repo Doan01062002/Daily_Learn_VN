@@ -27,8 +27,17 @@ if ($LASTEXITCODE -ne 0) {
 }
 Write-Host "OK: Linter check passed." -ForegroundColor Green
 
-# 3. Build test
-Write-Host "3. Testing Production Build..." -ForegroundColor Yellow
+# 3. Run Automated Tests
+Write-Host "3. Running Automated Tests..." -ForegroundColor Yellow
+npm.cmd run test
+if ($LASTEXITCODE -ne 0) {
+    Write-Error "Automated tests failed! Commit aborted."
+    exit 1
+}
+Write-Host "OK: All automated tests passed." -ForegroundColor Green
+
+# 4. Build test
+Write-Host "4. Testing Production Build..." -ForegroundColor Yellow
 npm.cmd run build
 if ($LASTEXITCODE -ne 0) {
     Write-Error "Next.js Build failed! Commit aborted."
