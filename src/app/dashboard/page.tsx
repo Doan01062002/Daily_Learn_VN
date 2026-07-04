@@ -548,7 +548,8 @@ export default function DashboardPage() {
                 : "text-slate-500 hover:text-slate-800"
             }`}
           >
-            📖 Bài học
+            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18c-2.305 0-4.408.867-6 2.292m0-14.25v14.25" /></svg>
+            Bài học
           </button>
           <button
             onClick={() => setActiveTab("bookmarks")}
@@ -558,7 +559,8 @@ export default function DashboardPage() {
                 : "text-slate-500 hover:text-slate-800"
             }`}
           >
-            🔖 Đã lưu
+            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M17.593 3.322c1.1.128 1.907 1.077 1.907 2.185V21L12 17.25 4.5 21V5.507c0-1.108.806-2.057 1.907-2.185a48.507 48.507 0 0111.186 0z" /></svg>
+            Đã lưu
           </button>
           <button
             onClick={() => setActiveTab("groups")}
@@ -568,7 +570,8 @@ export default function DashboardPage() {
                 : "text-slate-500 hover:text-slate-800"
             }`}
           >
-            👥 Học nhóm
+            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M18 18.72a9.094 9.094 0 003.741-.479 3 3 0 00-4.682-2.72m.94 3.198l.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0112 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 016 18.719m12 0a5.971 5.971 0 00-.941-3.197m0 0A5.995 5.995 0 0012 12.75a5.995 5.995 0 00-5.058 2.772m0 0a3 3 0 00-4.681 2.72 8.986 8.986 0 003.74.477m.94-3.197a5.971 5.971 0 00-.94 3.197M15 6.75a3 3 0 11-6 0 3 3 0 016 0zm6 3a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0zm-13.5 0a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0z" /></svg>
+            Học nhóm
           </button>
           <button
             onClick={() => setActiveTab("leaderboard")}
@@ -578,7 +581,8 @@ export default function DashboardPage() {
                 : "text-slate-500 hover:text-slate-800"
             }`}
           >
-            🏆 Xếp hạng
+            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M16.5 18.75h-9m9 0a3 3 0 013 3h-15a3 3 0 013-3m9 0v-3.375c0-.621-.303-1.2-.81-1.543L15 10.5M7.5 18.75v-3.375c0-.621.303-1.2.81-1.543L9 10.5M15 10.5V6.75A3.75 3.75 0 107.5 6.75v3.75m7.5 0h-7.5m9-3.75h.75c1.035 0 1.875.84 1.875 1.875v.375c0 1.035-.84 1.875-1.875 1.875h-.75M7.5 6.75h-.75C5.715 6.75 4.875 7.59 4.875 8.625v.375c0 1.035.84 1.875 1.875 1.875h.75" /></svg>
+            Xếp hạng
           </button>
           <button
             onClick={() => setActiveTab("stats")}
@@ -588,7 +592,8 @@ export default function DashboardPage() {
                 : "text-slate-500 hover:text-slate-800"
             }`}
           >
-            📊 Tiến trình
+            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v5.25c0 .621-.504 1.125-1.125 1.125h-2.25A1.125 1.125 0 013 18.375v-5.25zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125v-9.75zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v14.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z" /></svg>
+            Tiến trình
           </button>
         </nav>
 
@@ -837,7 +842,7 @@ export default function DashboardPage() {
                     : "border-transparent text-slate-450 hover:text-slate-700"
                 }`}
               >
-                📖 Bài học
+                Bài học
               </button>
               <button
                 onClick={() => setActiveTab("bookmarks")}
@@ -847,7 +852,7 @@ export default function DashboardPage() {
                     : "border-transparent text-slate-450 hover:text-slate-700"
                 }`}
               >
-                🔖 Đã lưu
+                Đã lưu
               </button>
               <button
                 onClick={() => setActiveTab("groups")}
@@ -857,7 +862,7 @@ export default function DashboardPage() {
                     : "border-transparent text-slate-450 hover:text-slate-700"
                 }`}
               >
-                👥 Nhóm
+                Nhóm
               </button>
               <button
                 onClick={() => setActiveTab("leaderboard")}
@@ -867,7 +872,7 @@ export default function DashboardPage() {
                     : "border-transparent text-slate-450 hover:text-slate-700"
                 }`}
               >
-                🏆 Xếp hạng
+                Xếp hạng
               </button>
               <button
                 onClick={() => setActiveTab("stats")}
@@ -877,7 +882,7 @@ export default function DashboardPage() {
                     : "border-transparent text-slate-450 hover:text-slate-700"
                 }`}
               >
-                📊 Tiến trình
+                Tiến trình
               </button>
             </div>
 
@@ -1570,13 +1575,13 @@ export default function DashboardPage() {
                             };
                           };
 
-                          // Labels translation and icons
-                          const labelMap: Record<string, { name: string; icon: string }> = {
-                            Tech: { name: "Công nghệ", icon: "💻" },
-                            Business: { name: "Kinh doanh", icon: "📈" },
-                            SoftSkills: { name: "Kỹ năng mềm", icon: "🤝" },
-                            Design: { name: "Thiết kế", icon: "🎨" },
-                            Health: { name: "Sức khỏe", icon: "🍎" },
+                          // Labels translation
+                          const labelMap: Record<string, { name: string }> = {
+                            Tech: { name: "Công nghệ" },
+                            Business: { name: "Kinh doanh" },
+                            SoftSkills: { name: "Kỹ năng mềm" },
+                            Design: { name: "Thiết kế" },
+                            Health: { name: "Sức khỏe" },
                           };
 
                           // Render grid concentric polygons
@@ -1655,7 +1660,7 @@ export default function DashboardPage() {
                               {/* Labels */}
                               {competencies.map((c, i) => {
                                 const outer = getCoordinates(i, 118);
-                                const item = labelMap[c.category] || { name: c.category, icon: "🏷️" };
+                                const item = labelMap[c.category] || { name: c.category };
                                 
                                 // Text anchor alignment
                                 let textAnchor: "middle" | "end" | "start" = "middle";
@@ -1670,7 +1675,7 @@ export default function DashboardPage() {
                                       textAnchor={textAnchor}
                                       className="font-sans font-bold"
                                     >
-                                      {item.icon} {item.name}
+                                      {item.name}
                                     </text>
                                     <text
                                       x={outer.x}
@@ -1706,20 +1711,20 @@ export default function DashboardPage() {
                     ) : (
                       <div className="space-y-4">
                         {competencies.map((c) => {
-                          const labelMap: Record<string, { name: string; icon: string; color: string }> = {
-                            Tech: { name: "Công nghệ", icon: "💻", color: "bg-blue-500" },
-                            Business: { name: "Kinh doanh", icon: "📈", color: "bg-emerald-500" },
-                            SoftSkills: { name: "Kỹ năng mềm", icon: "🤝", color: "bg-amber-500" },
-                            Design: { name: "Thiết kế", icon: "🎨", color: "bg-pink-500" },
-                            Health: { name: "Sức khỏe", icon: "🍎", color: "bg-rose-500" },
+                          const labelMap: Record<string, { name: string; color: string }> = {
+                            Tech: { name: "Công nghệ", color: "bg-blue-500" },
+                            Business: { name: "Kinh doanh", color: "bg-emerald-500" },
+                            SoftSkills: { name: "Kỹ năng mềm", color: "bg-amber-500" },
+                            Design: { name: "Thiết kế", color: "bg-pink-500" },
+                            Health: { name: "Sức khỏe", color: "bg-rose-500" },
                           };
-                          const item = labelMap[c.category] || { name: c.category, icon: "🏷️", color: "bg-slate-500" };
+                          const item = labelMap[c.category] || { name: c.category, color: "bg-slate-500" };
                           
                           return (
                             <div key={c.category} className="space-y-2">
                               <div className="flex justify-between items-center text-xs font-semibold">
-                                <div className="flex items-center gap-1.5 font-bold text-slate-800">
-                                  <span>{item.icon}</span>
+                                <div className="flex items-center gap-2 font-bold text-slate-800">
+                                  <span className={`w-2 h-2 rounded-full ${item.color} shrink-0`} />
                                   <span>{item.name}</span>
                                 </div>
                                 <span className="font-mono font-bold text-indigo-650">

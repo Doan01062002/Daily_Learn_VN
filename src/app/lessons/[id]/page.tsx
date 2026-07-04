@@ -249,9 +249,10 @@ export default function LessonDetailPage({
 
           <button
             onClick={() => setShowFeedbackModal(true)}
-            className="flex items-center gap-1 px-2.5 py-1.5 rounded-xl border border-amber-250 bg-amber-50 hover:bg-amber-100 text-amber-800 text-[11px] font-bold transition duration-150 cursor-pointer"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-amber-250 bg-amber-50 hover:bg-amber-100 text-amber-800 text-[11px] font-bold transition duration-150 cursor-pointer shadow-sm"
           >
-            📬 Báo cáo lỗi
+            <svg className="w-3.5 h-3.5 text-amber-700" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" /></svg>
+            Báo cáo lỗi
           </button>
           <span className="font-serif italic text-xs bg-slate-50 px-2.5 py-1.5 rounded-xl border border-slate-150 theme-muted">Đọc tập trung</span>
         </div>
@@ -365,7 +366,8 @@ export default function LessonDetailPage({
                 {/* Actionable Step widget */}
                 <div className="rounded-2xl border border-amber-500/20 bg-amber-500/5 p-5 space-y-2 shadow-sm mt-8">
                   <h3 className="text-[10px] font-bold text-amber-800 uppercase tracking-wider flex items-center gap-1.5">
-                    ⚡ Hành động gợi ý hôm nay
+                    <svg className="w-3.5 h-3.5 text-amber-600" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z" /></svg>
+                    Hành động gợi ý hôm nay
                   </h3>
                   <p className="text-sm font-serif italic leading-relaxed theme-text">
                     &quot;{lesson.actionableStep}&quot;
@@ -379,7 +381,8 @@ export default function LessonDetailPage({
                 <div className="border rounded-3xl p-6 sm:p-8 shadow-xl shadow-indigo-950/5 space-y-4 font-sans theme-card">
                   <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-2">
                     <h3 className="text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 theme-muted">
-                      📝 Bài tập tự luận ({assignment.type === "WRITING" ? "Viết" : "Nói/Phát âm"})
+                      <svg className="w-3.5 h-3.5 text-slate-500" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" /></svg>
+                      Bài tập tự luận ({assignment.type === "WRITING" ? "Viết" : "Nói/Phát âm"})
                     </h3>
                     {submission && (
                       <span className={`text-[9px] font-extrabold uppercase px-2.5 py-0.5 rounded-full border ${
@@ -511,7 +514,8 @@ export default function LessonDetailPage({
               <div className="backdrop-blur-md border rounded-3xl p-6 shadow-xl shadow-indigo-950/5 space-y-4 theme-card">
                 <div className="flex justify-between items-center border-b border-slate-100 dark:border-slate-800 pb-2.5">
                   <h3 className="text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 theme-text">
-                    📝 Ghi chép cá nhân
+                    <svg className="w-3.5 h-3.5 text-slate-500" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" /></svg>
+                    Ghi chép cá nhân
                   </h3>
                   <span className="text-[10px] font-bold font-mono transition-all duration-200 theme-muted">
                     {savingNotes ? "🔄 Đang lưu..." : "✓ Đã lưu"}
