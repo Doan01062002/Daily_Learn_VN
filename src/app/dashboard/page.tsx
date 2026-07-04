@@ -108,7 +108,7 @@ export default function DashboardPage() {
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
   // Stats and Leaderboard states
-  const [activeTab, setActiveTab] = useState<"today" | "bookmarks" | "timeline">("today");
+  const [activeTab, setActiveTab] = useState<"today" | "bookmarks" | "leaderboard" | "stats">("today");
   const [stats, setStats] = useState<UserStats | null>(null);
   const [leaderboard, setLeaderboard] = useState<LeaderboardUser[]>([]);
   const [timeline, setTimeline] = useState<any[]>([]);
@@ -593,96 +593,6 @@ export default function DashboardPage() {
               </div>
             </div>
 
-            {/* Contribution Graph Heatmap */}
-            <div className="bg-white/80 border border-slate-100 p-5 rounded-2xl shadow-sm">
-              <h3 className="font-serif text-sm font-bold text-slate-800">Nhật ký hoạt động</h3>
-              <p className="text-[10px] text-slate-400 mt-0.5 mb-3">Tần suất học tập 6 tháng qua.</p>
-              
-              <div className="flex gap-1.5 items-end justify-center py-2 overflow-x-auto select-none">
-                <div className="flex flex-col justify-between text-[8px] text-slate-400 h-[105px] pr-1 pb-1">
-                  <span>CN</span>
-                  <span>T3</span>
-                  <span>T5</span>
-                  <span>T7</span>
-                </div>
-                <div className="grid grid-flow-col grid-rows-7 gap-1 h-[105px]">
-                  {getHeatmapGrid().map((d, index) => {
-                    const dateStr = d.toLocaleDateString("en-CA", { timeZone: "Asia/Ho_Chi_Minh" });
-                    const count = heatmapData[dateStr] || 0;
-                    const formattedDate = d.toLocaleDateString("vi-VN", { day: "numeric", month: "short" });
-                    const titleText = `${formattedDate}: Hoàn thành ${count} bài học`;
-                    
-                    return (
-                      <div
-                        key={index}
-                        className={`h-3 w-3 rounded-sm transition-all duration-150 cursor-pointer ${getCellColor(d)}`}
-                        title={titleText}
-                      />
-                    );
-                  })}
-                </div>
-              </div>
-              <div className="flex items-center justify-end gap-1 mt-2 text-[8px] text-slate-400 pr-1">
-                <span>Ít</span>
-                <div className="h-2 w-2 rounded bg-slate-100" />
-                <div className="h-2 w-2 rounded bg-indigo-200" />
-                <div className="h-2 w-2 rounded bg-indigo-400" />
-                <div className="h-2 w-2 rounded bg-indigo-600" />
-                <span>Nhiều</span>
-              </div>
-            </div>
-
-            {/* Leaderboard panel */}
-            <div className="bg-white/85 border border-slate-100 rounded-2xl shadow-sm overflow-hidden">
-              <div className="px-5 py-4 border-b border-slate-100 bg-white/40">
-                <h3 className="font-serif text-sm font-bold text-slate-800">Bảng xếp hạng thi đua</h3>
-                <p className="text-[10px] text-slate-400 mt-0.5">Theo chuỗi ngày học liên tục (Streak).</p>
-              </div>
-
-              <div className="divide-y divide-slate-50 max-h-[300px] overflow-y-auto">
-                {leaderboard.map((item, index) => {
-                  let rankIcon = `${item.rank}`;
-                  if (item.rank === 1) rankIcon = "🥇";
-                  if (item.rank === 2) rankIcon = "🥈";
-                  if (item.rank === 3) rankIcon = "🥉";
-
-                  const isCurrentUser = item.name === user.name;
-
-                  return (
-                    <div
-                      key={index}
-                      className={`px-4 py-3 flex items-center justify-between transition-all duration-150 ${
-                        isCurrentUser ? "bg-indigo-50/50 border-l-4 border-l-indigo-500" : "hover:bg-slate-50/50"
-                      }`}
-                    >
-                      <div className="flex items-center gap-2">
-                        <span className="text-xs font-bold w-5 text-center">{rankIcon}</span>
-                        {/* eslint-disable-next-line @next/next/no-img-element */}
-                        <img
-                          src={item.avatarUrl || "https://lh3.googleusercontent.com/a/default-user"}
-                          alt={item.name}
-                          className="h-7 w-7 rounded-full border border-slate-200"
-                        />
-                        <div>
-                          <div className="text-xs font-bold text-slate-800 truncate max-w-[100px] flex items-center gap-1">
-                            {item.name.split(" ").pop()}
-                            {isCurrentUser && (
-                              <span className="text-[8px] bg-emerald-50 text-emerald-700 font-bold px-1 rounded">Bạn</span>
-                            )}
-                          </div>
-                          <span className="text-[9px] text-slate-400 font-mono block">Done: {item.completedLessons} bài</span>
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-0.5 font-mono font-bold text-[10px] text-white bg-gradient-to-r from-orange-500 to-amber-500 px-2 py-0.5 rounded">
-                        <span>🔥</span>
-                        <span>{item.currentStreak}d</span>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-
           </div>
 
           {/* Right Column (3/4 Width) - Active Feed & Dynamic widgets */}
@@ -733,7 +643,7 @@ export default function DashboardPage() {
                     : "border-transparent text-slate-400 hover:text-slate-700"
                 }`}
               >
-                Học tập
+                📖 Bài học
               </button>
               <button
                 onClick={() => setActiveTab("bookmarks")}
@@ -743,17 +653,27 @@ export default function DashboardPage() {
                     : "border-transparent text-slate-400 hover:text-slate-700"
                 }`}
               >
-                Đã lưu
+                🔖 Đã lưu
               </button>
               <button
-                onClick={() => setActiveTab("timeline")}
+                onClick={() => setActiveTab("leaderboard")}
                 className={`pb-2 text-xs font-bold uppercase tracking-wider border-b-2 transition duration-200 focus:outline-none ${
-                  activeTab === "timeline"
+                  activeTab === "leaderboard"
                     ? "border-indigo-600 text-indigo-600"
                     : "border-transparent text-slate-400 hover:text-slate-700"
                 }`}
               >
-                Nhật ký
+                🏆 Xếp hạng
+              </button>
+              <button
+                onClick={() => setActiveTab("stats")}
+                className={`pb-2 text-xs font-bold uppercase tracking-wider border-b-2 transition duration-200 focus:outline-none ${
+                  activeTab === "stats"
+                    ? "border-indigo-600 text-indigo-600"
+                    : "border-transparent text-slate-400 hover:text-slate-700"
+                }`}
+              >
+                📊 Tiến trình
               </button>
             </div>
 
@@ -1015,62 +935,199 @@ export default function DashboardPage() {
                   </div>
                 )}
               </div>
-            ) : (
-              /* Timeline / Activity Logs Tab */
-              <div className="space-y-5">
-                <h2 className="text-[10px] font-bold text-slate-400 uppercase tracking-wider px-1">
-                  Nhật ký hoạt động của bạn ({timeline.length})
-                </h2>
+            ) : activeTab === "leaderboard" ? (
+              /* New spacious Leaderboard View */
+              <div className="bg-white/80 border border-slate-100 rounded-2xl shadow-sm overflow-hidden p-6 space-y-5">
+                <div>
+                  <h3 className="font-serif text-lg font-bold text-slate-800">Bảng xếp hạng thi đua</h3>
+                  <p className="text-xs text-slate-400 mt-0.5">Xếp hạng học tập dựa trên chuỗi ngày học liên tục (Streak) giữa các thành viên.</p>
+                </div>
 
-                {loadingStats ? (
-                  <div className="flex justify-center items-center py-16">
-                    <div className="h-8 w-8 animate-spin rounded-full border-2 border-indigo-500 border-t-transparent"></div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {/* Highlight Top 3 users in style! */}
+                  {leaderboard.slice(0, 3).map((item, idx) => {
+                    let badgeColor = "from-amber-400 to-yellow-500 text-amber-950";
+                    let placement = "🥇 Quán quân";
+                    if (item.rank === 2) {
+                      badgeColor = "from-slate-350 to-slate-400 text-slate-900";
+                      placement = "🥈 Á quan";
+                    }
+                    if (item.rank === 3) {
+                      badgeColor = "from-amber-600 to-amber-700 text-amber-50";
+                      placement = "🥉 Hạng ba";
+                    }
+
+                    return (
+                      <div key={idx} className={`bg-gradient-to-br ${item.name === user.name ? "from-indigo-50/50 to-purple-50/30 border-indigo-200" : "from-slate-50 to-white/70 border-slate-100"} border p-5 rounded-2xl shadow-sm flex flex-col items-center text-center gap-3 relative overflow-hidden`}>
+                        <div className={`absolute top-3 left-3 text-[9px] font-black uppercase tracking-wider bg-gradient-to-r ${badgeColor} px-2.5 py-0.5 rounded-full`}>
+                          {placement}
+                        </div>
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img
+                          src={item.avatarUrl || "https://lh3.googleusercontent.com/a/default-user"}
+                          alt={item.name}
+                          className="h-14 w-14 rounded-full border-2 border-white shadow-sm mt-3"
+                        />
+                        <div>
+                          <div className="text-sm font-bold text-slate-800 flex items-center justify-center gap-1">
+                            {item.name}
+                            {item.name === user.name && <span className="text-[8px] bg-emerald-50 text-emerald-700 font-bold px-1 rounded">Bạn</span>}
+                          </div>
+                          <span className="text-[10px] text-slate-400 font-medium block mt-0.5 font-sans">Hoàn thành {item.completedLessons} bài học</span>
+                        </div>
+                        <div className="flex items-center gap-1 font-mono font-bold text-xs text-white bg-gradient-to-r from-orange-500 to-amber-500 px-3 py-1 rounded-full shadow-sm mt-1">
+                          <span>🔥</span>
+                          <span>{item.currentStreak} ngày</span>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+
+                <div className="border border-slate-100 rounded-xl overflow-hidden mt-6 bg-white/40">
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-left border-collapse">
+                      <thead>
+                        <tr className="bg-slate-50/70 text-[10px] font-bold text-slate-450 uppercase tracking-wider border-b border-slate-100">
+                          <th className="py-3.5 px-5">Thứ hạng</th>
+                          <th className="py-3.5 px-5">Thành viên</th>
+                          <th className="py-3.5 px-5">Số bài đã học</th>
+                          <th className="py-3.5 px-5 text-right">Chuỗi Streak</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-slate-100 text-xs">
+                        {leaderboard.map((item, idx) => {
+                          const isCurrentUser = item.name === user.name;
+                          let rankLabel = `${item.rank}`;
+                          if (item.rank === 1) rankLabel = "🥇";
+                          if (item.rank === 2) rankLabel = "🥈";
+                          if (item.rank === 3) rankLabel = "🥉";
+
+                          return (
+                            <tr key={idx} className={`${isCurrentUser ? "bg-indigo-50/30" : "hover:bg-slate-50/50"} transition duration-150`}>
+                              <td className="py-3 px-5 font-bold text-slate-500">{rankLabel}</td>
+                              <td className="py-3 px-5">
+                                <div className="flex items-center gap-2.5">
+                                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                                  <img
+                                    src={item.avatarUrl || "https://lh3.googleusercontent.com/a/default-user"}
+                                    alt={item.name}
+                                    className="h-6.5 w-6.5 rounded-full border border-slate-200"
+                                  />
+                                  <span className={`font-bold ${isCurrentUser ? "text-indigo-600" : "text-slate-800"}`}>
+                                    {item.name}
+                                    {isCurrentUser && <span className="ml-1.5 text-[8px] bg-emerald-50 text-emerald-700 font-bold px-1 rounded">Bạn</span>}
+                                  </span>
+                                </div>
+                              </td>
+                              <td className="py-3 px-5 font-medium text-slate-500 font-mono">{item.completedLessons} bài viết</td>
+                              <td className="py-3 px-5 text-right font-mono font-bold text-orange-650">🔥 {item.currentStreak} ngày</td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
                   </div>
-                ) : timeline.length === 0 ? (
-                  <div className="text-center py-16 border border-dashed border-slate-200 rounded-2xl bg-white/40 flex flex-col items-center justify-center p-6 space-y-4">
-                    <svg className="h-16 w-16 text-indigo-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                    <div className="space-y-1 max-w-xs">
-                      <h3 className="text-sm font-bold text-slate-700">Chưa có hoạt động nào</h3>
-                      <p className="text-xs text-slate-400 leading-normal">
-                        Hãy bắt đầu học và vượt qua các bài kiểm tra trắc nghiệm để ghi nhận nhật ký của bạn.
-                      </p>
+                </div>
+              </div>
+            ) : (
+              /* Expanded Stats & Contribution Heatmap + Timeline combined */
+              <div className="space-y-6">
+                
+                {/* Heatmap graph Card - stretched beautifully */}
+                <div className="bg-white/80 border border-slate-100 p-6 rounded-2xl shadow-sm space-y-4">
+                  <div>
+                    <h3 className="font-serif text-sm font-bold text-slate-800">Nhật ký hoạt động</h3>
+                    <p className="text-[10px] text-slate-450 mt-0.5">Tần suất và lịch sử học tập 6 tháng qua của bạn.</p>
+                  </div>
+                  
+                  <div className="flex gap-2 items-end justify-start py-2 overflow-x-auto select-none">
+                    <div className="flex flex-col justify-between text-[8px] text-slate-400 h-[105px] pr-2 pb-1.5 shrink-0">
+                      <span>CN</span>
+                      <span>T3</span>
+                      <span>T5</span>
+                      <span>T7</span>
+                    </div>
+                    <div className="grid grid-flow-col grid-rows-7 gap-1.2 h-[105px]">
+                      {getHeatmapGrid().map((d, index) => {
+                        const dateStr = d.toLocaleDateString("en-CA", { timeZone: "Asia/Ho_Chi_Minh" });
+                        const count = heatmapData[dateStr] || 0;
+                        const formattedDate = d.toLocaleDateString("vi-VN", { day: "numeric", month: "short" });
+                        const titleText = `${formattedDate}: Hoàn thành ${count} bài học`;
+                        
+                        return (
+                          <div
+                            key={index}
+                            className={`h-3.2 w-3.2 rounded-sm transition-all duration-150 cursor-pointer ${getCellColor(d)}`}
+                            title={titleText}
+                          />
+                        );
+                      })}
                     </div>
                   </div>
-                ) : (
-                  <div className="relative border-l border-indigo-100 ml-4 pl-6 space-y-6 py-4">
-                    {timeline.map((item, idx) => {
-                      const date = new Date(item.completedAt);
-                      const formattedDate = date.toLocaleDateString("vi-VN", {
-                        day: "numeric",
-                        month: "short",
-                        hour: "2-digit",
-                        minute: "2-digit",
-                      });
-                      return (
-                        <div key={idx} className="relative">
-                          {/* Dot marker on vertical timeline line */}
-                          <div className="absolute -left-[31px] top-1 h-3.5 w-3.5 rounded-full border-2 border-white bg-indigo-500 shadow-sm" />
-                          <div className="space-y-1">
-                            <span className="text-[10px] font-bold text-slate-400">{formattedDate}</span>
-                            <h4 className="text-sm font-bold text-slate-800 leading-snug">{item.title}</h4>
-                            <div className="flex flex-wrap gap-2 pt-0.5">
-                              <span className="text-[9px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-100 uppercase">
-                                Đạt {item.score}%
-                              </span>
-                              {item.tags.map((tag: string) => (
-                                <span key={tag} className="text-[9px] font-semibold text-slate-400 bg-slate-50 px-1.5 py-0.5 rounded border border-slate-100">
-                                  #{tag}
+                  <div className="flex items-center justify-end gap-1.5 text-[8px] text-slate-400 pr-1">
+                    <span>Ít</span>
+                    <div className="h-2 w-2 rounded-sm bg-slate-100" />
+                    <div className="h-2 w-2 rounded-sm bg-indigo-200" />
+                    <div className="h-2 w-2 rounded-sm bg-indigo-400" />
+                    <div className="h-2 w-2 rounded-sm bg-indigo-600" />
+                    <span>Nhiều</span>
+                  </div>
+                </div>
+
+                {/* Timeline Card */}
+                <div className="bg-white/80 border border-slate-100 p-6 rounded-2xl shadow-sm space-y-4">
+                  <div>
+                    <h3 className="font-serif text-sm font-bold text-slate-800">Lịch sử bài học đã hoàn thành</h3>
+                    <p className="text-[10px] text-slate-450 mt-0.5">Nhật ký chi tiết các ngày nộp bài tập kiểm tra.</p>
+                  </div>
+
+                  {timeline.length === 0 ? (
+                    <div className="text-center py-12 border border-dashed border-slate-200 rounded-2xl bg-white/40 flex flex-col items-center justify-center p-6 space-y-4">
+                      <svg className="h-14 w-14 text-indigo-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                      <div className="space-y-1 max-w-xs">
+                        <h3 className="text-sm font-bold text-slate-700">Chưa có hoạt động nào</h3>
+                        <p className="text-xs text-slate-450 leading-normal">
+                          Hãy bắt đầu học và vượt qua các bài kiểm tra trắc nghiệm để ghi nhận nhật ký của bạn.
+                        </p>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="relative border-l border-indigo-100 ml-4 pl-6 space-y-6 py-4">
+                      {timeline.map((item, idx) => {
+                        const date = new Date(item.completedAt);
+                        const formattedDate = date.toLocaleDateString("vi-VN", {
+                          day: "numeric",
+                          month: "short",
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        });
+                        return (
+                          <div key={idx} className="relative animate-fade-in">
+                            {/* Dot marker on vertical timeline line */}
+                            <div className="absolute -left-[31px] top-1 h-3.5 w-3.5 rounded-full border-2 border-white bg-indigo-500 shadow-sm" />
+                            <div className="space-y-1">
+                              <span className="text-[10px] font-bold text-slate-400">{formattedDate}</span>
+                              <h4 className="text-sm font-bold text-slate-800 leading-snug">{item.title}</h4>
+                              <div className="flex flex-wrap gap-2 pt-0.5">
+                                <span className="text-[9px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-100 uppercase">
+                                  Đạt {item.score}%
                                 </span>
-                              ))}
+                                {item.tags.map((tag: string) => (
+                                  <span key={tag} className="text-[9px] font-semibold text-slate-400 bg-slate-50 px-1.5 py-0.5 rounded border border-slate-100">
+                                    #{tag}
+                                  </span>
+                                ))}
+                              </div>
                             </div>
                           </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-                )}
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
               </div>
             )}
           </div>
