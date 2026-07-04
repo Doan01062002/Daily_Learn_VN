@@ -196,22 +196,22 @@ export default function LessonDetailPage({
       <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] rounded-full bg-indigo-200/10 blur-[100px] pointer-events-none"></div>
       <div className="absolute bottom-[20%] right-[-10%] w-[35%] h-[35%] rounded-full bg-pink-200/15 blur-[120px] pointer-events-none"></div>
 
-      {/* Focused Navigation Header */}
-      <header className="border-b border-slate-100 bg-white/80 backdrop-blur-md px-6 py-4 flex justify-between items-center shadow-sm sticky top-0 z-30">
+      {/* Focused Navigation Header - Floating design */}
+      <header className="sticky top-4 z-40 max-w-5xl w-[calc(100%-2rem)] mx-auto rounded-2xl border border-white/60 bg-white/75 backdrop-blur-md px-5 py-3 flex justify-between items-center shadow-lg shadow-indigo-950/5 mt-4 transition-all duration-300">
         <Link
           href="/dashboard"
-          className="flex items-center gap-1.5 text-xs font-bold text-slate-500 hover:text-slate-800 transition duration-200"
+          className="flex items-center gap-1.5 text-xs font-bold text-slate-500 hover:text-slate-800 transition duration-200 border border-slate-200/85 px-3 py-2 rounded-xl hover:bg-slate-50"
         >
-          <span>←</span> Quay lại Dashboard
+          <span>←</span> <span className="hidden sm:inline">Quay lại Dashboard</span>
         </Link>
         <div className="flex items-center gap-3">
           <button
             onClick={() => setShowFeedbackModal(true)}
-            className="flex items-center gap-1 px-2.5 py-1 rounded-lg border border-amber-250 bg-amber-50 hover:bg-amber-100 text-amber-800 text-[11px] font-bold transition duration-150 cursor-pointer"
+            className="flex items-center gap-1 px-2.5 py-1.5 rounded-xl border border-amber-250 bg-amber-50 hover:bg-amber-100 text-amber-800 text-[11px] font-bold transition duration-150 cursor-pointer"
           >
             📬 Báo cáo lỗi
           </button>
-          <span className="font-serif italic text-xs text-slate-400">Đọc tập trung</span>
+          <span className="font-serif italic text-xs text-slate-400 bg-slate-50 px-2.5 py-1.5 rounded-xl border border-slate-150">Đọc tập trung</span>
         </div>
       </header>
 

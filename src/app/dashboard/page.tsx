@@ -306,45 +306,75 @@ export default function DashboardPage() {
       <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] rounded-full bg-indigo-200/10 blur-[100px] pointer-events-none"></div>
       <div className="absolute bottom-[20%] right-[-10%] w-[35%] h-[35%] rounded-full bg-pink-200/15 blur-[120px] pointer-events-none"></div>
 
-      {/* Header Layout */}
-      <header className="border-b border-slate-100 bg-white/80 backdrop-blur-md px-6 py-4 flex justify-between items-center shadow-sm sticky top-0 z-30">
-        <div className="flex items-center gap-2.5">
-          <div className="h-9 w-9 rounded-xl bg-gradient-to-tr from-[#4F46E5] to-[#EC4899] flex items-center justify-center shadow-md shadow-indigo-500/20">
-            <svg className="h-5 w-5 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+      {/* Header Layout - Floating Pill design */}
+      <header className="sticky top-4 z-40 max-w-5xl w-[calc(100%-2rem)] mx-auto rounded-2xl border border-white/60 bg-white/75 backdrop-blur-md px-5 py-3 flex justify-between items-center shadow-lg shadow-indigo-950/5 mt-4 transition-all duration-300">
+        <div className="flex items-center gap-3">
+          <div className="h-9.5 w-9.5 rounded-xl bg-gradient-to-tr from-[#4F46E5] to-[#EC4899] flex items-center justify-center shadow-md shadow-indigo-500/25 shrink-0 transform hover:rotate-6 transition duration-300">
+            <svg className="h-5.5 w-5.5 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
               <path strokeLinecap="round" strokeLinejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25" />
             </svg>
           </div>
           <div className="flex flex-col">
-            <span className="font-serif font-extrabold text-base tracking-tight text-slate-800 leading-none">Daily Learn</span>
-            <span className="text-[9px] font-bold text-slate-400 tracking-widest uppercase mt-0.5">Việt Nam</span>
+            <span className="font-serif font-black text-sm tracking-tight text-slate-800 leading-none">Daily Learn</span>
+            <span className="text-[8px] font-black text-indigo-600/80 tracking-widest uppercase mt-0.5 font-sans">Việt Nam</span>
           </div>
         </div>
-        <div className="flex items-center gap-3">
+
+        {/* Quick Stats indicators in Header (Visible on tablet/desktop) */}
+        <div className="hidden sm:flex items-center gap-3 select-none">
+          <div className="flex items-center gap-1.5 bg-gradient-to-r from-orange-500/10 to-amber-500/10 border border-orange-200/40 text-orange-700 px-3 py-1 rounded-full text-[10px] font-bold shadow-sm animate-pulse">
+            <span className="text-xs">🔥</span>
+            <span>{streakVal} ngày</span>
+          </div>
+          <div className="flex items-center gap-1.5 bg-indigo-50 border border-indigo-100 text-indigo-700 px-3 py-1 rounded-full text-[10px] font-bold shadow-sm">
+            <span className="text-xs">💎</span>
+            <span>{user.knowledgePoints || 0} điểm</span>
+          </div>
+        </div>
+
+        <div className="flex items-center gap-2.5">
           {user.role === "ADMIN" && (
             <Link
               href="/admin"
-              className="text-xs font-semibold text-rose-600 border border-rose-100 bg-rose-50/50 px-3 py-1.5 rounded-lg hover:bg-rose-100/50 transition duration-200"
+              className="flex items-center gap-1 text-[11px] font-bold text-rose-600 border border-rose-100 bg-rose-50/50 px-2.5 py-1.5 rounded-xl hover:bg-rose-100/50 hover:text-rose-750 transition duration-200"
+              title="Quản trị hệ thống"
             >
-              ⚙ Quản trị
+              <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+              </svg>
+              <span className="hidden md:inline">Quản trị</span>
             </Link>
           )}
+          
           <Link
             href="/dashboard/settings"
-            className="text-xs font-semibold text-slate-500 border border-slate-200 px-3 py-1.5 rounded-lg hover:bg-slate-50 transition duration-200"
+            className="p-2 text-slate-500 border border-slate-200/80 rounded-xl hover:bg-slate-50 hover:text-slate-800 transition duration-200 flex items-center justify-center"
+            title="Cài đặt tài khoản"
           >
-            ⚙ Cài đặt
+            <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.2">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+              <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+            </svg>
           </Link>
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src={user.avatarUrl || "https://lh3.googleusercontent.com/a/default-user"}
-            alt="Avatar"
-            className="h-8 w-8 rounded-full border border-slate-200"
-          />
+
+          {/* User profile avatar wrap */}
+          <div className="relative group shrink-0">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={user.avatarUrl || "https://lh3.googleusercontent.com/a/default-user"}
+              alt="Avatar"
+              className="h-8.5 w-8.5 rounded-full border-2 border-indigo-500/20 group-hover:border-indigo-500 transition-all duration-200 shadow-sm"
+            />
+          </div>
+
           <button
             onClick={logout}
-            className="text-xs font-semibold text-slate-500 hover:text-slate-800 border border-slate-200 px-3 py-1.5 rounded-lg hover:bg-slate-50 transition duration-200"
+            className="p-2 text-slate-500 border border-slate-200/80 rounded-xl hover:bg-rose-50 hover:text-rose-600 hover:border-rose-100 transition duration-200 flex items-center justify-center cursor-pointer"
+            title="Đăng xuất"
           >
-            Đăng xuất
+            <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.2">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+            </svg>
           </button>
         </div>
       </header>
