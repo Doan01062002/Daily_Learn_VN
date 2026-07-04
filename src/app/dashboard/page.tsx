@@ -370,43 +370,15 @@ export default function DashboardPage() {
             />
           </div>
 
-          <div className="relative">
-            <button
-              onClick={() => setShowLogoutConfirm(!showLogoutConfirm)}
-              className={`p-2 border rounded-xl transition duration-200 flex items-center justify-center cursor-pointer ${
-                showLogoutConfirm
-                  ? "bg-rose-50 border-rose-200 text-rose-600"
-                  : "text-slate-500 border-slate-200/80 hover:bg-rose-50 hover:text-rose-600 hover:border-rose-100"
-              }`}
-              title="Đăng xuất"
-            >
-              <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.2">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-              </svg>
-            </button>
-
-            {showLogoutConfirm && (
-              <div className="absolute right-0 top-11 bg-white border border-slate-200 rounded-xl p-3.5 shadow-2xl z-50 w-52 space-y-2.5 text-left animate-fade-in">
-                <p className="text-[10px] font-bold text-slate-700 leading-normal">
-                  Bạn chắc chắn muốn đăng xuất khỏi hệ thống?
-                </p>
-                <div className="flex gap-2 justify-end">
-                  <button
-                    onClick={() => setShowLogoutConfirm(false)}
-                    className="px-2.5 py-1 text-[9px] font-extrabold text-slate-500 border border-slate-200 rounded-lg hover:bg-slate-50 cursor-pointer"
-                  >
-                    Hủy
-                  </button>
-                  <button
-                    onClick={logout}
-                    className="px-2.5 py-1 text-[9px] font-extrabold text-white bg-rose-500 rounded-lg hover:bg-rose-600 cursor-pointer"
-                  >
-                    Xác nhận
-                  </button>
-                </div>
-              </div>
-            )}
-          </div>
+          <button
+            onClick={() => setShowLogoutConfirm(true)}
+            className="p-2 text-slate-500 border border-slate-200/80 rounded-xl hover:bg-rose-50 hover:text-rose-600 hover:border-rose-100 transition duration-200 flex items-center justify-center cursor-pointer"
+            title="Đăng xuất"
+          >
+            <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.2">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013 3v1" />
+            </svg>
+          </button>
         </div>
       </header>
 
@@ -966,6 +938,37 @@ export default function DashboardPage() {
 
         </div>
       </main>
+
+      {/* Center-screen Modal for Logout Confirmation */}
+      {showLogoutConfirm && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 backdrop-blur-sm animate-fade-in">
+          <div className="bg-white/95 border border-slate-100 rounded-3xl p-6 shadow-2xl max-w-sm w-full mx-4 space-y-5 text-center animate-scale-up">
+            <div className="h-12 w-12 rounded-full bg-rose-50 border border-rose-100 text-rose-500 flex items-center justify-center mx-auto text-xl">
+              ⚠️
+            </div>
+            <div className="space-y-1">
+              <h3 className="font-serif text-lg font-bold text-slate-800">Xác nhận đăng xuất</h3>
+              <p className="text-xs text-slate-500 leading-relaxed">
+                Bạn có chắc chắn muốn đăng xuất khỏi ứng dụng Daily Learn Việt Nam không?
+              </p>
+            </div>
+            <div className="flex gap-3 pt-2">
+              <button
+                onClick={() => setShowLogoutConfirm(false)}
+                className="flex-1 text-center py-2.5 rounded-xl border border-slate-200 text-xs font-bold text-slate-600 hover:bg-slate-50 transition duration-200 cursor-pointer"
+              >
+                Hủy bỏ
+              </button>
+              <button
+                onClick={logout}
+                className="flex-1 text-center py-2.5 rounded-xl bg-rose-500 text-white text-xs font-bold hover:bg-rose-600 transition duration-200 shadow-md shadow-rose-500/10 cursor-pointer"
+              >
+                Đăng xuất
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
