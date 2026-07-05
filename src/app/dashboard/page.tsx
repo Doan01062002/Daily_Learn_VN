@@ -527,6 +527,22 @@ export default function DashboardPage() {
     }
   }, [activeTab, user]);
 
+  // Level Up Confetti Trigger
+  useEffect(() => {
+    if (!user) return;
+    const computedLevel = Math.floor((user.knowledgePoints || 0) / 100) + 1;
+    if (levelRef.current !== null && computedLevel > levelRef.current) {
+      import("canvas-confetti").then((confetti) => {
+        confetti.default({
+          particleCount: 150,
+          spread: 80,
+          origin: { y: 0.6 },
+        });
+      });
+    }
+    levelRef.current = computedLevel;
+  }, [user]);
+
   if (!user) return null;
 
   // Count progress
@@ -753,21 +769,7 @@ export default function DashboardPage() {
   };
   const levelTitle = getLevelTitle(level);
 
-  // Level Up Confetti Trigger
-  useEffect(() => {
-    if (!user) return;
-    const computedLevel = Math.floor((user.knowledgePoints || 0) / 100) + 1;
-    if (levelRef.current !== null && computedLevel > levelRef.current) {
-      import("canvas-confetti").then((confetti) => {
-        confetti.default({
-          particleCount: 150,
-          spread: 80,
-          origin: { y: 0.6 },
-        });
-      });
-    }
-    levelRef.current = computedLevel;
-  }, [user]);
+
 
   const drawCanvas = () => {
     const canvas = canvasRef.current;

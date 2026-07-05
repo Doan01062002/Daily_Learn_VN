@@ -73,6 +73,7 @@ export default function AdminDashboardPage() {
   const [formActionableStep, setFormActionableStep] = useState("");
   const [formStatus, setFormStatus] = useState<"DRAFT" | "PUBLISHED">("DRAFT");
   const [formSubmitting, setFormSubmitting] = useState(false);
+  const [formSteps, setFormSteps] = useState<any[]>([]);
 
   // Toast notification state
   const [toast, setToast] = useState<{ message: string; type: "success" | "error" } | null>(null);
@@ -144,6 +145,47 @@ export default function AdminDashboardPage() {
     }
   };
 
+    const handleAddStep = () => {
+    setFormSteps([
+      ...formSteps,
+      {
+        stepNumber: formSteps.length + 1,
+        title: "",
+        instruction: "",
+        imageUrl: "/figma_preset.png",
+        hotspotX: 50,
+        hotspotY: 50,
+        hotspotRadius: 5
+      }
+    ]);
+  };
+
+  const handleRemoveStep = (index: number) => {
+    const updated = formSteps.filter((_, idx) => idx !== index);
+    const recalculated = updated.map((s, idx) => ({
+      ...s,
+      stepNumber: idx + 1
+    }));
+    setFormSteps(recalculated);
+  };
+
+  const handleStepChange = (index: number, field: string, value: any) => {
+    const updated = [...formSteps];
+    updated[index] = {
+      ...updated[index],
+      [field]: value
+    };
+    setFormSteps(updated);
+  };
+
+  const handleImageClick = (index: number, e: React.MouseEvent<HTMLImageElement>) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const x = parseFloat((((e.clientX - rect.left) / rect.width) * 100).toFixed(1));
+    const y = parseFloat((((e.clientY - rect.top) / rect.height) * 100).toFixed(1));
+    handleStepChange(index, "hotspotX", x);
+    handleStepChange(index, "hotspotY", y);
+  };
+
   const resetForm = () => {
     setEditingLessonId(null);
     setFormTitle("");
@@ -155,6 +197,7 @@ export default function AdminDashboardPage() {
     setFormStatus("DRAFT");
     setAttachedMediaFiles([]);
     setOriginalMediaFiles([]);
+    setFormSteps([]);
   };
 
   const handleCreateClick = () => {
@@ -173,6 +216,7 @@ export default function AdminDashboardPage() {
     setFormStatus(lesson.status);
     setAttachedMediaFiles(lesson.mediaFiles || []);
     setOriginalMediaFiles(lesson.mediaFiles || []);
+    setFormSteps(lesson.steps || []);
     setIsModalOpen(true);
   };
 
@@ -234,6 +278,15 @@ export default function AdminDashboardPage() {
           summary: summaryArray,
           actionableStep: actionClean,
           status: formStatus,
+          steps: formSteps.map((s, idx) => ({
+            stepNumber: idx + 1,
+            title: s.title || "",
+            instruction: s.instruction || "",
+            imageUrl: s.imageUrl || "/figma_preset.png",
+            hotspotX: s.hotspotX || 50,
+            hotspotY: s.hotspotY || 50,
+            hotspotRadius: s.hotspotRadius || 5
+          })),
         };
 
         try {
@@ -928,6 +981,138 @@ export default function AdminDashboardPage() {
                       <span>Xuất bản (PUBLISHED)</span>
                     </label>
                   </div>
+                </div>
+
+                {/* SECTION 2: INTERACTIVE STEPS EDITOR */}
+                <div className="border-t border-[#E2E8F0] pt-4 space-y-4">
+                  <div className="flex items-center justify-between">
+                    <label className="block text-[10px] font-bold text-[#64748B] uppercase tracking-wider">
+                      Các bước thao tác thực hành (Hotspots)
+                    </label>
+                    <button
+                      type="button"
+                      onClick={handleAddStep}
+                      className="px-2.5 py-1.5 rounded-lg bg-indigo-50 border border-indigo-200 text-indigo-700 hover:bg-indigo-100 text-2xs font-bold transition flex items-center gap-1 cursor-pointer"
+                    >
+                      <span>+</span> Thêm bước thao tác
+                    </button>
+                  </div>
+
+                  {formSteps.length === 0 ? (
+                    <p className="text-2xs text-[#BFB8AC] italic">Chưa có bước thực hành thao tác nào cho bài học này.</p>
+                  ) : (
+                    <div className="space-y-4 max-h-[350px] overflow-y-auto pr-1">
+                      {formSteps.map((step, index) => (
+                        <div key={index} className="border border-[#E2E8F0] rounded-xl p-3 bg-slate-50/50 space-y-3 relative">
+                          <div className="flex justify-between items-center border-b border-[#E2E8F0] pb-1.5">
+                            <span className="text-[10px] font-extrabold uppercase tracking-wider text-indigo-700">
+                              Bước {step.stepNumber}
+                            </span>
+                            <button
+                              type="button"
+                              onClick={() => handleRemoveStep(index)}
+                              className="text-[9px] font-bold text-red-500 hover:text-red-700 transition cursor-pointer"
+                            >
+                              Xóa bước
+                            </button>
+                          </div>
+
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <div className="space-y-2">
+                              <div className="space-y-0.5">
+                                <label className="text-[9px] font-bold text-[#4E4941] uppercase tracking-wider block">Tiêu đề bước</label>
+                                <input
+                                  type="text"
+                                  placeholder="Ví dụ: Chọn công cụ Frame"
+                                  value={step.title || ""}
+                                  onChange={(e) => handleStepChange(index, "title", e.target.value)}
+                                  className="w-full px-2.5 py-1.5 rounded-lg border border-[#CBD5E1] bg-white text-xs focus:outline-none focus:border-rose-800"
+                                />
+                              </div>
+
+                              <div className="space-y-0.5">
+                                <label className="text-[9px] font-bold text-[#4E4941] uppercase tracking-wider block">Nội dung hướng dẫn</label>
+                                <textarea
+                                  rows={2}
+                                  placeholder="Hướng dẫn học viên..."
+                                  value={step.instruction || ""}
+                                  onChange={(e) => handleStepChange(index, "instruction", e.target.value)}
+                                  className="w-full px-2.5 py-1.5 rounded-lg border border-[#CBD5E1] bg-white text-xs focus:outline-none focus:border-rose-800 resize-none"
+                                />
+                              </div>
+
+                              <div className="space-y-0.5">
+                                <label className="text-[9px] font-bold text-[#4E4941] uppercase tracking-wider block">Ảnh chụp giao diện</label>
+                                <select
+                                  value={step.imageUrl || "/figma_preset.png"}
+                                  onChange={(e) => handleStepChange(index, "imageUrl", e.target.value)}
+                                  className="w-full px-2.5 py-1.5 rounded-lg border border-[#CBD5E1] bg-white text-xs focus:outline-none focus:border-rose-800 cursor-pointer"
+                                >
+                                  <option value="/figma_preset.png">Figma (/figma_preset.png)</option>
+                                  <option value="/git_terminal.png">Terminal (/git_terminal.png)</option>
+                                </select>
+                              </div>
+
+                              <div className="grid grid-cols-3 gap-1.5">
+                                <div>
+                                  <label className="text-[8px] font-bold text-[#8C8375] uppercase block text-center">X (%)</label>
+                                  <input
+                                    type="number"
+                                    step="0.1"
+                                    value={step.hotspotX}
+                                    onChange={(e) => handleStepChange(index, "hotspotX", parseFloat(e.target.value) || 0)}
+                                    className="w-full px-1 py-0.5 rounded border border-[#CBD5E1] bg-white text-xs font-mono text-center"
+                                  />
+                                </div>
+                                <div>
+                                  <label className="text-[8px] font-bold text-[#8C8375] uppercase block text-center">Y (%)</label>
+                                  <input
+                                    type="number"
+                                    step="0.1"
+                                    value={step.hotspotY}
+                                    onChange={(e) => handleStepChange(index, "hotspotY", parseFloat(e.target.value) || 0)}
+                                    className="w-full px-1 py-0.5 rounded border border-[#CBD5E1] bg-white text-xs font-mono text-center"
+                                  />
+                                </div>
+                                <div>
+                                  <label className="text-[8px] font-bold text-[#8C8375] uppercase block text-center">R (%)</label>
+                                  <input
+                                    type="number"
+                                    value={step.hotspotRadius}
+                                    onChange={(e) => handleStepChange(index, "hotspotRadius", parseInt(e.target.value) || 5)}
+                                    className="w-full px-1 py-0.5 rounded border border-[#CBD5E1] bg-white text-xs font-mono text-center"
+                                  />
+                                </div>
+                              </div>
+                            </div>
+
+                            <div className="space-y-1 flex flex-col justify-between items-center">
+                              <span className="text-[8px] font-bold text-[#64748B] uppercase tracking-wider block text-center">
+                                Click ảnh để định vị Hotspot
+                              </span>
+                              <div className="relative border border-[#CBD5E1] rounded-lg overflow-hidden shadow bg-black max-w-[180px] select-none">
+                                <img
+                                  src={step.imageUrl || "/figma_preset.png"}
+                                  alt="Click to pick hotspot"
+                                  onClick={(e) => handleImageClick(index, e)}
+                                  className="w-full h-auto object-contain cursor-crosshair opacity-85 select-none"
+                                />
+                                <div
+                                  className="absolute h-4 w-4 rounded-full border border-red-500 bg-red-500/35 pointer-events-none -translate-x-1/2 -translate-y-1/2 flex items-center justify-center animate-pulse"
+                                  style={{ left: `${step.hotspotX}%`, top: `${step.hotspotY}%` }}
+                                >
+                                  <div className="h-1 w-1 rounded-full bg-red-600" />
+                                </div>
+                              </div>
+                              <span className="text-[8px] text-[#8C8375] italic block text-center">
+                                X: {step.hotspotX}% | Y: {step.hotspotY}%
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
 
                 {/* Media Attachments Section */}

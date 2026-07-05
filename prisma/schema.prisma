@@ -82,6 +82,7 @@ model Lesson {
   level               String
   status              LessonStatus         @default(DRAFT)
   createdAt           DateTime             @default(now())
+  steps               Json?
 
   // Relations
   quizzes             Quiz[]

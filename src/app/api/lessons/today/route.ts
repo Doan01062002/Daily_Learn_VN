@@ -74,6 +74,7 @@ export async function GET(req: NextRequest) {
       actionableStep: lesson.actionableStep,
       level: lesson.level,
       completed: completedLessonIds.has(lesson.id),
+      steps: lesson.steps,
     }));
 
     // 5. Apply daily quota calculations from settings
@@ -119,10 +120,38 @@ export async function GET(req: NextRequest) {
         actionableStep: lesson.actionableStep,
         level: lesson.level,
         completed: completedLessonIds.has(lesson.id),
+        steps: lesson.steps,
       }));
     } else {
       // Slice to user's daily quota limit
       feed = feed.slice(0, dailyLimit);
+    }
+
+    // Ensure the two interactive mock lessons are always in the feed for testing purposes
+    const mockLessonIds = ["ff311538-6cb9-4d6d-93df-a0b70071073c", "0bd10bce-4e68-4c23-8816-189b2babc092"];
+    for (const mockId of mockLessonIds) {
+      if (!feed.some(l => l.id === mockId)) {
+        const foundMock = lessonsWithStatus.find(l => l.id === mockId);
+        if (foundMock) {
+          feed.unshift(foundMock);
+        } else {
+          // If not found in filtered list, fetch it directly from database to force append
+          const dbMock = await prisma.lesson.findUnique({ where: { id: mockId } });
+          if (dbMock) {
+            feed.unshift({
+              id: dbMock.id,
+              title: dbMock.title,
+              tags: dbMock.tags,
+              sourceDomain: dbMock.sourceDomain,
+              summary: dbMock.summary,
+              actionableStep: dbMock.actionableStep,
+              level: dbMock.level,
+              completed: completedLessonIds.has(dbMock.id),
+              steps: dbMock.steps,
+            });
+          }
+        }
+      }
     }
 
     return NextResponse.json({

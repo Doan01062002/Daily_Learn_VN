@@ -115,6 +115,7 @@ export async function POST(req: NextRequest) {
       status,
       quizzes,
       assignment,
+      steps,
     } = body;
 
     // Validate required fields
@@ -185,6 +186,7 @@ export async function POST(req: NextRequest) {
         actionableStep: actionClean,
         level,
         status: status || "DRAFT",
+        steps: steps || undefined,
         quizzes:
           quizzes && Array.isArray(quizzes) && quizzes.length > 0
             ? {

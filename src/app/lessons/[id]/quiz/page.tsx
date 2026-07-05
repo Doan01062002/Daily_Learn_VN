@@ -346,32 +346,6 @@ export default function QuizPage({
           <span>←</span> <span className="hidden sm:inline">Quay lại bài học</span>
         </Link>
         <div className="flex items-center gap-2">
-          {/* Theme Switcher Dropdown */}
-          <div className="relative group">
-            <button className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border theme-input text-[11px] font-bold transition-all duration-200 hover:scale-[1.03] active:scale-[0.96] cursor-pointer shadow-sm">
-              <span>{theme === "light" ? "☀️ Sáng" : theme === "dark" ? "🌙 Tối" : "📜 Cổ điển"}</span>
-            </button>
-            <div className="absolute right-0 mt-1.5 w-32 theme-card border rounded-xl shadow-lg opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto transition-all duration-150 z-50 p-1 space-y-1">
-              <button
-                onClick={() => changeTheme("light")}
-                className="w-full text-left px-3 py-2 text-xs font-semibold rounded-lg hover:bg-[#F0ECE4]/50 flex items-center gap-1.5 cursor-pointer"
-              >
-                <span>☀️</span> Sáng
-              </button>
-              <button
-                onClick={() => changeTheme("dark")}
-                className="w-full text-left px-3 py-2 text-xs font-semibold rounded-lg hover:bg-slate-150/20 flex items-center gap-1.5 cursor-pointer"
-              >
-                <span>🌙</span> Tối
-              </button>
-              <button
-                onClick={() => changeTheme("sepia")}
-                className="w-full text-left px-3 py-2 text-xs font-semibold rounded-lg hover:bg-slate-150/20 flex items-center gap-1.5 cursor-pointer"
-              >
-                <span>📜</span> Cổ điển
-              </button>
-            </div>
-          </div>
 
           <button
             onClick={() => setShowFeedbackModal(true)}

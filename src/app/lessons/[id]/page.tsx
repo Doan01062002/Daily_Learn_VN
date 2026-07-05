@@ -16,7 +16,81 @@ interface LessonDetail {
   actionableStep: string;
   level: string;
   completed: boolean;
+  steps?: any;
 }
+
+const FALLBACK_STEPS: Record<string, any[]> = {
+  "ff311538-6cb9-4d6d-93df-a0b70071073c": [
+    {
+      stepNumber: 1,
+      title: "Khởi tạo Kho chứa cục bộ (git init)",
+      instruction: "Hãy mở ứng dụng Terminal trên máy tính, di chuyển đến thư mục dự án và gõ lệnh sau để khởi tạo Git:\n\n`git init`",
+      appType: "terminal",
+      actionKey: "git_init",
+      imageUrl: "/git_terminal.png",
+      hotspotX: 25.5,
+      hotspotY: 42.0,
+      hotspotRadius: 6
+    },
+    {
+      stepNumber: 2,
+      title: "Theo dõi tệp tin và Đóng gói (git commit)",
+      instruction: "Sử dụng lệnh sau để thêm tất cả các tệp thay đổi vào vùng chờ (Staging Area), sau đó đóng gói chúng kèm thông điệp:\n\n`git add .`  \n`git commit -m 'initial commit'`",
+      appType: "terminal",
+      actionKey: "git_commit",
+      imageUrl: "/git_terminal.png",
+      hotspotX: 42.5,
+      hotspotY: 55.0,
+      hotspotRadius: 6
+    },
+    {
+      stepNumber: 3,
+      title: "Đẩy mã nguồn lên GitHub (git push)",
+      instruction: "Liên kết kho chứa cục bộ với kho chứa từ xa trên GitHub và đẩy mã nguồn lên nhánh chính (main):\n\n`git remote add origin <url>`  \n`git push -u origin main`",
+      appType: "terminal",
+      actionKey: "git_push",
+      imageUrl: "/git_terminal.png",
+      hotspotX: 68.0,
+      hotspotY: 72.0,
+      hotspotRadius: 6
+    }
+  ],
+  "0bd10bce-4e68-4c23-8816-189b2babc092": [
+    {
+      stepNumber: 1,
+      title: "Chọn Công cụ vẽ Frame",
+      instruction: "Nhấp chuột vào biểu tượng **Frame** trên thanh công cụ góc trái phía trên hoặc nhấn phím tắt **F** để kích hoạt chế độ vẽ vùng chứa.",
+      appType: "figma",
+      actionKey: "frame_tool",
+      imageUrl: "/figma_preset.png",
+      hotspotX: 18.0,
+      hotspotY: 22.5,
+      hotspotRadius: 5
+    },
+    {
+      stepNumber: 2,
+      title: "Chọn Kích thước Thiết bị chuẩn",
+      instruction: "Tại bảng tùy chọn xuất hiện ở menu bên phải, nhấp chọn mục **Phone** và chọn kích thước **iPhone 14 / 15 Pro** để tự động tạo kích thước Canvas chuẩn.",
+      appType: "figma",
+      actionKey: "select_preset",
+      imageUrl: "/figma_preset.png",
+      hotspotX: 82.5,
+      hotspotY: 38.0,
+      hotspotRadius: 5
+    },
+    {
+      stepNumber: 3,
+      title: "Áp dụng Màu nền & Bo góc",
+      instruction: "Nhấp chọn Frame vừa tạo, di chuyển sang bảng Fill để đổi màu nền thành `#F9F7F4`, đồng thời thiết lập Corner Radius (bo góc) bằng `24px` ở bảng Design.",
+      appType: "figma",
+      actionKey: "border_radius",
+      imageUrl: "/figma_preset.png",
+      hotspotX: 86.0,
+      hotspotY: 64.5,
+      hotspotRadius: 5
+    }
+  ]
+};
 
 export default function LessonDetailPage({
   params,
@@ -69,6 +143,20 @@ export default function LessonDetailPage({
     setToastMessage(msg);
     setTimeout(() => setToastMessage(null), 4000);
   };
+
+  // Step-by-Step interactive guide states
+  const [activeStepIndex, setActiveStepIndex] = useState(0);
+  const [completedSteps, setCompletedSteps] = useState<boolean[]>([]);
+
+  // Interactive Simulator Sandbox States
+  const [cliInput, setCliInput] = useState("");
+  const [cliLogs, setCliLogs] = useState<string[]>([]);
+  const [cliRunning, setCliRunning] = useState(false);
+  const [figmaTool, setFigmaTool] = useState("move"); // "move" | "frame"
+  const [figmaFramePlaced, setFigmaFramePlaced] = useState(false);
+  const [figmaRadius, setFigmaRadius] = useState(0);
+  const [figmaFill, setFigmaFill] = useState("#ffffff");
+  const [showConfetti, setShowConfetti] = useState(false);
 
   // Get simulator configuration if matching this lesson title
   const simulatorConfig = lesson ? (simulatorsData as any)[lesson.title] : null;
@@ -188,16 +276,29 @@ export default function LessonDetailPage({
 
     const fetchLessonDetail = async () => {
       try {
-        const res = await fetch("/api/lessons/today");
+        const res = await fetch(`/api/lessons/${lessonId}`);
         if (res.ok) {
           const data = await res.json();
-          const found = data.lessons.find((l: LessonDetail) => l.id === lessonId);
+          const found = data.lesson;
           if (found) {
             setLesson(found);
             // Default takeaways checked if already completed
             setCheckedTakeaways(new Array(found.summary.length).fill(found.completed));
+            
+            const foundSteps = (() => {
+              if (found.id && FALLBACK_STEPS[found.id]) {
+                return FALLBACK_STEPS[found.id];
+              }
+              if (!found.steps) return [];
+              if (typeof found.steps === "string") {
+                try { return JSON.parse(found.steps); } catch (e) { return []; }
+              }
+              if (Array.isArray(found.steps)) return found.steps;
+              return [];
+            })();
+            setCompletedSteps(new Array(foundSteps.length).fill(found.completed));
           } else {
-            setErrorMsg("Không tìm thấy bài học này trong danh sách hôm nay.");
+            setErrorMsg("Không tìm thấy bài học này.");
           }
         } else {
           setErrorMsg("Không thể kết nối đến dữ liệu bài học.");
@@ -318,16 +419,545 @@ export default function LessonDetailPage({
     }
   };
 
+  const handleCliSubmit = (cmd: string) => {
+    const trimmed = cmd.trim();
+    if (!trimmed) return;
+
+    setCliRunning(true);
+    setCliLogs((prev) => [...prev, `$ ${trimmed}`]);
+    setCliInput("");
+
+    setTimeout(() => {
+      let output = "";
+      let stepMatched = false;
+
+      if (activeStepIndex === 0 && trimmed === "git init") {
+        output = "Initialized empty Git repository in C:/Users/vandoan/projects/app/.git/";
+        stepMatched = true;
+      } else if (activeStepIndex === 1 && (trimmed === "git commit" || trimmed.startsWith("git commit") || trimmed === "git add .")) {
+        output = "[main (root-commit) a1b2c3d] initial commit\n 3 files changed, 45 insertions(+)\n create mode 100644 package.json";
+        stepMatched = true;
+      } else if (activeStepIndex === 2 && (trimmed === "git push" || trimmed.startsWith("git push"))) {
+        output = "Enumerating objects: 3, done.\nWriting objects: 100% (3/3), 320 bytes, done.\nTo https://github.com/vandoan/app.git\n * [new branch]      main -> main";
+        stepMatched = true;
+      } else {
+        output = `bash: ${trimmed}: command not found. Gợi ý: Hãy nhập đúng lệnh hướng dẫn ở bước này.`;
+      }
+
+      setCliLogs((prev) => [...prev, ...output.split("\n")]);
+      setCliRunning(false);
+
+      if (stepMatched) {
+        const nextCompleted = [...completedSteps];
+        nextCompleted[activeStepIndex] = true;
+        setCompletedSteps(nextCompleted);
+        showToast(`🚀 Đã hoàn thành Bước ${activeStepIndex + 1}!`);
+
+        const isAllDoneNow = nextCompleted.every(Boolean);
+        if (isAllDoneNow) {
+          setShowConfetti(true);
+          setTimeout(() => setShowConfetti(false), 5000);
+          showToast("🎉 Tuyệt vời! Bạn đã hoàn thành xuất sắc tất cả các bước thực hành!");
+        }
+      }
+    }, 800);
+  };
+
+  const handleCliAutoRun = (key: string) => {
+    let targetCmd = "";
+    if (key === "git_init") targetCmd = "git init";
+    else if (key === "git_commit") targetCmd = "git commit -m \"initial commit\"";
+    else if (key === "git_push") targetCmd = "git push -u origin main";
+
+    if (targetCmd) {
+      setCliRunning(true);
+      let currentText = "";
+      let idx = 0;
+      const interval = setInterval(() => {
+        if (idx < targetCmd.length) {
+          currentText += targetCmd[idx];
+          setCliInput(currentText);
+          idx++;
+        } else {
+          clearInterval(interval);
+          setTimeout(() => {
+            handleCliSubmit(targetCmd);
+          }, 300);
+        }
+      }, 50);
+    }
+  };
+
+  const [screenshotShake, setScreenshotShake] = useState(false);
+
+  const renderScreenshotHotspot = (imageUrl: string, hotspotX?: number, hotspotY?: number, stepTitle?: string) => {
+    const x = hotspotX !== undefined ? hotspotX : 50;
+    const y = hotspotY !== undefined ? hotspotY : 50;
+
+    const handleImageClick = (e: React.MouseEvent<HTMLDivElement>) => {
+      const rect = e.currentTarget.getBoundingClientRect();
+      const clickX = ((e.clientX - rect.left) / rect.width) * 100;
+      const clickY = ((e.clientY - rect.top) / rect.height) * 100;
+
+      const dx = clickX - x;
+      const dy = clickY - y;
+      const distance = Math.sqrt(dx * dx + dy * dy);
+
+      if (distance <= 8) {
+        const nextCompleted = [...completedSteps];
+        nextCompleted[activeStepIndex] = true;
+        setCompletedSteps(nextCompleted);
+        showToast("🎉 Bấm chính xác! +10 XP");
+        
+        const isAllDoneNow = nextCompleted.every(Boolean);
+        if (isAllDoneNow) {
+          setShowConfetti(true);
+          setTimeout(() => setShowConfetti(false), 5000);
+          showToast("🎉 Tuyệt vời! Bạn đã hoàn thành xuất sắc tất cả các bước thực hành!");
+        } else {
+          setTimeout(() => {
+            if (activeStepIndex < completedSteps.length - 1) {
+              setActiveStepIndex(prev => prev + 1);
+            }
+          }, 800);
+        }
+      } else {
+        setScreenshotShake(true);
+        setTimeout(() => setScreenshotShake(false), 500);
+        showToast("❌ Sai vị trí rồi! Hãy nhấp đúng vị trí vòng tròn gợi ý phát sáng trên hình.");
+      }
+    };
+
+    return (
+      <div className="space-y-2 select-none">
+        <div className="text-[10px] text-slate-500 dark:text-slate-400 italic">
+          🎯 Hãy nhấp chuột vào đúng vị trí cần thực hiện (vòng tròn màu đỏ nhấp nháy) trên ảnh chụp màn hình dưới đây:
+        </div>
+        <div 
+          onClick={handleImageClick}
+          className={`relative border border-[#D5CFC5]/85 dark:border-slate-800 rounded-2xl overflow-hidden shadow-lg bg-[#2c2c2c] cursor-pointer transition-all duration-300 max-w-2xl mx-auto ${screenshotShake ? "animate-shake" : ""}`}
+        >
+          <img 
+            src={imageUrl} 
+            alt={stepTitle || "Hướng dẫn thao tác"} 
+            className="w-full h-auto object-contain select-none pointer-events-none opacity-90 max-h-[350px]"
+          />
+
+          <div 
+            className="absolute -translate-x-1/2 -translate-y-1/2 flex items-center justify-center pointer-events-none"
+            style={{ left: `${x}%`, top: `${y}%` }}
+          >
+            {/* Pulsating dashed outline box (hotspot boundary) */}
+            <div className="h-9 w-9 border-2 border-[#F24E1E] border-dashed rounded-xl bg-[#F24E1E]/10 animate-pulse flex items-center justify-center" />
+
+            {/* Pointing SVG Arrow (curved pointing up-left to the boundary center) */}
+            <svg 
+              className="absolute pointer-events-none select-none text-[#F24E1E]"
+              style={{ 
+                left: 'calc(100% - 10px)', 
+                top: 'calc(100% - 10px)', 
+                width: '28px', 
+                height: '28px' 
+              }} 
+              viewBox="0 0 24 24" 
+              fill="none" 
+              stroke="currentColor" 
+              strokeWidth="3.5" 
+              strokeLinecap="round" 
+              strokeLinejoin="round"
+            >
+              <path d="M20 20 C 16 15, 12 11, 4 4" />
+              <polyline points="4 9 4 4 9 4" />
+            </svg>
+
+            {/* Sleek message badge at the end of arrow */}
+            <div 
+              className="absolute bg-[#F24E1E] text-white text-[9px] font-extrabold px-2.5 py-1 rounded-xl shadow-md border border-red-500/20 whitespace-nowrap"
+              style={{
+                left: 'calc(100% + 14px)',
+                top: 'calc(100% + 14px)'
+              }}
+            >
+              BẤM VÀO ĐÂY
+            </div>
+          </div>
+        </div>
+        
+        <style dangerouslySetInnerHTML={{ __html: `
+          @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            20%, 60% { transform: translateX(-4px); }
+            40%, 80% { transform: translateX(4px); }
+          }
+          .animate-shake {
+            animation: shake 0.4s ease-in-out;
+          }
+        `}} />
+      </div>
+    );
+  };
+
+  const renderMockAppCanvas = (appType: string, actionKey: string) => {
+    if (appType === "figma") {
+      return (
+        <div className="border border-[#EBE6DD] dark:border-slate-800 rounded-2xl overflow-hidden shadow-md bg-[#FAF9F6] dark:bg-slate-950 font-sans select-none">
+          {/* Figma header toolbar bar */}
+          <div className="bg-[#2c2c2c] text-[#dedede] h-10 px-4 flex items-center justify-between text-[11px] font-medium border-b border-[#1e1e1e]">
+            <div className="flex items-center gap-3.5">
+              {/* Figma logo */}
+              <div className="flex gap-0.5">
+                <span className="w-1.5 h-1.5 bg-[#F24E1E] rounded-full" />
+                <span className="w-1.5 h-1.5 bg-[#FF7262] rounded-full" />
+                <span className="w-1.5 h-1.5 bg-[#A259FF] rounded-full" />
+              </div>
+              
+              {/* Tool icons */}
+              <div className="flex items-center gap-2">
+                <span className={`p-1 rounded cursor-pointer ${figmaTool === "move" ? "bg-indigo-650 text-white" : "hover:bg-white/10 text-slate-400"}`} onClick={() => setFigmaTool("move")}>👤</span>
+                {/* Frame tool cursor indicator red hotspot! */}
+                <div className="relative">
+                  <span 
+                    onClick={() => {
+                      setFigmaTool("frame");
+                      if (actionKey === "frame_tool") {
+                        const nextCompleted = [...completedSteps];
+                        nextCompleted[0] = true;
+                        setCompletedSteps(nextCompleted);
+                        showToast("🎉 Đã chọn công cụ Frame thành công! Nhấp chuột vào Canvas để vẽ.");
+                        
+                        const isAllDoneNow = nextCompleted.every(Boolean);
+                        if (isAllDoneNow) {
+                          setShowConfetti(true);
+                          setTimeout(() => setShowConfetti(false), 5000);
+                          showToast("🎉 Tuyệt vời! Bạn đã hoàn thành xuất sắc tất cả các bước thực hành!");
+                        }
+                      }
+                    }}
+                    className={`p-1.5 rounded text-xs block cursor-pointer transition ${figmaTool === "frame" ? "bg-indigo-600 text-white" : "hover:bg-white/10 text-slate-400"}`}
+                  >
+                    #
+                  </span>
+                  {actionKey === "frame_tool" && figmaTool !== "frame" && (
+                    <span className="absolute -top-1 -right-1 flex h-2.5 w-2.5">
+                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                      <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-red-500"></span>
+                    </span>
+                  )}
+                </div>
+                <span className="p-1 rounded hover:bg-white/10 text-slate-400">▢</span>
+                <span className="p-1 rounded hover:bg-white/10 text-slate-400">✎</span>
+                <span className="p-1 rounded hover:bg-white/10 text-slate-400">T</span>
+              </div>
+            </div>
+            <div className="text-[10px] opacity-75">Figma Project: Artboard Design</div>
+            <div className="flex items-center gap-2">
+              <span className="bg-[#18A0FB] text-white px-3 py-1 rounded text-[10px] font-bold">Share</span>
+            </div>
+          </div>
+
+          <div className="flex h-56">
+            {/* Left Layers panel */}
+            <div className="w-1/4 bg-[#2c2c2c] border-r border-[#1e1e1e] text-[#a6a6a6] p-3 text-[10px] space-y-2 select-none">
+              <div className="font-bold text-[9px] uppercase tracking-wider text-slate-500">Layers</div>
+              <div className="space-y-1">
+                {(figmaFramePlaced || actionKey === "select_preset" || actionKey === "border_radius") && (
+                  <div className={`p-1 rounded flex items-center gap-1 ${actionKey === "border_radius" ? "text-white bg-indigo-950/40" : "text-slate-200"}`}>
+                    <span>#</span> iPhone 14 / 15 Pro
+                  </div>
+                )}
+                <div className="pl-3 opacity-60 flex items-center gap-1">
+                  <span>▢</span> Rectangle 1
+                </div>
+              </div>
+            </div>
+
+            {/* Canvas Area */}
+            <div 
+              className={`flex-1 bg-[#1e1e1e] relative flex items-center justify-center p-4 ${figmaTool === "frame" ? "cursor-crosshair" : "cursor-default"}`}
+              onClick={() => {
+                if (figmaTool === "frame" && actionKey === "frame_tool") {
+                  setFigmaFramePlaced(true);
+                  setFigmaTool("move");
+                  showToast("🎉 Đã vẽ xong iPhone Frame!");
+                }
+              }}
+            >
+              {actionKey === "frame_tool" && !figmaFramePlaced ? (
+                <div className="text-[10px] text-slate-500 italic border border-dashed border-slate-700 p-6 rounded text-center">
+                  {figmaTool === "frame" 
+                    ? "Nhấp vào khu vực này để bắt đầu vẽ Frame..."
+                    : "Chọn công cụ # (Frame Tool) ở thanh công cụ phía trên để bắt đầu vẽ..."}
+                </div>
+              ) : (
+                <div className="relative">
+                  {/* Phone frame simulation */}
+                  <div
+                    className="w-28 h-44 border border-slate-700 shadow-xl transition-all duration-300 relative flex flex-col justify-between p-3"
+                    style={{
+                      backgroundColor: figmaFill,
+                      borderRadius: `${figmaRadius}px`
+                    }}
+                  >
+                    <div className="text-[7px] font-mono text-slate-400">iPhone 14 / 15 Pro</div>
+                    <div className="h-full flex items-center justify-center">
+                      <div className="text-[8px] text-slate-400 select-none">App Canvas</div>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Right Design Properties panel */}
+            <div className="w-1/4 bg-[#2c2c2c] border-l border-[#1e1e1e] text-[#b3b3b3] p-3 text-[10px] space-y-3.5 select-none overflow-y-auto">
+              <div className="font-bold text-[9px] uppercase tracking-wider text-slate-500">Design</div>
+              
+              {actionKey === "select_preset" ? (
+                <div className="space-y-2">
+                  <div className="font-bold text-white">Preset Phones</div>
+                  <div className="space-y-1.5">
+                    <div 
+                      onClick={() => {
+                        setFigmaFramePlaced(true);
+                        const nextCompleted = [...completedSteps];
+                        nextCompleted[1] = true;
+                        setCompletedSteps(nextCompleted);
+                        showToast("🎉 Đã chọn preset iPhone 14 / 15 Pro!");
+                        
+                        const isAllDoneNow = nextCompleted.every(Boolean);
+                        if (isAllDoneNow) {
+                          setShowConfetti(true);
+                          setTimeout(() => setShowConfetti(false), 5000);
+                          showToast("🎉 Tuyệt vời! Bạn đã hoàn thành xuất sắc tất cả các bước thực hành!");
+                        }
+                      }}
+                      className="bg-indigo-600 hover:bg-indigo-700 text-white p-1.5 rounded flex items-center justify-between text-[9px] cursor-pointer font-bold relative transition"
+                    >
+                      <span>iPhone 14 / 15 Pro</span>
+                      <span>393 x 852</span>
+                      <span className="absolute -top-1 -left-1 flex h-2 w-2">
+                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                        <span className="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span>
+                      </span>
+                    </div>
+                    <div className="bg-[#1e1e1e]/60 p-1.5 rounded flex items-center justify-between text-[9px] text-slate-400 cursor-not-allowed">
+                      <span>Google Pixel 8</span>
+                      <span>360 x 800</span>
+                    </div>
+                  </div>
+                </div>
+              ) : actionKey === "border_radius" ? (
+                <div className="space-y-2.5">
+                  <div className="space-y-1">
+                    <span className="text-slate-400 block text-[8px] uppercase">Frame properties</span>
+                    <div className="grid grid-cols-2 gap-1.5">
+                      <div className="bg-[#1e1e1e] p-1 rounded text-slate-400">W: 393</div>
+                      <div className="bg-[#1e1e1e] p-1 rounded text-slate-400">H: 852</div>
+                    </div>
+                  </div>
+
+                  <div className="space-y-1.5 relative">
+                    <div className="flex justify-between items-center">
+                      <span className="text-slate-400 block text-[8px] uppercase">Corner Radius</span>
+                      <span className="font-mono text-indigo-400 font-bold">{figmaRadius}px</span>
+                    </div>
+                    <input 
+                      type="range" 
+                      min="0" 
+                      max="40" 
+                      value={figmaRadius}
+                      onChange={(e) => {
+                        const radiusVal = Number(e.target.value);
+                        setFigmaRadius(radiusVal);
+                        if (radiusVal >= 24) {
+                          const nextCompleted = [...completedSteps];
+                          nextCompleted[2] = true;
+                          setCompletedSteps(nextCompleted);
+                          
+                          const isAllDoneNow = nextCompleted.every(Boolean);
+                          if (isAllDoneNow) {
+                            setShowConfetti(true);
+                            setTimeout(() => setShowConfetti(false), 5000);
+                            showToast("🎉 Tuyệt vời! Bạn đã hoàn thành xuất sắc tất cả các bước thực hành!");
+                          }
+                        }
+                      }}
+                      className="w-full accent-indigo-650 cursor-pointer"
+                    />
+                    {figmaRadius < 24 && (
+                      <span className="absolute -top-1.5 -right-1 flex h-2 w-2">
+                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                        <span className="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span>
+                      </span>
+                    )}
+                  </div>
+
+                  <div className="space-y-1.5">
+                    <span className="text-slate-400 block text-[8px] uppercase">Fill (Màu nền)</span>
+                    <div className="flex gap-1.5">
+                      {["#ffffff", "#F9F7F4", "#FAF9F6", "#22252a"].map((color) => (
+                        <button
+                          key={color}
+                          onClick={() => setFigmaFill(color)}
+                          className={`w-4 h-4 rounded border transition cursor-pointer ${figmaFill === color ? "border-indigo-600 scale-110" : "border-slate-700"}`}
+                          style={{ backgroundColor: color }}
+                        />
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <div className="text-[8px] text-slate-500 italic">Chọn một thành phần trên canvas để thiết lập thuộc tính...</div>
+              )}
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    if (appType === "terminal") {
+      return (
+        <div className="border border-slate-800 rounded-2xl overflow-hidden shadow-lg bg-slate-950 text-slate-100 font-mono text-[11px] leading-relaxed relative group">
+          {/* CRT Screen Glow/Curve Overlay */}
+          <div className="absolute inset-0 pointer-events-none bg-gradient-to-b from-white/3 to-transparent opacity-35 z-10" />
+
+          {/* Terminal Title Bar */}
+          <div className="bg-slate-900 px-4 py-2 flex items-center justify-between border-b border-slate-850 select-none">
+            <div className="flex items-center gap-1.5">
+              <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
+              <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
+              <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
+              <span className="text-[10px] text-slate-400 ml-2">Bash Terminal - Git workspace</span>
+            </div>
+            
+            <button
+              type="button"
+              onClick={() => handleCliAutoRun(actionKey)}
+              disabled={cliRunning}
+              className="text-[9px] bg-indigo-600/30 hover:bg-indigo-600/50 text-indigo-300 border border-indigo-500/30 px-2 py-0.5 rounded transition disabled:opacity-50 cursor-pointer"
+            >
+              ⚡ Auto Run
+            </button>
+          </div>
+
+          {/* Terminal Console */}
+          <div className="p-4 space-y-2 h-44 overflow-y-auto flex flex-col justify-between select-text">
+            <div className="space-y-1.5">
+              <div>vandoan@DESKTOP-DAILYLEARN MINGW64 ~/projects/app</div>
+              
+              {/* Output history logs */}
+              {cliLogs.map((log, idx) => (
+                <div key={idx} className={log.startsWith("$") ? "text-indigo-300" : log.includes("command not found") ? "text-rose-400" : "text-emerald-400"}>
+                  {log}
+                </div>
+              ))}
+            </div>
+
+            {/* Input prompt line */}
+            <div className="border-t border-slate-900 pt-2 mt-2">
+              <form
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  handleCliSubmit(cliInput);
+                }}
+                className="flex items-center gap-1.5"
+              >
+                <span className="text-indigo-400">$</span>
+                <input
+                  type="text"
+                  value={cliInput}
+                  onChange={(e) => setCliInput(e.target.value)}
+                  placeholder={`Gõ lệnh cho bước này... (Ví dụ: ${actionKey === "git_init" ? "git init" : actionKey === "git_commit" ? "git commit -m \"initial commit\"" : "git push -u origin main"})`}
+                  className="bg-transparent border-none outline-none text-white font-mono flex-1 caret-indigo-400 placeholder:opacity-35 placeholder:text-[10px]"
+                  disabled={cliRunning}
+                />
+                <button
+                  type="submit"
+                  disabled={cliRunning}
+                  className="bg-indigo-600 hover:bg-indigo-700 text-white px-2.5 py-1 rounded text-[9px] font-bold uppercase tracking-wider transition active:scale-95 disabled:opacity-50 cursor-pointer"
+                >
+                  {cliRunning ? "Chạy..." : "Gửi"}
+                </button>
+              </form>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    return null;
+  };
+
   if (!user) return null;
 
   // Calculate reading checklist progress
+  const stepsList = (() => {
+    if (lesson?.id && FALLBACK_STEPS[lesson.id]) {
+      return FALLBACK_STEPS[lesson.id];
+    }
+    if (!lesson?.steps) return [];
+    if (typeof lesson.steps === "string") {
+      try {
+        return JSON.parse(lesson.steps);
+      } catch (e) {
+        console.error("Failed to parse steps JSON string:", e);
+        return [];
+      }
+    }
+    if (Array.isArray(lesson.steps)) {
+      return lesson.steps;
+    }
+    return [];
+  })();
+
+  const hasSteps = stepsList.length > 0;
+
   const checkedCount = checkedTakeaways.filter(Boolean).length;
   const totalTakeaways = checkedTakeaways.length;
-  const readingProgress = totalTakeaways > 0 ? (checkedCount / totalTakeaways) * 100 : 0;
+
+  const completedStepsCount = completedSteps.filter(Boolean).length;
+  const totalSteps = completedSteps.length;
+
+  const readingProgress = hasSteps
+    ? (totalSteps > 0 ? (completedStepsCount / totalSteps) * 100 : 0)
+    : (totalTakeaways > 0 ? (checkedCount / totalTakeaways) * 100 : 0);
+
   const isQuizUnlocked = readingProgress === 100 || (lesson?.completed || false);
 
   return (
     <div className={`min-h-screen flex flex-col relative overflow-hidden theme-container ${theme}`}>
+      {/* Confetti Celebration Overlay */}
+      {showConfetti && (
+        <div className="fixed inset-0 pointer-events-none z-50 overflow-hidden">
+          {Array.from({ length: 45 }).map((_, i) => {
+            const randomLeft = Math.random() * 100;
+            const randomDelay = Math.random() * 3;
+            const randomDur = 2 + Math.random() * 3;
+            const randomColor = ["#F24E1E", "#FF7262", "#A259FF", "#18A0FB", "#00C676", "#FFD600"][i % 6];
+            return (
+              <div
+                key={i}
+                className="absolute w-2 h-4 rounded-sm animate-fall"
+                style={{
+                  left: `${randomLeft}%`,
+                  backgroundColor: randomColor,
+                  animationDelay: `${randomDelay}s`,
+                  animationDuration: `${randomDur}s`,
+                  top: `-20px`,
+                }}
+              />
+            );
+          })}
+          <style dangerouslySetInnerHTML={{ __html: `
+            @keyframes fall {
+              0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+              100% { transform: translateY(105vh) rotate(360deg); opacity: 0; }
+            }
+            .animate-fall {
+              animation: fall linear infinite;
+            }
+          `}} />
+        </div>
+      )}
       {/* Decorative background shapes */}
       <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] rounded-full bg-indigo-200/10 blur-[100px] pointer-events-none"></div>
       <div className="absolute bottom-[20%] right-[-10%] w-[35%] h-[35%] rounded-full bg-pink-200/15 blur-[120px] pointer-events-none"></div>
@@ -341,34 +971,6 @@ export default function LessonDetailPage({
           <span>←</span> <span className="hidden sm:inline">Quay lại Dashboard</span>
         </Link>
         <div className="flex items-center gap-2">
-          {/* Theme Switcher Dropdown */}
-          <div className="relative group">
-            <button className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border theme-input text-[11px] font-bold transition-all duration-200 hover:scale-[1.03] active:scale-[0.96] cursor-pointer shadow-sm">
-              <span>{theme === "light" ? "☀️ Sáng" : theme === "dark" ? "🌙 Tối" : "📜 Cổ điển"}</span>
-            </button>
-            <div className="absolute right-0 pt-1.5 w-32 opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto transition-all duration-150 z-50">
-              <div className="theme-card border rounded-xl shadow-lg p-1 space-y-1">
-                <button
-                  onClick={() => changeTheme("light")}
-                  className="w-full text-left px-3 py-2 text-xs font-semibold rounded-lg hover:bg-[#F0ECE4]/50 flex items-center gap-1.5 cursor-pointer"
-                >
-                  <span>☀️</span> Sáng
-                </button>
-                <button
-                  onClick={() => changeTheme("dark")}
-                  className="w-full text-left px-3 py-2 text-xs font-semibold rounded-lg hover:bg-slate-150/20 flex items-center gap-1.5 cursor-pointer"
-                >
-                  <span>🌙</span> Tối
-                </button>
-                <button
-                  onClick={() => changeTheme("sepia")}
-                  className="w-full text-left px-3 py-2 text-xs font-semibold rounded-lg hover:bg-slate-150/20 flex items-center gap-1.5 cursor-pointer"
-                >
-                  <span>📜</span> Cổ điển
-                </button>
-              </div>
-            </div>
-          </div>
 
           <button
             onClick={() => setShowFeedbackModal(true)}
@@ -475,8 +1077,13 @@ export default function LessonDetailPage({
                 {!lesson.completed && (
                   <div className="mt-4 pt-4 border-t border-[#EBE6DD]/60 dark:border-slate-800">
                     <div className="flex justify-between items-center text-[10px] font-bold uppercase tracking-wider mb-2 theme-muted">
-                      <span>Tiến độ đọc hiểu bài viết</span>
-                      <span className="font-mono text-xs theme-text">{checkedCount} / {totalTakeaways} ý đã tích chọn</span>
+                      <span>{hasSteps ? "Tiến độ thực hành thao tác" : "Tiến độ đọc hiểu bài viết"}</span>
+                      <span className="font-mono text-xs theme-text">
+                        {hasSteps 
+                          ? `${completedStepsCount} / ${totalSteps} bước đã xong`
+                          : `${checkedCount} / ${totalTakeaways} ý đã tích chọn`
+                        }
+                      </span>
                     </div>
                     <div className="h-2 w-full bg-[#F0ECE4] dark:bg-slate-850 rounded-full overflow-hidden">
                       <div
@@ -487,48 +1094,155 @@ export default function LessonDetailPage({
                   </div>
                 )}
 
-                {/* Takeaways bullet points list */}
-                <div className="space-y-4 pt-4 border-t border-[#EBE6DD] dark:border-slate-800">
-                  <h3 className="text-xs font-bold uppercase tracking-wider theme-muted">
-                    Điểm tóm tắt quan trọng (Tích chọn để đánh dấu đã đọc)
-                  </h3>
-                  <ul className="space-y-3 text-base leading-relaxed font-serif theme-text">
-                    {lesson.summary.map((point, index) => {
-                      const isChecked = checkedTakeaways[index];
-                      return (
-                        <li
-                          key={index}
-                          onClick={() => {
-                            if (lesson.completed) return; // lock if completed
-                            const nextChecked = [...checkedTakeaways];
-                            nextChecked[index] = !nextChecked[index];
-                            setCheckedTakeaways(nextChecked);
-                          }}
-                          className={`flex items-start gap-4 p-4 rounded-2xl border transition-all duration-200 cursor-pointer hover:scale-[1.01] active:scale-[0.99] ${
-                            isChecked 
-                              ? "bg-indigo-500/10 border-indigo-500/50" 
-                              : "theme-card border hover:bg-indigo-500/5"
-                          }`}
-                        >
+                {hasSteps ? (
+                  /* Render Interactive App Steps slide deck! */
+                  <div className="space-y-6 pt-6 border-t border-[#EBE6DD] dark:border-slate-800">
+                    {/* Step selection tabs */}
+                    <div className="flex flex-wrap gap-2">
+                      {stepsList.map((step: any, idx: number) => {
+                        const isDone = completedSteps[idx];
+                        const isActive = idx === activeStepIndex;
+                        return (
                           <button
-                            type="button"
-                            disabled={lesson.completed}
-                            className={`h-6 w-6 rounded-lg border flex items-center justify-center text-xs font-bold shrink-0 transition-all duration-150 active:scale-90 ${
-                              isChecked
-                                ? "bg-indigo-600 border-indigo-600 text-white"
-                                : "bg-white border-[#D5CFC5] text-slate-400"
+                            key={idx}
+                            onClick={() => setActiveStepIndex(idx)}
+                            className={`px-3.5 py-2 rounded-xl text-xs font-bold transition duration-200 cursor-pointer ${
+                              isActive
+                                ? "bg-indigo-600 text-white shadow-sm"
+                                : isDone
+                                ? "bg-emerald-50 text-emerald-800 border border-emerald-250 dark:bg-emerald-950/20 dark:text-emerald-300 dark:border-emerald-900"
+                                : "bg-[#FAF8F5] border border-[#EBE6DD] text-slate-500 hover:bg-[#F9F7F4] dark:bg-slate-900 dark:border-slate-800"
                             }`}
                           >
-                            {isChecked ? "✓" : index + 1}
+                            Bước {step.stepNumber} {isDone ? "✓" : ""}
                           </button>
-                          <span className={`pt-0.5 select-none leading-relaxed text-sm ${isChecked ? "line-through text-slate-400" : ""}`}>
-                            {point}
-                          </span>
-                        </li>
+                        );
+                      })}
+                    </div>
+
+                    {/* Step details card */}
+                    {(() => {
+                      const currentStep = stepsList[activeStepIndex];
+                      if (!currentStep) return null;
+                      const isStepDone = completedSteps[activeStepIndex];
+
+                      return (
+                        <div className="space-y-5">
+                          <div className="space-y-1">
+                            <h3 className="text-sm font-serif font-bold text-slate-850 dark:text-slate-200 flex items-center gap-2">
+                              <span className="h-5 w-5 rounded-full bg-indigo-100 dark:bg-indigo-950/40 text-indigo-700 dark:text-indigo-300 flex items-center justify-center text-[10px] font-bold">
+                                {currentStep.stepNumber}
+                              </span>
+                              {currentStep.title}
+                            </h3>
+                            <p className="text-xs text-[#5C554B] dark:text-slate-350 leading-relaxed font-sans whitespace-pre-line bg-[#FAF8F5]/80 dark:bg-slate-900/60 p-4 border border-[#EBE6DD] dark:border-slate-800 rounded-2xl">
+                              {currentStep.instruction}
+                            </p>
+                          </div>
+
+                          {/* Render Mock Application Screen or Screenshot Hotspot! */}
+                          {currentStep.imageUrl ? (
+                            renderScreenshotHotspot(currentStep.imageUrl, currentStep.hotspotX, currentStep.hotspotY, currentStep.title)
+                          ) : (
+                            renderMockAppCanvas(currentStep.appType, currentStep.actionKey)
+                          )}
+
+                          {/* Complete Step button */}
+                          <div className="flex justify-between items-center pt-2">
+                            <div className="flex gap-2">
+                              <button
+                                disabled={activeStepIndex === 0}
+                                onClick={() => setActiveStepIndex(activeStepIndex - 1)}
+                                className="px-3.5 py-2 rounded-xl text-xs font-bold border border-[#D5CFC5] text-slate-500 disabled:opacity-30 hover:bg-[#F9F7F4] dark:border-slate-800 cursor-pointer"
+                              >
+                                ← Trước đó
+                              </button>
+                              <button
+                                disabled={activeStepIndex === stepsList.length - 1}
+                                onClick={() => setActiveStepIndex(activeStepIndex + 1)}
+                                className="px-3.5 py-2 rounded-xl text-xs font-bold border border-[#D5CFC5] text-slate-500 disabled:opacity-30 hover:bg-[#F9F7F4] dark:border-slate-800 cursor-pointer"
+                              >
+                                Tiếp theo →
+                              </button>
+                            </div>
+
+                            <button
+                              onClick={() => {
+                                const nextCompleted = [...completedSteps];
+                                const wasCompletedBefore = nextCompleted[activeStepIndex];
+                                nextCompleted[activeStepIndex] = !wasCompletedBefore;
+                                setCompletedSteps(nextCompleted);
+
+                                const isAllDoneNow = nextCompleted.every(Boolean);
+                                if (isAllDoneNow && !wasCompletedBefore) {
+                                  setShowConfetti(true);
+                                  setTimeout(() => setShowConfetti(false), 5000);
+                                  showToast("🎉 Tuyệt vời! Bạn đã hoàn thành xuất sắc tất cả các bước thực hành!");
+                                } else {
+                                  showToast(
+                                    !wasCompletedBefore
+                                      ? `Đã đánh dấu hoàn thành Bước ${currentStep.stepNumber}!`
+                                      : `Đã bỏ đánh dấu Bước ${currentStep.stepNumber}.`
+                                  );
+                                }
+                              }}
+                              className={`px-4.5 py-2.5 rounded-xl text-xs font-bold shadow-sm transition duration-200 cursor-pointer active:scale-95 flex items-center gap-1.5 ${
+                                isStepDone
+                                  ? "bg-emerald-50 text-emerald-800 border border-emerald-250 hover:bg-emerald-100"
+                                  : "bg-indigo-600 hover:bg-indigo-700 text-white"
+                              }`}
+                            >
+                              {isStepDone ? "✓ Đã hoàn thành" : "Xác nhận đã làm bước này"}
+                            </button>
+                          </div>
+                        </div>
                       );
-                    })}
-                  </ul>
-                </div>
+                    })()}
+                  </div>
+                ) : (
+                  /* Original takeaways bullet points list */
+                  <div className="space-y-4 pt-4 border-t border-[#EBE6DD] dark:border-slate-800">
+                    <h3 className="text-xs font-bold uppercase tracking-wider theme-muted">
+                      Điểm tóm tắt quan trọng (Tích chọn để đánh dấu đã đọc)
+                    </h3>
+                    <ul className="space-y-3 text-base leading-relaxed font-serif theme-text">
+                      {lesson.summary.map((point, index) => {
+                        const isChecked = checkedTakeaways[index];
+                        return (
+                          <li
+                            key={index}
+                            onClick={() => {
+                              if (lesson.completed) return; // lock if completed
+                              const nextChecked = [...checkedTakeaways];
+                              nextChecked[index] = !nextChecked[index];
+                              setCheckedTakeaways(nextChecked);
+                            }}
+                            className={`flex items-start gap-4 p-4 rounded-2xl border transition-all duration-200 cursor-pointer hover:scale-[1.01] active:scale-[0.99] ${
+                              isChecked 
+                                ? "bg-indigo-500/10 border-indigo-500/50" 
+                                : "theme-card border hover:bg-indigo-500/5"
+                            }`}
+                          >
+                            <button
+                              type="button"
+                              disabled={lesson.completed}
+                              className={`h-6 w-6 rounded-lg border flex items-center justify-center text-xs font-bold shrink-0 transition-all duration-150 active:scale-90 ${
+                                isChecked
+                                  ? "bg-indigo-600 border-indigo-600 text-white"
+                                  : "bg-white border-[#D5CFC5] text-slate-400"
+                              }`}
+                            >
+                              {isChecked ? "✓" : index + 1}
+                            </button>
+                            <span className={`pt-0.5 select-none leading-relaxed text-sm ${isChecked ? "line-through text-slate-400" : ""}`}>
+                              {point}
+                            </span>
+                          </li>
+                        );
+                      })}
+                    </ul>
+                  </div>
+                )}
 
                 {/* Actionable Step widget */}
                 <div className="rounded-2xl border border-amber-500/20 bg-amber-500/5 p-5 space-y-2 shadow-sm mt-8">

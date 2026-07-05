@@ -294,8 +294,120 @@ const LESSONS = [
       }
     ]
   },
+  // APPLICATION PRACTICE TOPIC
+  {
+    title: "Thực hành khởi tạo Git & GitHub",
+    tags: ["Tech"],
+    sourceDomain: "github.com",
+    summary: [
+      "Lệnh git init dùng để khởi tạo một local repository mới.",
+      "Lệnh git commit ghi lại các thay đổi của bạn kèm thông điệp rõ ràng.",
+      "Lệnh git push đẩy lịch sử code cục bộ lên máy chủ đám mây GitHub."
+    ],
+    actionableStep: "Mở Terminal và gõ 'git init' để bắt đầu quản lý phiên bản mã nguồn của bạn.",
+    level: "Beginner",
+    status: "PUBLISHED" as const,
+    steps: [
+      {
+        stepNumber: 1,
+        title: "Khởi tạo Kho chứa cục bộ (git init)",
+        instruction: "Hãy mở ứng dụng Terminal trên máy tính, di chuyển đến thư mục dự án và gõ lệnh sau để khởi tạo Git:\n\n`git init`",
+        appType: "terminal",
+        actionKey: "git_init",
+        imageUrl: "/git_terminal.png",
+        hotspotX: 25.5,
+        hotspotY: 42.0,
+        hotspotRadius: 6
+      },
+      {
+        stepNumber: 2,
+        title: "Theo dõi tệp tin và Đóng gói (git commit)",
+        instruction: "Sử dụng lệnh sau để thêm tất cả các tệp thay đổi vào vùng chờ (Staging Area), sau đó đóng gói chúng kèm thông điệp:\n\n`git add .`  \n`git commit -m 'initial commit'`",
+        appType: "terminal",
+        actionKey: "git_commit",
+        imageUrl: "/git_terminal.png",
+        hotspotX: 42.5,
+        hotspotY: 55.0,
+        hotspotRadius: 6
+      },
+      {
+        stepNumber: 3,
+        title: "Đẩy mã nguồn lên GitHub (git push)",
+        instruction: "Liên kết kho chứa cục bộ với kho chứa từ xa trên GitHub và đẩy mã nguồn lên nhánh chính (main):\n\n`git remote add origin <url>`  \n`git push -u origin main`",
+        appType: "terminal",
+        actionKey: "git_push",
+        imageUrl: "/git_terminal.png",
+        hotspotX: 68.0,
+        hotspotY: 72.0,
+        hotspotRadius: 6
+      }
+    ],
+    quizzes: [
+      {
+        question: "Lệnh nào được dùng để kiểm tra trạng thái thay đổi của các tệp tin trong thư mục Git?",
+        options: ["git init", "git status", "git commit", "git push"],
+        correctAnswer: "git status",
+        explanation: "Lệnh 'git status' hiển thị trạng thái của các tệp đã được đưa vào staging area hoặc chưa được theo dõi bởi Git."
+      }
+    ]
+  },
+  {
+    title: "Thiết kế Frame đầu tiên trên Figma",
+    tags: ["Design"],
+    sourceDomain: "figma.com",
+    summary: [
+      "Frame trong Figma là vùng chứa bố cục (Artboard) chứa các thành phần thiết kế.",
+      "Phím tắt F mở nhanh công cụ chọn kích thước Frame chuẩn ở bảng điều khiển bên phải.",
+      "Sử dụng Auto Layout để thiết kế giao diện tự động căn lề và co giãn linh hoạt."
+    ],
+    actionableStep: "Mở Figma, tạo một file mới và vẽ một Frame iPhone 14 Pro Max chuẩn.",
+    level: "Beginner",
+    status: "PUBLISHED" as const,
+    steps: [
+      {
+        stepNumber: 1,
+        title: "Chọn Công cụ vẽ Frame",
+        instruction: "Nhấp chuột vào biểu tượng **Frame** trên thanh công cụ góc trái phía trên hoặc nhấn phím tắt **F** để kích hoạt chế độ vẽ vùng chứa.",
+        appType: "figma",
+        actionKey: "frame_tool",
+        imageUrl: "/figma_preset.png",
+        hotspotX: 18.0,
+        hotspotY: 22.5,
+        hotspotRadius: 5
+      },
+      {
+        stepNumber: 2,
+        title: "Chọn Kích thước Thiết bị chuẩn",
+        instruction: "Tại bảng tùy chọn xuất hiện ở menu bên phải, nhấp chọn mục **Phone** và chọn kích thước **iPhone 14 / 15 Pro** để tự động tạo kích thước Canvas chuẩn.",
+        appType: "figma",
+        actionKey: "select_preset",
+        imageUrl: "/figma_preset.png",
+        hotspotX: 82.5,
+        hotspotY: 38.0,
+        hotspotRadius: 5
+      },
+      {
+        stepNumber: 3,
+        title: "Áp dụng Màu nền & Bo góc",
+        instruction: "Nhấp chọn Frame vừa tạo, di chuyển sang bảng Fill để đổi màu nền thành `#F9F7F4`, đồng thời thiết lập Corner Radius (bo góc) bằng `24px` ở bảng Design.",
+        appType: "figma",
+        actionKey: "border_radius",
+        imageUrl: "/figma_preset.png",
+        hotspotX: 86.0,
+        hotspotY: 64.5,
+        hotspotRadius: 5
+      }
+    ],
+    quizzes: [
+      {
+        question: "Phím tắt nào giúp mở nhanh công cụ vẽ Frame trong Figma?",
+        options: ["F", "V", "R", "T"],
+        correctAnswer: "F",
+        explanation: "Phím tắt F (hoặc A) kích hoạt ngay công cụ Frame Tool giúp vẽ nhanh các vùng chứa thiết kế trong Figma."
+      }
+    ]
+  }
 ];
-
 async function main() {
   console.log("Cleaning Database...");
   await prisma.userLessonProgress.deleteMany({});
