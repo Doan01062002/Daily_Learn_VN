@@ -185,6 +185,26 @@ export default function DashboardPage() {
     setTimeout(() => setToastMessage(null), 4000);
   };
 
+  // Speedrun Leaderboard states
+  const [leaderboardMode, setLeaderboardMode] = useState<"lessons" | "speedrun">("lessons");
+  const [speedrunLeaderboard, setSpeedrunLeaderboard] = useState<any[]>([]);
+  const [loadingSpeedrunLeaderboard, setLoadingSpeedrunLeaderboard] = useState(false);
+
+  const fetchSpeedrunLeaderboard = async () => {
+    setLoadingSpeedrunLeaderboard(true);
+    try {
+      const res = await fetch("/api/challenges/speedrun?action=leaderboard");
+      if (res.ok) {
+        const data = await res.json();
+        setSpeedrunLeaderboard(data.leaderboard || []);
+      }
+    } catch (e) {
+      console.error("Failed to fetch speedrun leaderboard:", e);
+    } finally {
+      setLoadingSpeedrunLeaderboard(false);
+    }
+  };
+
   useEffect(() => {
     const record = localStorage.getItem("daily_speedrun_record");
     if (record) {
@@ -253,6 +273,20 @@ export default function DashboardPage() {
       setSpeedrunFinished(true);
 
       const timeTaken = speedrunTimer;
+      
+      // Submit speedrun score to database
+      fetch("/api/challenges/speedrun", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ score: correct, timeSeconds: timeTaken })
+      })
+      .then(res => {
+        if (res.ok && activeTab === "leaderboard") {
+          fetchSpeedrunLeaderboard();
+        }
+      })
+      .catch(err => console.error("Failed to submit speedrun score:", err));
+
       if (correct === 5) {
         const existingRecord = localStorage.getItem("daily_speedrun_record");
         const existingVal = existingRecord ? JSON.parse(existingRecord) : null;
@@ -488,6 +522,8 @@ export default function DashboardPage() {
       fetchBadgesData();
     } else if (activeTab === "referrals") {
       fetchReferralsData();
+    } else if (activeTab === "leaderboard") {
+      fetchSpeedrunLeaderboard();
     }
   }, [activeTab, user]);
 
@@ -2063,97 +2099,236 @@ export default function DashboardPage() {
             ) : activeTab === "leaderboard" ? (
               /* New spacious Leaderboard View */
               <div className="bg-white/80 border border-[#EBE6DD] rounded-2xl shadow-sm overflow-hidden p-6 space-y-5">
-                <div>
-                  <h3 className="font-serif text-lg font-bold text-slate-800">Bảng xếp hạng thi đua</h3>
-                  <p className="text-xs text-slate-400 mt-0.5">Xếp hạng học tập dựa trên chuỗi ngày học liên tục (Streak) giữa các thành viên.</p>
-                </div>
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between border-b border-[#EBE6DD]/60 pb-4 gap-4">
+                  <div>
+                    <h3 className="font-serif text-lg font-bold text-slate-800">Bảng xếp hạng thi đua</h3>
+                    <p className="text-xs text-slate-400 mt-0.5">Xếp hạng giữa các học viên dựa trên kết quả bài học hoặc tốc độ phản xạ.</p>
+                  </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {/* Highlight Top 3 users in style! */}
-                  {leaderboard.slice(0, 3).map((item, idx) => {
-                    let badgeColor = "from-amber-400 to-yellow-500 text-amber-950";
-                    let placement = "🥇 Quán quân";
-                    if (item.rank === 2) {
-                      badgeColor = "from-slate-350 to-slate-400 text-slate-900";
-                      placement = "🥈 Á quan";
-                    }
-                    if (item.rank === 3) {
-                      badgeColor = "from-amber-600 to-amber-700 text-amber-50";
-                      placement = "🥉 Hạng ba";
-                    }
-
-                    return (
-                      <div key={idx} className={`bg-gradient-to-br ${item.name === user.name ? "from-indigo-50/50 to-purple-50/30 border-indigo-200" : "from-slate-50 to-white/70 border-[#EBE6DD]"} border p-5 rounded-2xl shadow-sm flex flex-col items-center text-center gap-3 relative overflow-hidden`}>
-                        <div className={`absolute top-3 left-3 text-[9px] font-black uppercase tracking-wider bg-gradient-to-r ${badgeColor} px-2.5 py-0.5 rounded-full`}>
-                          {placement}
-                        </div>
-                        {/* eslint-disable-next-line @next/next/no-img-element */}
-                        <img
-                          src={item.avatarUrl || "https://lh3.googleusercontent.com/a/default-user"}
-                          alt={item.name}
-                          className="h-14 w-14 rounded-full border-2 border-white shadow-sm mt-3"
-                        />
-                        <div>
-                          <div className="text-sm font-bold text-slate-800 flex items-center justify-center gap-1">
-                            {item.name}
-                            {item.name === user.name && <span className="text-[8px] bg-emerald-50 text-emerald-700 font-bold px-1 rounded">Bạn</span>}
-                          </div>
-                          <span className="text-[10px] text-slate-400 font-medium block mt-0.5 font-sans">Hoàn thành {item.completedLessons} bài học</span>
-                        </div>
-                        <div className="flex items-center gap-1 font-mono font-bold text-xs text-white bg-gradient-to-r from-orange-500 to-amber-500 px-3 py-1 rounded-full shadow-sm mt-1">
-                          <span>🔥</span>
-                          <span>{item.currentStreak} ngày</span>
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-
-                <div className="border border-[#EBE6DD] rounded-xl overflow-hidden mt-6 bg-white/40">
-                  <div className="overflow-x-auto">
-                    <table className="w-full text-left border-collapse">
-                      <thead>
-                        <tr className="bg-[#FAF8F5]/70 text-[10px] font-bold text-slate-450 uppercase tracking-wider border-b border-[#EBE6DD]">
-                          <th className="py-3.5 px-5">Thứ hạng</th>
-                          <th className="py-3.5 px-5">Thành viên</th>
-                          <th className="py-3.5 px-5">Số bài đã học</th>
-                          <th className="py-3.5 px-5 text-right">Chuỗi Streak</th>
-                        </tr>
-                      </thead>
-                      <tbody className="divide-y divide-slate-100 text-xs">
-                        {leaderboard.map((item, idx) => {
-                          const isCurrentUser = item.name === user.name;
-                          let rankLabel = `${item.rank}`;
-                          if (item.rank === 1) rankLabel = "🥇";
-                          if (item.rank === 2) rankLabel = "🥈";
-                          if (item.rank === 3) rankLabel = "🥉";
-
-                          return (
-                            <tr key={idx} className={`${isCurrentUser ? "bg-indigo-50/30" : "hover:bg-[#FAF8F5]/50"} transition duration-150`}>
-                              <td className="py-3 px-5 font-bold text-slate-500">{rankLabel}</td>
-                              <td className="py-3 px-5">
-                                <div className="flex items-center gap-2.5">
-                                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                                  <img
-                                    src={item.avatarUrl || "https://lh3.googleusercontent.com/a/default-user"}
-                                    alt={item.name}
-                                    className="h-6.5 w-6.5 rounded-full border border-[#D5CFC5]"
-                                  />
-                                  <span className={`font-bold ${isCurrentUser ? "text-indigo-600" : "text-slate-800"}`}>
-                                    {item.name}
-                                    {isCurrentUser && <span className="ml-1.5 text-[8px] bg-emerald-50 text-emerald-700 font-bold px-1 rounded">Bạn</span>}
-                                  </span>
-                                </div>
-                              </td>
-                              <td className="py-3 px-5 font-medium text-slate-500 font-mono">{item.completedLessons} bài viết</td>
-                              <td className="py-3 px-5 text-right font-mono font-bold text-orange-650">🔥 {item.currentStreak} ngày</td>
-                            </tr>
-                          );
-                        })}
-                      </tbody>
-                    </table>
+                  {/* Leaderboard Mode Switcher */}
+                  <div className="flex gap-1.5 bg-[#FAF8F5]/85 border border-[#EBE6DD]/80 p-1 rounded-2xl max-w-max select-none">
+                    <button
+                      onClick={() => setLeaderboardMode("lessons")}
+                      className={`px-3 py-1.5 rounded-xl text-[10px] font-bold uppercase tracking-wider transition duration-200 cursor-pointer ${
+                        leaderboardMode === "lessons"
+                          ? "bg-white text-slate-800 shadow-sm border border-[#EBE6DD]"
+                          : "text-slate-450 hover:text-slate-700"
+                      }`}
+                    >
+                      📚 Chuỗi Streak
+                    </button>
+                    <button
+                      onClick={() => {
+                        setLeaderboardMode("speedrun");
+                        fetchSpeedrunLeaderboard();
+                      }}
+                      className={`px-3 py-1.5 rounded-xl text-[10px] font-bold uppercase tracking-wider transition duration-200 cursor-pointer ${
+                        leaderboardMode === "speedrun"
+                          ? "bg-white text-slate-800 shadow-sm border border-[#EBE6DD]"
+                          : "text-slate-450 hover:text-slate-700"
+                      }`}
+                    >
+                      ⚡ Speed-Run
+                    </button>
                   </div>
                 </div>
+
+                {leaderboardMode === "speedrun" ? (
+                  loadingSpeedrunLeaderboard ? (
+                    <div className="flex justify-center items-center py-16">
+                      <div className="h-8 w-8 animate-spin rounded-full border-2 border-indigo-500 border-t-transparent"></div>
+                    </div>
+                  ) : speedrunLeaderboard.length === 0 ? (
+                    <div className="text-center py-16 border border-dashed border-[#D5CFC5] rounded-2xl bg-white/40 flex flex-col items-center justify-center p-6 space-y-3">
+                      <span className="text-3xl select-none">⚡</span>
+                      <div className="space-y-1 max-w-xs">
+                        <h3 className="text-sm font-bold text-[#3E3A35]">Chưa có kỷ lục nào</h3>
+                        <p className="text-xs text-slate-400 leading-normal">
+                          Hãy tham gia đấu Speed-Run hôm nay để ghi danh kỷ lục đầu tiên lên bảng xếp hạng!
+                        </p>
+                      </div>
+                    </div>
+                  ) : (
+                    <>
+                      {/* Highlight Top 3 Speedrunners */}
+                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                        {speedrunLeaderboard.slice(0, 3).map((item, idx) => {
+                          let badgeColor = "from-amber-400 to-yellow-500 text-amber-950";
+                          let placement = "🥇 Quán quân";
+                          if (item.rank === 2) {
+                            badgeColor = "from-slate-350 to-slate-400 text-slate-900";
+                            placement = "🥈 Á quan";
+                          }
+                          if (item.rank === 3) {
+                            badgeColor = "from-amber-600 to-amber-700 text-amber-50";
+                            placement = "🥉 Hạng ba";
+                          }
+
+                          return (
+                            <div key={idx} className={`bg-gradient-to-br ${item.name === user.name ? "from-indigo-50/50 to-purple-50/30 border-indigo-200" : "from-slate-50 to-white/70 border-[#EBE6DD]"} border p-5 rounded-2xl shadow-sm flex flex-col items-center text-center gap-3 relative overflow-hidden`}>
+                              <div className={`absolute top-3 left-3 text-[9px] font-black uppercase tracking-wider bg-gradient-to-r ${badgeColor} px-2.5 py-0.5 rounded-full`}>
+                                {placement}
+                              </div>
+                              {/* eslint-disable-next-line @next/next/no-img-element */}
+                              <img
+                                src={item.avatarUrl || "https://lh3.googleusercontent.com/a/default-user"}
+                                alt={item.name}
+                                className="h-14 w-14 rounded-full border-2 border-white shadow-sm mt-3"
+                              />
+                              <div>
+                                <div className="text-sm font-bold text-slate-800 flex items-center justify-center gap-1">
+                                  {item.name}
+                                  {item.name === user.name && <span className="text-[8px] bg-emerald-50 text-emerald-700 font-bold px-1 rounded">Bạn</span>}
+                                </div>
+                                <span className="text-[10px] text-slate-400 font-medium block mt-0.5 font-sans">Đúng {item.score}/5 câu</span>
+                              </div>
+                              <div className="flex items-center gap-1 font-mono font-bold text-xs text-white bg-gradient-to-r from-orange-500 to-amber-500 px-3 py-1 rounded-full shadow-sm mt-1">
+                                <span>⏱️</span>
+                                <span>{item.time} giây</span>
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+
+                      {/* Speedrun leaderboard table */}
+                      <div className="border border-[#EBE6DD] rounded-xl overflow-hidden mt-6 bg-white/40">
+                        <div className="overflow-x-auto">
+                          <table className="w-full text-left border-collapse">
+                            <thead>
+                              <tr className="bg-[#FAF8F5]/70 text-[10px] font-bold text-slate-450 uppercase tracking-wider border-b border-[#EBE6DD]">
+                                <th className="py-3.5 px-5">Thứ hạng</th>
+                                <th className="py-3.5 px-5">Thành viên</th>
+                                <th className="py-3.5 px-5">Số câu đúng</th>
+                                <th className="py-3.5 px-5 text-right">Thời gian hoàn thành</th>
+                              </tr>
+                            </thead>
+                            <tbody className="divide-y divide-slate-100 text-xs">
+                              {speedrunLeaderboard.map((item: any, idx: number) => {
+                                const isCurrentUser = item.name === user.name;
+                                let rankLabel = `${item.rank}`;
+                                if (item.rank === 1) rankLabel = "🥇";
+                                if (item.rank === 2) rankLabel = "🥈";
+                                if (item.rank === 3) rankLabel = "🥉";
+
+                                return (
+                                  <tr key={idx} className={`${isCurrentUser ? "bg-indigo-50/30" : "hover:bg-[#FAF8F5]/50"} transition duration-150`}>
+                                    <td className="py-3 px-5 font-bold text-slate-500">{rankLabel}</td>
+                                    <td className="py-3 px-5">
+                                      <div className="flex items-center gap-2.5">
+                                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                                        <img
+                                          src={item.avatarUrl || "https://lh3.googleusercontent.com/a/default-user"}
+                                          alt={item.name}
+                                          className="h-6.5 w-6.5 rounded-full border border-[#D5CFC5]"
+                                        />
+                                        <span className={`font-bold ${isCurrentUser ? "text-indigo-600" : "text-slate-800"}`}>
+                                          {item.name}
+                                          {isCurrentUser && <span className="ml-1.5 text-[8px] bg-emerald-50 text-emerald-700 font-bold px-1 rounded">Bạn</span>}
+                                        </span>
+                                      </div>
+                                    </td>
+                                    <td className="py-3 px-5 font-medium text-slate-500 font-mono">{item.score} / 5 câu đúng</td>
+                                    <td className="py-3 px-5 text-right font-mono font-bold text-orange-650">⚡ {item.time} giây</td>
+                                  </tr>
+                                );
+                              })}
+                            </tbody>
+                          </table>
+                        </div>
+                      </div>
+                    </>
+                  )
+                ) : (
+                  <>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                      {/* Highlight Top 3 users in style! */}
+                      {leaderboard.slice(0, 3).map((item, idx) => {
+                        let badgeColor = "from-amber-400 to-yellow-500 text-amber-950";
+                        let placement = "🥇 Quán quân";
+                        if (item.rank === 2) {
+                          badgeColor = "from-slate-350 to-slate-400 text-slate-900";
+                          placement = "🥈 Á quan";
+                        }
+                        if (item.rank === 3) {
+                          badgeColor = "from-amber-600 to-amber-700 text-amber-50";
+                          placement = "🥉 Hạng ba";
+                        }
+
+                        return (
+                          <div key={idx} className={`bg-gradient-to-br ${item.name === user.name ? "from-indigo-50/50 to-purple-50/30 border-indigo-200" : "from-slate-50 to-white/70 border-[#EBE6DD]"} border p-5 rounded-2xl shadow-sm flex flex-col items-center text-center gap-3 relative overflow-hidden`}>
+                            <div className={`absolute top-3 left-3 text-[9px] font-black uppercase tracking-wider bg-gradient-to-r ${badgeColor} px-2.5 py-0.5 rounded-full`}>
+                              {placement}
+                            </div>
+                            {/* eslint-disable-next-line @next/next/no-img-element */}
+                            <img
+                              src={item.avatarUrl || "https://lh3.googleusercontent.com/a/default-user"}
+                              alt={item.name}
+                              className="h-14 w-14 rounded-full border-2 border-white shadow-sm mt-3"
+                            />
+                            <div>
+                              <div className="text-sm font-bold text-slate-800 flex items-center justify-center gap-1">
+                                {item.name}
+                                {item.name === user.name && <span className="text-[8px] bg-emerald-50 text-emerald-700 font-bold px-1 rounded">Bạn</span>}
+                              </div>
+                              <span className="text-[10px] text-slate-400 font-medium block mt-0.5 font-sans">Hoàn thành {item.completedLessons} bài học</span>
+                            </div>
+                            <div className="flex items-center gap-1 font-mono font-bold text-xs text-white bg-gradient-to-r from-orange-500 to-amber-500 px-3 py-1 rounded-full shadow-sm mt-1">
+                              <span>🔥</span>
+                              <span>{item.currentStreak} ngày</span>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+
+                    <div className="border border-[#EBE6DD] rounded-xl overflow-hidden mt-6 bg-white/40">
+                      <div className="overflow-x-auto">
+                        <table className="w-full text-left border-collapse">
+                          <thead>
+                            <tr className="bg-[#FAF8F5]/70 text-[10px] font-bold text-slate-450 uppercase tracking-wider border-b border-[#EBE6DD]">
+                              <th className="py-3.5 px-5">Thứ hạng</th>
+                              <th className="py-3.5 px-5">Thành viên</th>
+                              <th className="py-3.5 px-5">Số bài đã học</th>
+                              <th className="py-3.5 px-5 text-right">Chuỗi Streak</th>
+                            </tr>
+                          </thead>
+                          <tbody className="divide-y divide-slate-100 text-xs">
+                            {leaderboard.map((item, idx) => {
+                              const isCurrentUser = item.name === user.name;
+                              let rankLabel = `${item.rank}`;
+                              if (item.rank === 1) rankLabel = "🥇";
+                              if (item.rank === 2) rankLabel = "🥈";
+                              if (item.rank === 3) rankLabel = "🥉";
+
+                              return (
+                                <tr key={idx} className={`${isCurrentUser ? "bg-indigo-50/30" : "hover:bg-[#FAF8F5]/50"} transition duration-150`}>
+                                  <td className="py-3 px-5 font-bold text-slate-500">{rankLabel}</td>
+                                  <td className="py-3 px-5">
+                                    <div className="flex items-center gap-2.5">
+                                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                                      <img
+                                        src={item.avatarUrl || "https://lh3.googleusercontent.com/a/default-user"}
+                                        alt={item.name}
+                                        className="h-6.5 w-6.5 rounded-full border border-[#D5CFC5]"
+                                      />
+                                      <span className={`font-bold ${isCurrentUser ? "text-indigo-600" : "text-slate-800"}`}>
+                                        {item.name}
+                                        {isCurrentUser && <span className="ml-1.5 text-[8px] bg-emerald-50 text-emerald-700 font-bold px-1 rounded">Bạn</span>}
+                                      </span>
+                                    </div>
+                                  </td>
+                                  <td className="py-3 px-5 font-medium text-slate-500 font-mono">{item.completedLessons} bài viết</td>
+                                  <td className="py-3 px-5 text-right font-mono font-bold text-orange-650">🔥 {item.currentStreak} ngày</td>
+                                </tr>
+                              );
+                            })}
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                  </>
+                )}
               </div>
             ) : activeTab === "stats" ? (
               /* Expanded Stats & Contribution Heatmap + Timeline combined */

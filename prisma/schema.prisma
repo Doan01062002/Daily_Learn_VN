@@ -69,6 +69,7 @@ model User {
   groupMemberships    GroupMembership[]
   badges              UserBadge[]
   weeklyAttempts      WeeklyChallengeAttempt[]
+  speedrunRecord      SpeedrunRecord?
 }
 
 model Lesson {
@@ -338,4 +339,13 @@ model WeeklyChallengeAttempt {
   completedAt DateTime        @default(now())
 
   @@unique([challengeId, userId])
+}
+
+model SpeedrunRecord {
+  id          String   @id @default(uuid())
+  userId      String   @unique
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  score       Int      // e.g. 0 to 5 (number of correct answers)
+  timeSeconds Float    // e.g. 14.5 seconds
+  createdAt   DateTime @default(now())
 }
