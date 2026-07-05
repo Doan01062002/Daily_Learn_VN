@@ -1848,18 +1848,28 @@ export default function DashboardPage() {
                               {competencies.map((c, i) => {
                                 const { x, y } = getCoordinates(i, Math.max(10, c.progress));
                                 return (
-                                  <circle
-                                    key={i}
-                                    cx={x}
-                                    cy={y}
-                                    r="4"
-                                    fill="#4f46e5"
-                                    stroke="#fff"
-                                    strokeWidth="1.5"
-                                    className="cursor-pointer hover:scale-125 transition-transform"
-                                  >
-                                    <title>{`${c.category}: ${c.progress}%`}</title>
-                                  </circle>
+                                  <g key={i} className="group">
+                                    <circle
+                                      cx={x}
+                                      cy={y}
+                                      r="4"
+                                      fill="#4f46e5"
+                                      stroke="#fff"
+                                      strokeWidth="1.5"
+                                      className="transition-all duration-200 group-hover:scale-[1.35] group-hover:fill-indigo-650"
+                                      style={{ transformOrigin: `${x}px ${y}px` }}
+                                    />
+                                    {/* Large invisible interactive hover area */}
+                                    <circle
+                                      cx={x}
+                                      cy={y}
+                                      r="12"
+                                      fill="transparent"
+                                      className="cursor-pointer"
+                                    >
+                                      <title>{`${c.category}: ${c.progress}%`}</title>
+                                    </circle>
+                                  </g>
                                 );
                               })}
 
