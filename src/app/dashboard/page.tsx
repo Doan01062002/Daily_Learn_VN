@@ -691,6 +691,52 @@ export default function DashboardPage() {
     }
   };
 
+  const renderShimmerSkeletons = () => {
+    return (
+      <div className="space-y-5">
+        {[1, 2].map((i) => (
+          <div
+            key={i}
+            className="rounded-2xl border border-slate-100/80 bg-white/80 p-6 relative overflow-hidden space-y-4 shadow-sm"
+          >
+            {/* Shimmer overlay animation */}
+            <div className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-slate-200/20 to-transparent animate-shimmer" style={{ animation: 'shimmer 1.6s infinite' }} />
+            
+            {/* Tags row skeleton */}
+            <div className="flex gap-2">
+              <div className="h-4.5 w-16 bg-slate-100 rounded-full" />
+              <div className="h-4.5 w-24 bg-slate-150 rounded-full" />
+            </div>
+
+            {/* Title skeleton */}
+            <div className="space-y-2">
+              <div className="h-6.5 w-3/4 bg-slate-100 rounded-md" />
+              <div className="h-6.5 w-1/2 bg-slate-150 rounded-md" />
+            </div>
+
+            {/* Takeaways lines skeleton */}
+            <div className="space-y-2.5 pt-2">
+              <div className="flex items-center gap-2.5">
+                <div className="h-3 w-3 rounded-full bg-slate-100 shrink-0" />
+                <div className="h-3.5 w-5/6 bg-slate-100 rounded-md" />
+              </div>
+              <div className="flex items-center gap-2.5">
+                <div className="h-3 w-3 rounded-full bg-slate-100 shrink-0" />
+                <div className="h-3.5 w-2/3 bg-slate-100 rounded-md" />
+              </div>
+            </div>
+
+            {/* Divider and Footer skeleton */}
+            <div className="flex justify-between items-center pt-4 border-t border-slate-100/50">
+              <div className="h-4.5 w-24 bg-slate-100 rounded-full" />
+              <div className="h-8.5 w-28 bg-slate-150 rounded-xl" />
+            </div>
+          </div>
+        ))}
+      </div>
+    );
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#EEF2F6] via-[#FFFFFF] to-[#F5EFFF] text-slate-800 flex flex-col relative overflow-hidden">
       <style dangerouslySetInnerHTML={{ __html: `
@@ -719,6 +765,27 @@ export default function DashboardPage() {
           color: #3B82F6;
           filter: drop-shadow(0 0 16px rgba(59,130,246,0.9));
         }
+        @keyframes shimmer {
+          100% { transform: translateX(100%); }
+        }
+        @keyframes fade-in-up {
+          0% {
+            opacity: 0;
+            transform: translateY(10px);
+            filter: blur(3px);
+          }
+          100% {
+            opacity: 1;
+            transform: translateY(0);
+            filter: blur(0);
+          }
+        }
+        .animate-shimmer {
+          animation: shimmer 1.6s infinite;
+        }
+        .animate-fade-in-up {
+          animation: fade-in-up 0.35s cubic-bezier(0.23, 1, 0.32, 1) forwards;
+        }
       `}} />
 
       {/* Decorative background shapes for extra depth */}
@@ -743,7 +810,7 @@ export default function DashboardPage() {
         <nav className="hidden md:flex items-center gap-1 bg-slate-100/80 border border-slate-200/60 p-1 rounded-xl select-none">
           <button
             onClick={() => setActiveTab("today")}
-            className={`px-3.5 py-1.5 text-[11px] font-extrabold uppercase tracking-wider rounded-lg transition duration-200 focus:outline-none flex items-center gap-1.5 cursor-pointer ${
+            className={`px-3.5 py-1.5 text-[11px] font-extrabold uppercase tracking-wider rounded-lg transition-all duration-200 hover:scale-[1.03] active:scale-[0.95] focus:outline-none flex items-center gap-1.5 cursor-pointer ${
               activeTab === "today"
                 ? "bg-white text-indigo-600 shadow-sm"
                 : "text-slate-500 hover:text-slate-800"
@@ -754,7 +821,7 @@ export default function DashboardPage() {
           </button>
           <button
             onClick={() => setActiveTab("bookmarks")}
-            className={`px-3.5 py-1.5 text-[11px] font-extrabold uppercase tracking-wider rounded-lg transition duration-200 focus:outline-none flex items-center gap-1.5 cursor-pointer ${
+            className={`px-3.5 py-1.5 text-[11px] font-extrabold uppercase tracking-wider rounded-lg transition-all duration-200 hover:scale-[1.03] active:scale-[0.95] focus:outline-none flex items-center gap-1.5 cursor-pointer ${
               activeTab === "bookmarks"
                 ? "bg-white text-indigo-600 shadow-sm"
                 : "text-slate-500 hover:text-slate-800"
@@ -765,7 +832,7 @@ export default function DashboardPage() {
           </button>
           <button
             onClick={() => setActiveTab("groups")}
-            className={`px-3.5 py-1.5 text-[11px] font-extrabold uppercase tracking-wider rounded-lg transition duration-200 focus:outline-none flex items-center gap-1.5 cursor-pointer ${
+            className={`px-3.5 py-1.5 text-[11px] font-extrabold uppercase tracking-wider rounded-lg transition-all duration-200 hover:scale-[1.03] active:scale-[0.95] focus:outline-none flex items-center gap-1.5 cursor-pointer ${
               activeTab === "groups"
                 ? "bg-white text-indigo-600 shadow-sm"
                 : "text-slate-500 hover:text-slate-800"
@@ -776,7 +843,7 @@ export default function DashboardPage() {
           </button>
           <button
             onClick={() => setActiveTab("leaderboard")}
-            className={`px-3.5 py-1.5 text-[11px] font-extrabold uppercase tracking-wider rounded-lg transition duration-200 focus:outline-none flex items-center gap-1.5 cursor-pointer ${
+            className={`px-3.5 py-1.5 text-[11px] font-extrabold uppercase tracking-wider rounded-lg transition-all duration-200 hover:scale-[1.03] active:scale-[0.95] focus:outline-none flex items-center gap-1.5 cursor-pointer ${
               activeTab === "leaderboard"
                 ? "bg-white text-indigo-600 shadow-sm"
                 : "text-slate-500 hover:text-slate-800"
@@ -787,7 +854,7 @@ export default function DashboardPage() {
           </button>
           <button
             onClick={() => setActiveTab("stats")}
-            className={`px-3.5 py-1.5 text-[11px] font-extrabold uppercase tracking-wider rounded-lg transition duration-200 focus:outline-none flex items-center gap-1.5 cursor-pointer ${
+            className={`px-3.5 py-1.5 text-[11px] font-extrabold uppercase tracking-wider rounded-lg transition-all duration-200 hover:scale-[1.03] active:scale-[0.95] focus:outline-none flex items-center gap-1.5 cursor-pointer ${
               activeTab === "stats"
                 ? "bg-white text-indigo-600 shadow-sm"
                 : "text-slate-500 hover:text-slate-800"
@@ -798,7 +865,7 @@ export default function DashboardPage() {
           </button>
           <button
             onClick={() => setActiveTab("referrals")}
-            className={`px-3.5 py-1.5 text-[11px] font-extrabold uppercase tracking-wider rounded-lg transition duration-200 focus:outline-none flex items-center gap-1.5 cursor-pointer ${
+            className={`px-3.5 py-1.5 text-[11px] font-extrabold uppercase tracking-wider rounded-lg transition-all duration-200 hover:scale-[1.03] active:scale-[0.95] focus:outline-none flex items-center gap-1.5 cursor-pointer ${
               activeTab === "referrals"
                 ? "bg-white text-indigo-600 shadow-sm"
                 : "text-slate-500 hover:text-slate-800"
@@ -1032,7 +1099,7 @@ export default function DashboardPage() {
             <div className="flex md:hidden border-b border-slate-100 gap-5 px-1 pb-1 overflow-x-auto select-none scrollbar-none">
               <button
                 onClick={() => setActiveTab("today")}
-                className={`pb-2 text-xs font-bold uppercase tracking-wider border-b-2 transition duration-200 focus:outline-none shrink-0 ${
+                className={`pb-2 text-xs font-bold uppercase tracking-wider border-b-2 transition-all duration-200 active:scale-[0.95] focus:outline-none shrink-0 ${
                   activeTab === "today"
                     ? "border-indigo-600 text-indigo-600 font-extrabold"
                     : "border-transparent text-slate-450 hover:text-slate-700"
@@ -1042,7 +1109,7 @@ export default function DashboardPage() {
               </button>
               <button
                 onClick={() => setActiveTab("bookmarks")}
-                className={`pb-2 text-xs font-bold uppercase tracking-wider border-b-2 transition duration-200 focus:outline-none shrink-0 ${
+                className={`pb-2 text-xs font-bold uppercase tracking-wider border-b-2 transition-all duration-200 active:scale-[0.95] focus:outline-none shrink-0 ${
                   activeTab === "bookmarks"
                     ? "border-indigo-600 text-indigo-600 font-extrabold"
                     : "border-transparent text-slate-450 hover:text-slate-700"
@@ -1052,7 +1119,7 @@ export default function DashboardPage() {
               </button>
               <button
                 onClick={() => setActiveTab("groups")}
-                className={`pb-2 text-xs font-bold uppercase tracking-wider border-b-2 transition duration-200 focus:outline-none shrink-0 ${
+                className={`pb-2 text-xs font-bold uppercase tracking-wider border-b-2 transition-all duration-200 active:scale-[0.95] focus:outline-none shrink-0 ${
                   activeTab === "groups"
                     ? "border-indigo-600 text-indigo-600 font-extrabold"
                     : "border-transparent text-slate-450 hover:text-slate-700"
@@ -1062,7 +1129,7 @@ export default function DashboardPage() {
               </button>
               <button
                 onClick={() => setActiveTab("leaderboard")}
-                className={`pb-2 text-xs font-bold uppercase tracking-wider border-b-2 transition duration-200 focus:outline-none shrink-0 ${
+                className={`pb-2 text-xs font-bold uppercase tracking-wider border-b-2 transition-all duration-200 active:scale-[0.95] focus:outline-none shrink-0 ${
                   activeTab === "leaderboard"
                     ? "border-indigo-600 text-indigo-600 font-extrabold"
                     : "border-transparent text-slate-450 hover:text-slate-700"
@@ -1072,7 +1139,7 @@ export default function DashboardPage() {
               </button>
               <button
                 onClick={() => setActiveTab("stats")}
-                className={`pb-2 text-xs font-bold uppercase tracking-wider border-b-2 transition duration-200 focus:outline-none shrink-0 ${
+                className={`pb-2 text-xs font-bold uppercase tracking-wider border-b-2 transition-all duration-200 active:scale-[0.95] focus:outline-none shrink-0 ${
                   activeTab === "stats"
                     ? "border-indigo-600 text-indigo-600 font-extrabold"
                     : "border-transparent text-slate-450 hover:text-slate-700"
@@ -1082,7 +1149,7 @@ export default function DashboardPage() {
               </button>
               <button
                 onClick={() => setActiveTab("referrals")}
-                className={`pb-2 text-xs font-bold uppercase tracking-wider border-b-2 transition duration-200 focus:outline-none shrink-0 ${
+                className={`pb-2 text-xs font-bold uppercase tracking-wider border-b-2 transition-all duration-200 active:scale-[0.95] focus:outline-none shrink-0 ${
                   activeTab === "referrals"
                     ? "border-indigo-600 text-indigo-600 font-extrabold"
                     : "border-transparent text-slate-450 hover:text-slate-700"
@@ -1093,7 +1160,8 @@ export default function DashboardPage() {
             </div>
 
             {/* Tab Switcher Content Render */}
-            {activeTab === "today" ? (
+            <div key={activeTab} className="space-y-6 animate-fade-in-up">
+              {activeTab === "today" ? (
               <div className="space-y-5">
                 {/* Progress bar today */}
                 {totalCount > 0 && (
@@ -1149,9 +1217,7 @@ export default function DashboardPage() {
                 )}
 
                 {loadingLessons ? (
-                  <div className="flex justify-center items-center py-16">
-                    <div className="h-8 w-8 animate-spin rounded-full border-2 border-indigo-500 border-t-transparent"></div>
-                  </div>
+                  renderShimmerSkeletons()
                 ) : errorMsg ? (
                   <div className="rounded-xl bg-red-50 p-4 text-center text-xs text-red-600 border border-red-100">
                     {errorMsg}
@@ -1176,12 +1242,19 @@ export default function DashboardPage() {
                       return (
                         <div
                           key={lesson.id}
-                          className={`rounded-2xl border p-6 transition-all duration-300 ease-out relative ${
+                          className={`rounded-[2rem] bg-slate-50/40 p-2 border border-slate-100/50 transition-all duration-300 relative ${
                             lesson.completed
-                              ? "bg-emerald-50/30 border-emerald-100 opacity-95 shadow-none"
-                              : "bg-white/80 border-slate-100 hover:border-indigo-300 hover:shadow-xl hover:shadow-indigo-950/5 hover:-translate-y-1 shadow-sm"
+                              ? "opacity-95 shadow-none"
+                              : "hover:scale-[1.015] hover:shadow-xl hover:shadow-indigo-950/5"
                           }`}
                         >
+                          <div
+                            className={`rounded-[calc(2rem-0.5rem)] p-6 border transition-all duration-300 ${
+                              lesson.completed
+                                ? "bg-emerald-50/30 border-emerald-100/80 shadow-none"
+                                : "bg-white/90 border-slate-100 shadow-[inset_0_1px_1px_rgba(255,255,255,0.2)]"
+                            }`}
+                          >
                           {/* Bookmark Toggle Button */}
                           <button
                             onClick={(e) => {
@@ -1253,16 +1326,17 @@ export default function DashboardPage() {
                             </span>
                             <Link
                               href={`/lessons/${lesson.id}`}
-                              className={`px-4.5 py-2 rounded-lg text-xs font-bold shadow-sm transition-all duration-200 active:translate-y-[1px] focus:outline-none ${
+                              className={`px-4.5 py-2 rounded-lg text-xs font-bold shadow-sm transition-all duration-200 hover:scale-[1.02] active:scale-[0.96] focus:outline-none ${
                                 lesson.completed
                                   ? "bg-emerald-50 text-emerald-800 border border-emerald-250 hover:bg-emerald-100"
-                                  : "bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white hover:scale-[1.02]"
+                                  : "bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white shadow-md shadow-orange-500/10"
                               }`}
                             >
                               {lesson.completed ? "✓ Đã xong" : "Bắt đầu học"}
                             </Link>
                           </div>
                         </div>
+                      </div>
                       );
                     })}
                   </div>
@@ -1534,9 +1608,7 @@ export default function DashboardPage() {
                 </h2>
 
                 {loadingBookmarks ? (
-                  <div className="flex justify-center items-center py-16">
-                    <div className="h-8 w-8 animate-spin rounded-full border-2 border-indigo-500 border-t-transparent"></div>
-                  </div>
+                  renderShimmerSkeletons()
                 ) : filteredBookmarks.length === 0 ? (
                   /* SVG Illustration empty state for bookmarks */
                   <div className="text-center py-16 border border-dashed border-slate-200 rounded-2xl bg-white/40 flex flex-col items-center justify-center p-6 space-y-4">
@@ -1555,12 +1627,19 @@ export default function DashboardPage() {
                     {filteredBookmarks.map((lesson) => (
                       <div
                         key={lesson.id}
-                        className={`rounded-2xl border p-6 transition-all duration-300 ease-out relative ${
+                        className={`rounded-[2rem] bg-slate-50/40 p-2 border border-slate-100/50 transition-all duration-300 relative ${
                           lesson.completed
-                            ? "bg-emerald-50/30 border-emerald-100 opacity-95 shadow-none"
-                            : "bg-white/80 border-slate-100 hover:border-indigo-300 hover:shadow-xl hover:shadow-indigo-950/5 hover:-translate-y-1 shadow-sm"
+                            ? "opacity-95 shadow-none"
+                            : "hover:scale-[1.015] hover:shadow-xl hover:shadow-indigo-950/5"
                         }`}
                       >
+                        <div
+                          className={`rounded-[calc(2rem-0.5rem)] p-6 border transition-all duration-300 ${
+                            lesson.completed
+                              ? "bg-emerald-50/30 border-emerald-100/80 shadow-none"
+                              : "bg-white/90 border-slate-100 shadow-[inset_0_1px_1px_rgba(255,255,255,0.2)]"
+                          }`}
+                        >
                         {/* Bookmark Toggle Button */}
                         <button
                           onClick={(e) => {
@@ -1632,16 +1711,17 @@ export default function DashboardPage() {
                           </span>
                           <Link
                             href={`/lessons/${lesson.id}`}
-                            className={`px-4.5 py-2 rounded-lg text-xs font-bold shadow-sm transition-all duration-200 active:translate-y-[1px] focus:outline-none ${
+                            className={`px-4.5 py-2 rounded-lg text-xs font-bold shadow-sm transition-all duration-200 hover:scale-[1.02] active:scale-[0.96] focus:outline-none ${
                               lesson.completed
                                 ? "bg-emerald-50 text-emerald-800 border border-emerald-250 hover:bg-emerald-100"
-                                : "bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white hover:scale-[1.02]"
+                                : "bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white hover:scale-[1.02] shadow-md shadow-orange-500/10"
                             }`}
                           >
                             {lesson.completed ? "✓ Đã xong" : "Bắt đầu học"}
                           </Link>
                         </div>
                       </div>
+                    </div>
                     ))}
                   </div>
                 )}
@@ -2278,6 +2358,7 @@ export default function DashboardPage() {
                 </div>
               </div>
             )}
+            </div>
           </div>
 
         </div>
