@@ -663,6 +663,24 @@ export default function DashboardPage() {
     return "bg-indigo-600 hover:bg-indigo-700";
   };
 
+  const getLineChartData = () => {
+    const points = [];
+    const now = new Date();
+    for (let i = 29; i >= 0; i--) {
+      const d = new Date(now);
+      d.setDate(d.getDate() - i);
+      const dateStr = d.toLocaleDateString("en-CA", { timeZone: "Asia/Ho_Chi_Minh" });
+      const count = heatmapData[dateStr] || 0;
+      points.push({
+        date: d,
+        dateStr,
+        formattedDate: d.toLocaleDateString("vi-VN", { day: "numeric", month: "short" }),
+        count,
+      });
+    }
+    return points;
+  };
+
   const streakVal = stats?.currentStreak !== undefined ? stats.currentStreak : (user.streak?.currentStreak || 0);
 
   // Leveling system computation
@@ -2362,45 +2380,141 @@ export default function DashboardPage() {
                   </div>
                 </div>
 
-                {/* Heatmap graph Card - stretched beautifully */}
-                <div className="bg-white/80 border border-[#EBE6DD] p-6 rounded-2xl shadow-sm space-y-4">
+                {/* Line Chart graph Card - stretched beautifully */}
+                <div className="bg-white/80 border border-[#EBE6DD] p-6 rounded-2xl shadow-sm space-y-5">
                   <div>
                     <h3 className="font-serif text-sm font-bold text-slate-800">Nhật ký hoạt động</h3>
-                    <p className="text-[10px] text-slate-450 mt-0.5">Tần suất và lịch sử học tập 6 tháng qua của bạn.</p>
+                    <p className="text-[10px] text-slate-450 mt-0.5">Tần suất và lịch sử học tập 30 ngày qua dưới dạng biểu đồ đường.</p>
                   </div>
                   
-                  <div className="flex gap-2 items-end justify-start py-2 overflow-x-auto select-none">
-                    <div className="flex flex-col justify-between text-[8px] text-slate-400 h-[105px] pr-2 pb-1.5 shrink-0">
-                      <span>CN</span>
-                      <span>T3</span>
-                      <span>T5</span>
-                      <span>T7</span>
-                    </div>
-                    <div className="grid grid-flow-col grid-rows-7 gap-[3px] h-[105px]">
-                      {getHeatmapGrid().map((d, index) => {
-                        const dateStr = d.toLocaleDateString("en-CA", { timeZone: "Asia/Ho_Chi_Minh" });
-                        const count = heatmapData[dateStr] || 0;
-                        const formattedDate = d.toLocaleDateString("vi-VN", { day: "numeric", month: "short" });
-                        const titleText = `${formattedDate}: Hoàn thành ${count} bài học`;
-                        
-                        return (
-                          <div
-                            key={index}
-                            className={`h-[11px] w-[11px] rounded-sm transition-all duration-150 cursor-pointer ${getCellColor(d)}`}
-                            title={titleText}
-                          />
-                        );
-                      })}
-                    </div>
-                  </div>
-                  <div className="flex items-center justify-end gap-1.5 text-[8px] text-slate-400 pr-1">
-                    <span>Ít</span>
-                    <div className="h-2 w-2 rounded-sm bg-[#F0ECE4]" />
-                    <div className="h-2 w-2 rounded-sm bg-indigo-200" />
-                    <div className="h-2 w-2 rounded-sm bg-indigo-400" />
-                    <div className="h-2 w-2 rounded-sm bg-indigo-600" />
-                    <span>Nhiều</span>
-                  </div>
+                  {(() => {
+                    const data = getLineChartData();
+                    const maxCount = Math.max(...data.map(d => d.count), 2); // minimum scale peak of 2 lessons
+                    
+                    const width = 500;
+                    const height = 150;
+                    const paddingLeft = 30;
+                    const paddingRight = 15;
+                    const paddingTop = 15;
+                    const paddingBottom = 25;
+                    
+                    const chartWidth = width - paddingLeft - paddingRight;
+                    const chartHeight = height - paddingTop - paddingBottom;
+                    
+                    const points = data.map((item, idx) => {
+                      const x = paddingLeft + (idx / 29) * chartWidth;
+                      const y = height - paddingBottom - (item.count / maxCount) * chartHeight;
+                      return { x, y, item };
+                    });
+                    
+                    const linePath = points.map((p, idx) => `${idx === 0 ? "M" : "L"} ${p.x.toFixed(1)} ${p.y.toFixed(1)}`).join(" ");
+                    const areaPath = points.length > 0 
+                      ? `${linePath} L ${points[points.length - 1].x.toFixed(1)} ${(height - paddingBottom).toFixed(1)} L ${points[0].x.toFixed(1)} ${(height - paddingBottom).toFixed(1)} Z`
+                      : "";
+                      
+                    const xAxisTicks = [0, 7, 14, 21, 29];
+
+                    return (
+                      <div className="w-full overflow-hidden select-none">
+                        <svg viewBox={`0 0 ${width} ${height}`} className="w-full overflow-visible">
+                          <defs>
+                            <linearGradient id="areaGrad" x1="0" y1="0" x2="0" y2="1">
+                              <stop offset="0%" stopColor="#6366f1" stopOpacity="0.22" />
+                              <stop offset="100%" stopColor="#6366f1" stopOpacity="0.00" />
+                            </linearGradient>
+                          </defs>
+
+                          {/* Horizontal Grid lines */}
+                          {[0, 0.5, 1].map((ratio) => {
+                            const y = height - paddingBottom - ratio * chartHeight;
+                            const label = Math.round(ratio * maxCount);
+                            return (
+                              <g key={ratio} className="opacity-40">
+                                <line
+                                  x1={paddingLeft}
+                                  y1={y}
+                                  x2={width - paddingRight}
+                                  y2={y}
+                                  stroke="#EBE6DD"
+                                  strokeWidth="1"
+                                  strokeDasharray="4,4"
+                                />
+                                <text
+                                  x={paddingLeft - 8}
+                                  y={y + 3}
+                                  textAnchor="end"
+                                  className="font-mono text-[8px] fill-slate-400 font-bold"
+                                >
+                                  {label}
+                                </text>
+                              </g>
+                            );
+                          })}
+
+                          {/* Gradient area */}
+                          {areaPath && (
+                            <path d={areaPath} fill="url(#areaGrad)" />
+                          )}
+
+                          {/* Stroke Line */}
+                          {linePath && (
+                            <path
+                              d={linePath}
+                              fill="none"
+                              stroke="#4f46e5"
+                              strokeWidth="2.5"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                            />
+                          )}
+
+                          {/* Data Points / Interactive hover points */}
+                          {points.map((p, idx) => {
+                            const hasActivity = p.item.count > 0;
+                            return (
+                              <g key={idx} className="group">
+                                <circle
+                                  cx={p.x}
+                                  cy={p.y}
+                                  r={hasActivity ? "3.5" : "1.5"}
+                                  fill={hasActivity ? "#4f46e5" : "#EBE6DD"}
+                                  stroke="#ffffff"
+                                  strokeWidth={hasActivity ? "1.5" : "0"}
+                                  className="transition-all duration-200 group-hover:scale-[1.8] group-hover:fill-indigo-700"
+                                />
+                                <circle
+                                  cx={p.x}
+                                  cy={p.y}
+                                  r="10"
+                                  fill="transparent"
+                                  className="cursor-pointer"
+                                >
+                                  <title>{`${p.item.formattedDate}: Hoàn thành ${p.item.count} bài học`}</title>
+                                </circle>
+                              </g>
+                            );
+                          })}
+
+                          {/* X-Axis labels */}
+                          {xAxisTicks.map((idx) => {
+                            const p = points[idx];
+                            if (!p) return null;
+                            return (
+                              <text
+                                key={idx}
+                                x={p.x}
+                                y={height - 5}
+                                textAnchor="middle"
+                                className="font-sans text-[8px] fill-slate-400 font-bold"
+                              >
+                                {p.item.formattedDate}
+                              </text>
+                            );
+                          })}
+                        </svg>
+                      </div>
+                    );
+                  })()}
                 </div>
 
                 {/* Achievements Badges Cabinet */}
