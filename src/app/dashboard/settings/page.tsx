@@ -184,7 +184,7 @@ export default function UserSettingsPage() {
 
         <Link
           href="/dashboard"
-          className="flex items-center gap-1.5 text-xs font-bold text-slate-500 hover:text-slate-800 transition duration-200 border border-slate-200/85 px-3 py-2 rounded-xl hover:bg-slate-50 shadow-sm"
+          className="flex items-center gap-1.5 text-xs font-bold text-slate-500 hover:text-slate-800 transition-all duration-200 border border-slate-200/85 px-3 py-2 rounded-xl hover:bg-slate-50 hover:scale-[1.03] active:scale-[0.96] shadow-sm"
         >
           <span>←</span> <span>Quay lại Dashboard</span>
         </Link>
@@ -237,7 +237,7 @@ export default function UserSettingsPage() {
               {user.role === "STUDENT" && (
                 <Link
                   href="/checkout"
-                  className="w-full block text-center py-2.5 rounded-xl bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white text-xs font-bold transition duration-200 shadow-sm uppercase tracking-wider"
+                  className="w-full block text-center py-2.5 rounded-xl bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white text-xs font-bold transition-all duration-200 hover:scale-[1.02] active:scale-[0.96] shadow-sm uppercase tracking-wider"
                 >
                   Nâng cấp Premium
                 </Link>
@@ -267,8 +267,24 @@ export default function UserSettingsPage() {
             )}
 
             {loading ? (
-              <div className="flex justify-center items-center py-16">
-                <div className="h-8 w-8 animate-spin rounded-full border-2 border-indigo-500 border-t-transparent"></div>
+              <div className="space-y-6 relative overflow-hidden bg-white/50 rounded-2xl p-6 border border-slate-100/50">
+                {/* Shimmer animation keyframe */}
+                <style dangerouslySetInnerHTML={{ __html: `
+                  @keyframes shimmer {
+                    100% { transform: translateX(100%); }
+                  }
+                  .animate-shimmer {
+                    animation: shimmer 1.6s infinite;
+                  }
+                `}} />
+                <div className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-slate-205/20 to-transparent animate-shimmer" style={{ animation: 'shimmer 1.6s infinite' }} />
+                {[1, 2, 3].map((i) => (
+                  <div key={i} className="space-y-2">
+                    <div className="h-4.5 w-24 bg-slate-100 rounded-md" />
+                    <div className="h-10 w-full bg-slate-200/50 rounded-xl" />
+                  </div>
+                ))}
+                <div className="h-12 w-full bg-slate-200 rounded-xl mt-8" />
               </div>
             ) : (
               <form onSubmit={handleSave} className="space-y-6">
@@ -307,7 +323,7 @@ export default function UserSettingsPage() {
                           key={topic.id}
                           type="button"
                           onClick={() => toggleTopic(topic.id)}
-                          className={`flex items-center justify-between p-3.5 rounded-xl border text-xs font-bold transition duration-200 text-left focus:outline-none ${
+                          className={`flex items-center justify-between p-3.5 rounded-xl border text-xs font-bold transition-all duration-200 text-left hover:scale-[1.015] active:scale-[0.98] focus:outline-none ${
                             isSelected
                               ? topic.activeStyle
                               : "bg-white/50 border-slate-200 text-slate-500 hover:border-slate-350"
@@ -335,7 +351,7 @@ export default function UserSettingsPage() {
                           key={level.id}
                           type="button"
                           onClick={() => handleLevelChange(level.id)}
-                          className={`flex flex-col p-3.5 rounded-xl border text-xs text-left transition duration-200 focus:outline-none ${
+                          className={`flex flex-col p-3.5 rounded-xl border text-xs text-left transition-all duration-200 hover:scale-[1.015] active:scale-[0.98] focus:outline-none ${
                             isSelected
                               ? "bg-indigo-500/10 border-indigo-500 text-indigo-600 font-bold"
                               : "bg-white/50 border-slate-200 text-slate-500 hover:border-slate-350"
@@ -362,7 +378,7 @@ export default function UserSettingsPage() {
                           key={com.id}
                           type="button"
                           onClick={() => handleCommitmentChange(com.id)}
-                          className={`flex items-center justify-between p-3.5 rounded-xl border text-xs text-left transition duration-200 focus:outline-none ${
+                          className={`flex items-center justify-between p-3.5 rounded-xl border text-xs text-left transition-all duration-200 hover:scale-[1.015] active:scale-[0.98] focus:outline-none ${
                             isSelected
                               ? "bg-indigo-500/10 border-indigo-500 text-indigo-600 font-bold"
                               : "bg-white/50 border-slate-200 text-slate-500 hover:border-slate-350"
@@ -385,7 +401,7 @@ export default function UserSettingsPage() {
                 <button
                   type="submit"
                   disabled={saveLoading}
-                  className="w-full flex justify-center py-3.5 rounded-xl bg-indigo-650 hover:bg-indigo-750 disabled:opacity-50 text-white text-xs font-bold transition duration-200 shadow-md uppercase tracking-wider"
+                  className="w-full flex justify-center py-3.5 rounded-xl bg-indigo-650 hover:bg-indigo-750 disabled:opacity-50 text-white text-xs font-bold transition-all duration-200 hover:scale-[1.02] active:scale-[0.97] shadow-md uppercase tracking-wider"
                 >
                   {saveLoading ? "Đang lưu thay đổi..." : "Lưu cấu hình & cập nhật bài học"}
                 </button>

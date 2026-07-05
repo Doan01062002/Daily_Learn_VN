@@ -146,7 +146,7 @@ export default function CheckoutPage() {
       <header className="border-b border-[#EBE6DD] bg-white px-6 py-4 flex justify-between items-center shadow-sm">
         <Link
           href="/dashboard"
-          className="flex items-center gap-1.5 text-xs font-bold text-[#8C8375] hover:text-[#3E3A35] transition duration-200"
+          className="flex items-center gap-1.5 text-xs font-bold text-[#8C8375] hover:text-[#3E3A35] transition-all duration-200 hover:scale-[1.03] active:scale-[0.96]"
         >
           <span>←</span> Quay lại Dashboard
         </Link>
@@ -259,7 +259,7 @@ export default function CheckoutPage() {
               <button
                 onClick={handleVerify}
                 disabled={isVerifying}
-                className="w-full py-3.5 rounded-lg bg-[#4E4941] text-white text-sm font-semibold hover:bg-[#3E3A35] transition duration-200 shadow-sm disabled:opacity-50 focus:outline-none"
+                className="w-full py-3.5 rounded-lg bg-[#4E4941] text-white text-sm font-semibold hover:bg-[#3E3A35] transition-all duration-200 hover:scale-[1.02] active:scale-[0.97] shadow-sm disabled:opacity-50 focus:outline-none"
               >
                 {isVerifying ? "Đang đối soát..." : "Tôi đã chuyển khoản thành công"}
               </button>
@@ -287,7 +287,7 @@ export default function CheckoutPage() {
                 <button
                   onClick={handleSandboxSuccess}
                   disabled={sandboxLoading}
-                  className="w-full py-2.5 rounded-xl border border-yellow-300 bg-yellow-100/50 text-xs font-bold text-yellow-900 hover:bg-yellow-100 hover:border-yellow-400 transition duration-200 focus:outline-none"
+                  className="w-full py-2.5 rounded-xl border border-yellow-300 bg-yellow-100/50 text-xs font-bold text-yellow-900 hover:bg-yellow-100 hover:border-yellow-400 transition-all duration-200 hover:scale-[1.02] active:scale-[0.97] focus:outline-none"
                 >
                   {sandboxLoading ? "Đang giả lập..." : "Giả lập Thanh toán Thành công"}
                 </button>

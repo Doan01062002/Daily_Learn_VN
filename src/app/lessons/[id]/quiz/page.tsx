@@ -341,14 +341,14 @@ export default function QuizPage({
       <header className="sticky top-4 z-40 max-w-7xl w-[calc(100%-2rem)] mx-auto rounded-2xl border px-5 py-3 flex justify-between items-center shadow-lg shadow-indigo-950/5 mt-4 transition-all duration-300 theme-header">
         <Link
           href={`/lessons/${lessonId}`}
-          className="flex items-center gap-1.5 text-xs font-bold transition duration-200 border border-slate-200/85 px-3 py-2 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800/50 theme-muted"
+          className="flex items-center gap-1.5 text-xs font-bold transition-all duration-200 border border-slate-200/85 px-3 py-2 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800/50 hover:scale-[1.03] active:scale-[0.96] shadow-sm theme-muted"
         >
           <span>←</span> <span className="hidden sm:inline">Quay lại bài học</span>
         </Link>
         <div className="flex items-center gap-2">
           {/* Theme Switcher Dropdown */}
           <div className="relative group">
-            <button className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border theme-input text-[11px] font-bold transition duration-150 cursor-pointer shadow-sm">
+            <button className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border theme-input text-[11px] font-bold transition-all duration-200 hover:scale-[1.03] active:scale-[0.96] cursor-pointer shadow-sm">
               <span>{theme === "light" ? "☀️ Sáng" : theme === "dark" ? "🌙 Tối" : "📜 Cổ điển"}</span>
             </button>
             <div className="absolute right-0 mt-1.5 w-32 theme-card border rounded-xl shadow-lg opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto transition-all duration-150 z-50 p-1 space-y-1">
@@ -375,7 +375,7 @@ export default function QuizPage({
 
           <button
             onClick={() => setShowFeedbackModal(true)}
-            className="flex items-center gap-1 px-2.5 py-1.5 rounded-xl border border-amber-250 bg-amber-50 hover:bg-amber-100 text-amber-800 text-[11px] font-bold transition duration-150 cursor-pointer"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-amber-250 bg-amber-50 hover:bg-amber-100 text-amber-800 text-[11px] font-bold transition-all duration-200 hover:scale-[1.03] active:scale-[0.96] cursor-pointer shadow-sm"
           >
             📬 Báo cáo lỗi
           </button>
@@ -389,8 +389,17 @@ export default function QuizPage({
       <main className="flex-1 max-w-xl w-full mx-auto px-4 py-8 flex flex-col justify-center z-20">
         
         {loading ? (
-          <div className="flex justify-center items-center py-20 flex-1">
-            <div className="h-8 w-8 animate-spin rounded-full border-2 border-indigo-500 border-t-transparent"></div>
+          <div className="backdrop-blur-md border border-slate-100 rounded-3xl p-6 sm:p-8 shadow-sm space-y-6 relative overflow-hidden bg-white/70 w-full animate-pulse">
+            <div className="h-2 w-full bg-slate-200 rounded-full" />
+            <div className="space-y-2">
+              <div className="h-7 w-5/6 bg-slate-200 rounded-md" />
+              <div className="h-7 w-2/3 bg-slate-200 rounded-md" />
+            </div>
+            <div className="space-y-3 pt-4 border-t border-slate-100">
+              {[1, 2, 3, 4].map((i) => (
+                <div key={i} className="h-14 w-full bg-slate-200 rounded-xl" />
+              ))}
+            </div>
           </div>
         ) : errorMsg && !quizzes.length ? (
           <div className="space-y-4 flex-1">
@@ -436,7 +445,7 @@ export default function QuizPage({
               <button
                 onClick={handleFinishQuiz}
                 disabled={isFinishing}
-                className="w-full text-center py-3.5 rounded-xl bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white text-sm font-bold shadow-md transition duration-200 disabled:opacity-50 focus:outline-none"
+                className="w-full text-center py-3.5 rounded-xl bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white text-sm font-bold shadow-md transition-all duration-200 hover:scale-[1.02] active:scale-[0.97] focus:outline-none"
               >
                 {isFinishing ? "Đang xử lý..." : "Hoàn tất & Về Dashboard"}
               </button>
@@ -504,7 +513,7 @@ export default function QuizPage({
                       key={option}
                       onClick={() => handleSelectOption(option)}
                       disabled={isSubmitted}
-                      className={`w-full text-left px-4 py-4 rounded-xl border transition duration-200 focus:outline-none ${btnStyle}`}
+                      className={`w-full text-left px-4 py-4 rounded-xl border transition-all duration-200 focus:outline-none hover:scale-[1.015] active:scale-[0.98] ${btnStyle}`}
                     >
                       {option}
                     </button>
@@ -542,14 +551,14 @@ export default function QuizPage({
                 <button
                   onClick={handleSubmitAnswer}
                   disabled={!selectedOption || isSubmitting}
-                  className="w-full text-center py-3.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-bold shadow-md shadow-indigo-600/10 transition duration-200 disabled:opacity-50 focus:outline-none"
+                  className="w-full text-center py-3.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-bold shadow-md shadow-indigo-600/10 transition-all duration-200 hover:scale-[1.02] active:scale-[0.97] disabled:opacity-50 focus:outline-none"
                 >
                   {isSubmitting ? "Đang chấm điểm..." : "Nộp đáp án"}
                 </button>
               ) : (
                 <button
                   onClick={handleNext}
-                  className="w-full text-center py-3.5 rounded-xl bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white text-sm font-bold shadow-md transition duration-200 focus:outline-none"
+                  className="w-full text-center py-3.5 rounded-xl bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white text-sm font-bold shadow-md transition-all duration-200 hover:scale-[1.02] active:scale-[0.97] focus:outline-none"
                 >
                   {currentIndex === quizzes.length - 1 ? "Xem kết quả" : "Câu hỏi tiếp theo"}
                 </button>

@@ -488,7 +488,7 @@ export default function LoginPage() {
                   setAgreeToTerms(false);
                   setFieldErrors({});
                 }}
-                className={`py-2 rounded-lg transition ${
+                className={`py-2 rounded-lg transition-all duration-200 hover:scale-[1.02] active:scale-[0.97] ${
                   !isRegisterMode
                     ? "bg-white text-slate-800 shadow-sm"
                     : "text-slate-500 hover:text-indigo-600"
@@ -505,7 +505,7 @@ export default function LoginPage() {
                   setAgreeToTerms(false);
                   setFieldErrors({});
                 }}
-                className={`py-2 rounded-lg transition ${
+                className={`py-2 rounded-lg transition-all duration-200 hover:scale-[1.02] active:scale-[0.97] ${
                   isRegisterMode
                     ? "bg-white text-slate-800 shadow-sm"
                     : "text-slate-500 hover:text-indigo-600"
@@ -570,7 +570,7 @@ export default function LoginPage() {
               <button
                 type="submit"
                 disabled={otpLoading}
-                className="flex w-full justify-center rounded-lg bg-gradient-to-r from-[#4F46E5] to-[#7C3AED] hover:from-[#4338CA] hover:to-[#6D28D9] px-4 py-2.5 text-xs font-semibold text-white shadow-md shadow-indigo-600/10 transition duration-200 disabled:opacity-50 focus:outline-none cursor-pointer"
+                className="flex w-full justify-center rounded-lg bg-gradient-to-r from-[#4F46E5] to-[#7C3AED] hover:from-[#4338CA] hover:to-[#6D28D9] px-4 py-2.5 text-xs font-semibold text-white shadow-md shadow-indigo-600/10 transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 focus:outline-none cursor-pointer"
               >
                 {otpLoading ? "Đang xác thực..." : "Xác thực OTP & Hoàn tất"}
               </button>
@@ -640,7 +640,7 @@ export default function LoginPage() {
               <button
                 type="submit"
                 disabled={otpLoading}
-                className="flex w-full justify-center rounded-lg bg-gradient-to-r from-[#4F46E5] to-[#7C3AED] hover:from-[#4338CA] hover:to-[#6D28D9] px-4 py-2.5 text-xs font-semibold text-white shadow-md shadow-indigo-600/10 transition duration-200 disabled:opacity-50 focus:outline-none cursor-pointer"
+                className="flex w-full justify-center rounded-lg bg-gradient-to-r from-[#4F46E5] to-[#7C3AED] hover:from-[#4338CA] hover:to-[#6D28D9] px-4 py-2.5 text-xs font-semibold text-white shadow-md shadow-indigo-600/10 transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 focus:outline-none cursor-pointer"
               >
                 {otpLoading ? "Đang xác thực..." : "Xác thực OTP & Hoàn tất"}
               </button>
@@ -757,7 +757,7 @@ export default function LoginPage() {
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="flex w-full justify-center rounded-lg bg-gradient-to-r from-[#4F46E5] to-[#7C3AED] hover:from-[#4338CA] hover:to-[#6D28D9] px-4 py-2.5 text-xs font-semibold text-white shadow-md shadow-indigo-600/10 transition duration-200 disabled:opacity-50 focus:outline-none cursor-pointer"
+                className="flex w-full justify-center rounded-lg bg-gradient-to-r from-[#4F46E5] to-[#7C3AED] hover:from-[#4338CA] hover:to-[#6D28D9] px-4 py-2.5 text-xs font-semibold text-white shadow-md shadow-indigo-600/10 transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 focus:outline-none cursor-pointer"
               >
                 {isSubmitting ? "Đang xử lý..." : "Gửi mã đặt lại mật khẩu"}
               </button>
@@ -856,7 +856,7 @@ export default function LoginPage() {
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="flex w-full justify-center rounded-lg bg-gradient-to-r from-[#4F46E5] to-[#7C3AED] hover:from-[#4338CA] hover:to-[#6D28D9] px-4 py-2.5 text-xs font-semibold text-white shadow-md shadow-indigo-600/10 transition duration-200 disabled:opacity-50 focus:outline-none cursor-pointer"
+                className="flex w-full justify-center rounded-lg bg-gradient-to-r from-[#4F46E5] to-[#7C3AED] hover:from-[#4338CA] hover:to-[#6D28D9] px-4 py-2.5 text-xs font-semibold text-white shadow-md shadow-indigo-600/10 transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 focus:outline-none cursor-pointer"
               >
                 {isSubmitting ? "Đang xử lý đăng nhập..." : "Đăng nhập bằng Email"}
               </button>

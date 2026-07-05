@@ -144,7 +144,7 @@ export default function OnboardingPage() {
                     <button
                       key={topic.id}
                       onClick={() => toggleTopic(topic.id)}
-                      className={`w-full text-left px-4 py-3.5 rounded-xl border font-medium transition duration-200 focus:outline-none ${
+                      className={`w-full text-left px-4 py-3.5 rounded-xl border font-medium transition-all duration-200 hover:scale-[1.015] active:scale-[0.98] focus:outline-none ${
                         isSelected
                           ? "bg-[#4E4941] text-white border-[#4E4941]"
                           : "bg-white text-[#4E4941] border-[#D5CFC5] hover:border-[#8C8375] hover:bg-[#F9F7F4]"
@@ -177,7 +177,7 @@ export default function OnboardingPage() {
                     <button
                       key={level.id}
                       onClick={() => setSelectedLevel(level.id)}
-                      className={`w-full text-left px-4 py-4 rounded-xl border transition duration-200 focus:outline-none ${
+                      className={`w-full text-left px-4 py-4 rounded-xl border transition-all duration-200 hover:scale-[1.015] active:scale-[0.98] focus:outline-none ${
                         isSelected
                           ? "bg-[#4E4941] text-white border-[#4E4941]"
                           : "bg-white border-[#D5CFC5] hover:border-[#8C8375] hover:bg-[#F9F7F4]"
@@ -215,7 +215,7 @@ export default function OnboardingPage() {
                     <button
                       key={item.id}
                       onClick={() => setSelectedCommitment(item.id)}
-                      className={`w-full text-left px-4 py-4 rounded-xl border transition duration-200 focus:outline-none ${
+                      className={`w-full text-left px-4 py-4 rounded-xl border transition-all duration-200 hover:scale-[1.015] active:scale-[0.98] focus:outline-none ${
                         isSelected
                           ? "bg-[#4E4941] text-white border-[#4E4941]"
                           : "bg-white border-[#D5CFC5] hover:border-[#8C8375] hover:bg-[#F9F7F4]"
@@ -240,7 +240,7 @@ export default function OnboardingPage() {
               <button
                 onClick={handlePrevStep}
                 disabled={isSubmitting}
-                className="flex-1 py-2.5 rounded-lg border border-[#D5CFC5] text-sm font-semibold text-[#4E4941] hover:bg-[#F9F7F4] transition duration-200 focus:outline-none"
+                className="flex-1 py-2.5 rounded-lg border border-[#D5CFC5] text-sm font-semibold text-[#4E4941] hover:bg-[#F9F7F4] transition-all duration-200 hover:scale-[1.02] active:scale-[0.97] focus:outline-none"
               >
                 Quay lại
               </button>
@@ -249,7 +249,7 @@ export default function OnboardingPage() {
             {step < 3 ? (
               <button
                 onClick={handleNextStep}
-                className="flex-1 py-2.5 rounded-lg bg-[#4E4941] text-sm font-semibold text-white hover:bg-[#3E3A35] transition duration-200 focus:outline-none"
+                className="flex-1 py-2.5 rounded-lg bg-[#4E4941] text-sm font-semibold text-white hover:bg-[#3E3A35] transition-all duration-200 hover:scale-[1.02] active:scale-[0.97] focus:outline-none"
               >
                 Tiếp tục
               </button>
@@ -257,7 +257,7 @@ export default function OnboardingPage() {
               <button
                 onClick={handleFinish}
                 disabled={isSubmitting}
-                className="flex-1 py-2.5 rounded-lg bg-[#4E4941] text-sm font-semibold text-white hover:bg-[#3E3A35] transition duration-200 focus:outline-none disabled:opacity-50"
+                className="flex-1 py-2.5 rounded-lg bg-[#4E4941] text-sm font-semibold text-white hover:bg-[#3E3A35] transition-all duration-200 hover:scale-[1.02] active:scale-[0.97] focus:outline-none disabled:opacity-50"
               >
                 {isSubmitting ? "Đang lưu..." : "Hoàn thành"}
               </button>

@@ -215,14 +215,14 @@ export default function LessonDetailPage({
       <header className="sticky top-4 z-40 max-w-7xl w-[calc(100%-2rem)] mx-auto rounded-2xl border px-5 py-3 flex justify-between items-center shadow-lg shadow-indigo-950/5 mt-4 transition-all duration-300 theme-header">
         <Link
           href="/dashboard"
-          className="flex items-center gap-1.5 text-xs font-bold transition duration-200 border border-slate-200/85 px-3 py-2 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800/50 theme-muted"
+          className="flex items-center gap-1.5 text-xs font-bold transition-all duration-200 border border-slate-200/85 px-3 py-2 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800/50 hover:scale-[1.03] active:scale-[0.96] shadow-sm theme-muted"
         >
           <span>←</span> <span className="hidden sm:inline">Quay lại Dashboard</span>
         </Link>
         <div className="flex items-center gap-2">
           {/* Theme Switcher Dropdown */}
           <div className="relative group">
-            <button className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border theme-input text-[11px] font-bold transition duration-150 cursor-pointer shadow-sm">
+            <button className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border theme-input text-[11px] font-bold transition-all duration-200 hover:scale-[1.03] active:scale-[0.96] cursor-pointer shadow-sm">
               <span>{theme === "light" ? "☀️ Sáng" : theme === "dark" ? "🌙 Tối" : "📜 Cổ điển"}</span>
             </button>
             <div className="absolute right-0 mt-1.5 w-32 theme-card border rounded-xl shadow-lg opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto transition-all duration-150 z-50 p-1 space-y-1">
@@ -249,7 +249,7 @@ export default function LessonDetailPage({
 
           <button
             onClick={() => setShowFeedbackModal(true)}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-amber-250 bg-amber-50 hover:bg-amber-100 text-amber-800 text-[11px] font-bold transition duration-150 cursor-pointer shadow-sm"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-amber-250 bg-amber-50 hover:bg-amber-100 text-amber-800 text-[11px] font-bold transition-all duration-200 hover:scale-[1.03] active:scale-[0.96] cursor-pointer shadow-sm"
           >
             <svg className="w-3.5 h-3.5 text-amber-700" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" /></svg>
             Báo cáo lỗi
@@ -262,8 +262,52 @@ export default function LessonDetailPage({
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 py-8 z-20">
         
         {loading ? (
-          <div className="flex justify-center items-center py-20 flex-1">
-            <div className="h-8 w-8 animate-spin rounded-full border-2 border-indigo-500 border-t-transparent"></div>
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start flex-1 w-full relative overflow-hidden">
+            {/* Shimmer animation style definition keyframe */}
+            <style dangerouslySetInnerHTML={{ __html: `
+              @keyframes shimmer {
+                100% { transform: translateX(100%); }
+              }
+              .animate-shimmer {
+                animation: shimmer 1.6s infinite;
+              }
+            `}} />
+
+            {/* Left Column Shimmer (2/3 width) */}
+            <div className="lg:col-span-2 space-y-6 relative overflow-hidden bg-white/70 border border-slate-100 rounded-3xl p-6 sm:p-8 shadow-sm">
+              <div className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-slate-205/20 to-transparent animate-shimmer" style={{ animation: 'shimmer 1.6s infinite' }} />
+              {/* Meta tags shimmer */}
+              <div className="flex gap-2 mb-4">
+                <div className="h-5 w-16 bg-slate-100 rounded-full" />
+                <div className="h-5 w-24 bg-slate-100 rounded-full" />
+              </div>
+              {/* Title shimmer */}
+              <div className="space-y-2.5">
+                <div className="h-8 w-3/4 bg-slate-100 rounded-md" />
+                <div className="h-8 w-1/2 bg-slate-150 rounded-md" />
+              </div>
+              {/* Takeaways lines shimmer */}
+              <div className="space-y-4 pt-6 border-t border-slate-100">
+                <div className="h-4 w-1/4 bg-slate-100 rounded" />
+                {[1, 2, 3].map((i) => (
+                  <div key={i} className="flex items-start gap-4 p-4 rounded-2xl border border-slate-100/50 bg-white/50 space-y-2">
+                    <div className="h-6 w-6 rounded-lg bg-slate-100 shrink-0" />
+                    <div className="space-y-2 flex-1 pt-1">
+                      <div className="h-4 w-full bg-slate-100 rounded" />
+                      <div className="h-4 w-5/6 bg-slate-100 rounded" />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Right Column Shimmer (1/3 width) */}
+            <div className="lg:col-span-1 space-y-6 relative overflow-hidden bg-white/70 border border-slate-100 rounded-3xl p-6 shadow-sm">
+              <div className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-slate-205/20 to-transparent animate-shimmer" style={{ animation: 'shimmer 1.6s infinite' }} />
+              <div className="h-6 w-1/3 bg-slate-100 rounded mb-4" />
+              <div className="h-32 bg-slate-100 rounded-xl" />
+              <div className="h-10 bg-slate-150 rounded-xl mt-6" />
+            </div>
           </div>
         ) : errorMsg || !lesson ? (
           <div className="max-w-md mx-auto space-y-4">
@@ -337,7 +381,7 @@ export default function LessonDetailPage({
                             nextChecked[index] = !nextChecked[index];
                             setCheckedTakeaways(nextChecked);
                           }}
-                          className={`flex items-start gap-4 p-4 rounded-2xl border transition-all duration-200 cursor-pointer ${
+                          className={`flex items-start gap-4 p-4 rounded-2xl border transition-all duration-200 cursor-pointer hover:scale-[1.01] active:scale-[0.99] ${
                             isChecked 
                               ? "bg-indigo-500/10 border-indigo-500/50" 
                               : "theme-card border hover:bg-indigo-500/5"
@@ -346,7 +390,7 @@ export default function LessonDetailPage({
                           <button
                             type="button"
                             disabled={lesson.completed}
-                            className={`h-6 w-6 rounded-lg border flex items-center justify-center text-xs font-bold shrink-0 transition-all duration-150 ${
+                            className={`h-6 w-6 rounded-lg border flex items-center justify-center text-xs font-bold shrink-0 transition-all duration-150 active:scale-90 ${
                               isChecked
                                 ? "bg-indigo-600 border-indigo-600 text-white"
                                 : "bg-white border-slate-200 text-slate-400"
@@ -471,7 +515,7 @@ export default function LessonDetailPage({
                     </div>
                     <Link
                       href="/dashboard"
-                      className="block w-full text-center py-3 rounded-xl border text-sm font-semibold transition duration-200 theme-input hover:scale-[1.01]"
+                      className="block w-full text-center py-3 rounded-xl border text-sm font-semibold transition-all duration-200 theme-input hover:scale-[1.02] active:scale-[0.97] shadow-sm"
                     >
                       Quay lại Dashboard
                     </Link>
@@ -487,9 +531,9 @@ export default function LessonDetailPage({
                           alert("Vui lòng đọc và tích chọn hoàn thành tất cả các ý tóm tắt quan trọng để mở khóa Quiz nhé!");
                         }
                       }}
-                      className={`block w-full text-center py-3.5 rounded-xl text-sm font-bold shadow-md transition duration-200 focus:outline-none ${
+                      className={`block w-full text-center py-3.5 rounded-xl text-sm font-bold shadow-md transition-all duration-200 focus:outline-none ${
                         isQuizUnlocked
-                          ? "bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white hover:scale-[1.01]"
+                          ? "bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white hover:scale-[1.02] active:scale-[0.97]"
                           : "bg-slate-200 text-slate-400 border border-slate-350 cursor-not-allowed shadow-none"
                       }`}
                     >
@@ -499,7 +543,7 @@ export default function LessonDetailPage({
                     <button
                       onClick={handleComplete}
                       disabled={isSubmitting}
-                      className="w-full text-center py-3 rounded-xl border text-xs font-semibold transition duration-200 disabled:opacity-50 focus:outline-none theme-input hover:scale-[1.01]"
+                      className="w-full text-center py-3 rounded-xl border text-xs font-semibold transition-all duration-200 disabled:opacity-50 focus:outline-none theme-input hover:scale-[1.02] active:scale-[0.97]"
                     >
                       {isSubmitting ? "Đang cập nhật..." : "Đọc xong (Không làm trắc nghiệm)"}
                     </button>
