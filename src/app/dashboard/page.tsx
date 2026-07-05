@@ -167,6 +167,97 @@ export default function DashboardPage() {
   const [activeChallenge, setActiveChallenge] = useState<any>(null);
   const [loadingChallenge, setLoadingChallenge] = useState(false);
 
+  // Daily Speed-Run Duel states
+  const [speedrunActive, setSpeedrunActive] = useState(false);
+  const [speedrunQuizzes, setSpeedrunQuizzes] = useState<any[]>([]);
+  const [loadingSpeedrun, setLoadingSpeedrun] = useState(false);
+  const [speedrunIndex, setSpeedrunIndex] = useState(0);
+  const [speedrunAnswers, setSpeedrunAnswers] = useState<string[]>([]);
+  const [speedrunTimer, setSpeedrunTimer] = useState(0.0);
+  const [speedrunFinished, setSpeedrunFinished] = useState(false);
+  const [speedrunRecord, setSpeedrunRecord] = useState<any>(null);
+  const [speedrunScore, setSpeedrunScore] = useState(0);
+
+  useEffect(() => {
+    const record = localStorage.getItem("daily_speedrun_record");
+    if (record) {
+      setSpeedrunRecord(JSON.parse(record));
+    }
+  }, []);
+
+  useEffect(() => {
+    let intervalId: any;
+    if (speedrunActive && !speedrunFinished) {
+      const startTime = Date.now() - (speedrunTimer * 1000);
+      intervalId = setInterval(() => {
+        const elapsed = (Date.now() - startTime) / 1000;
+        setSpeedrunTimer(Number(elapsed.toFixed(1)));
+        if (elapsed >= 60) {
+          setSpeedrunFinished(true);
+          let correct = 0;
+          speedrunQuizzes.forEach((q, idx) => {
+            if (q.correctAnswer === speedrunAnswers[idx]) {
+              correct++;
+            }
+          });
+          setSpeedrunScore(correct);
+          clearInterval(intervalId);
+        }
+      }, 100);
+    }
+    return () => clearInterval(intervalId);
+  }, [speedrunActive, speedrunFinished, speedrunAnswers, speedrunQuizzes, speedrunTimer]);
+
+  const startSpeedrun = async () => {
+    setLoadingSpeedrun(true);
+    setSpeedrunActive(true);
+    setSpeedrunFinished(false);
+    setSpeedrunIndex(0);
+    setSpeedrunAnswers([]);
+    setSpeedrunTimer(0.0);
+    setSpeedrunScore(0);
+    try {
+      const res = await fetch("/api/challenges/speedrun");
+      if (res.ok) {
+        const data = await res.json();
+        setSpeedrunQuizzes(data.quizzes || []);
+      }
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setLoadingSpeedrun(false);
+    }
+  };
+
+  const selectSpeedrunAnswer = (answer: string) => {
+    const nextAnswers = [...speedrunAnswers, answer];
+    setSpeedrunAnswers(nextAnswers);
+
+    if (speedrunIndex < speedrunQuizzes.length - 1) {
+      setSpeedrunIndex(speedrunIndex + 1);
+    } else {
+      let correct = 0;
+      speedrunQuizzes.forEach((q, idx) => {
+        if (q.correctAnswer === nextAnswers[idx]) {
+          correct++;
+        }
+      });
+      setSpeedrunScore(correct);
+      setSpeedrunFinished(true);
+
+      const timeTaken = speedrunTimer;
+      if (correct === 5) {
+        const existingRecord = localStorage.getItem("daily_speedrun_record");
+        const existingVal = existingRecord ? JSON.parse(existingRecord) : null;
+        if (!existingVal || timeTaken < existingVal.time) {
+          const newRecord = { time: timeTaken, date: new Date().toLocaleDateString() };
+          localStorage.setItem("daily_speedrun_record", JSON.stringify(newRecord));
+          setSpeedrunRecord(newRecord);
+        }
+      }
+    }
+  };
+
   const fetchBookmarksData = async () => {
     setLoadingBookmarks(true);
     try {
@@ -1163,57 +1254,206 @@ export default function DashboardPage() {
             <div key={activeTab} className="space-y-6 animate-fade-in-up">
               {activeTab === "today" ? (
               <div className="space-y-5">
-                {/* Progress bar today */}
-                {totalCount > 0 && (
-                  <div className="px-1">
-                    <div className="flex justify-between items-center text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-2">
-                      <span>Tiến độ hoàn thành hôm nay</span>
-                      <span className="font-mono text-xs">{completedCount} / {totalCount} bài học</span>
-                    </div>
-                    <div className="h-2 w-full bg-[#F0ECE4] rounded-full overflow-hidden">
-                      <div
-                        className="h-full bg-gradient-to-r from-orange-500 to-amber-500 transition-all duration-500 ease-out rounded-full"
-                        style={{ width: `${(completedCount / totalCount) * 100}%` }}
-                      ></div>
-                    </div>
-                  </div>
-                )}
-
-                {/* Weekly Challenge Banner */}
-                {activeChallenge && (
-                  <div className="bg-gradient-to-r from-purple-900 to-indigo-950 text-white rounded-2xl border border-indigo-950 p-5 shadow-lg shadow-indigo-950/10 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 overflow-hidden relative">
-                    <div className="absolute -top-12 -right-12 w-36 h-36 bg-white/5 rounded-full blur-2xl pointer-events-none"></div>
-                    <div className="space-y-1 relative z-10 flex-1">
-                      <div className="flex items-center gap-1.5">
-                        <span className="animate-bounce">🥊</span>
-                        <span className="text-[10px] font-black uppercase tracking-wider text-purple-300">Đấu trường trí tuệ hằng tuần</span>
-                      </div>
-                      <h4 className="text-sm font-extrabold">{activeChallenge.title}</h4>
-                      <p className="text-xs text-indigo-200/90 leading-relaxed max-w-xl">
-                        {activeChallenge.description}
-                      </p>
-                      {activeChallenge.alreadyAttempted && (
-                        <div className="pt-1.5 flex items-center gap-1.5">
-                          <span className="text-emerald-400 text-xs font-bold">✓ Đã tham gia:</span>
-                          <span className="text-xs font-mono font-bold bg-white/10 px-2 py-0.5 rounded">
-                            {activeChallenge.attemptScore} / 10 Điểm
+                {speedrunActive ? (
+                  <div className="rounded-3xl border border-[#EBE6DD] bg-white p-6 sm:p-8 shadow-sm space-y-6 theme-card">
+                    <div className="flex justify-between items-center border-b border-[#EBE6DD] pb-3">
+                      <div className="flex items-center gap-2">
+                        <span className="text-lg">⚡</span>
+                        <div>
+                          <h3 className="text-sm font-extrabold text-[#3E3A35]">Speed-Run Duel hằng ngày</h3>
+                          <span className="text-[9px] text-slate-400 font-bold uppercase tracking-wider block">
+                            Đang chạy đua thời gian
                           </span>
                         </div>
-                      )}
+                      </div>
+                      
+                      <div className="flex items-center gap-3">
+                        <div className={`px-3 py-1 rounded-xl text-xs font-mono font-bold border transition-colors ${
+                          speedrunTimer >= 45 ? "bg-red-50 text-red-700 border-red-200 animate-pulse" : speedrunTimer >= 30 ? "bg-amber-50 text-amber-700 border-amber-200" : "bg-indigo-50 text-indigo-700 border-indigo-200"
+                        }`}>
+                          ⏱️ {speedrunTimer}s / 60s
+                        </div>
+                        <button
+                          onClick={() => setSpeedrunActive(false)}
+                          className="text-xs text-slate-400 hover:text-[#3E3A35] font-bold cursor-pointer"
+                        >
+                          Thoát
+                        </button>
+                      </div>
                     </div>
-                    {!activeChallenge.alreadyAttempted ? (
-                      <Link
-                        href="/challenges/arena"
-                        className="bg-white text-indigo-900 hover:bg-purple-100 px-5 py-2.5 rounded-xl text-xs font-extrabold shadow-md transition-all duration-200 shrink-0 text-center relative z-10 hover:scale-[1.02]"
-                      >
-                        Thi đấu ngay (+100💎)
-                      </Link>
+
+                    {loadingSpeedrun ? (
+                      <div className="py-12 text-center text-xs font-semibold text-slate-400 animate-pulse">
+                        🔄 Đang chuẩn bị gói câu hỏi phản xạ...
+                      </div>
+                    ) : speedrunFinished ? (
+                      <div className="text-center py-6 space-y-4">
+                        <span className="text-3xl block">🏆</span>
+                        <div className="space-y-1">
+                          <h4 className="text-base font-extrabold text-[#3E3A35]">Kết quả Speed-Run!</h4>
+                          <p className="text-xs text-slate-450 font-medium">
+                            Bạn đã trả lời đúng <strong className="text-indigo-650 font-bold">{speedrunScore} / 5</strong> câu.
+                          </p>
+                          <p className="text-xs text-slate-455 font-medium">
+                            Thời gian hoàn thành: <strong className="text-indigo-655 font-bold">{speedrunTimer} giây</strong>.
+                          </p>
+                        </div>
+
+                        {speedrunScore === 5 ? (
+                          <div className="p-3.5 bg-emerald-50 border border-emerald-200 rounded-2xl text-xs text-emerald-800 font-semibold max-w-sm mx-auto">
+                            🎉 Hoàn hảo! Bạn đã ghi danh kỷ lục phản xạ xuất sắc ngày hôm nay!
+                          </div>
+                        ) : (
+                          <div className="p-3.5 bg-[#FAF8F5] border border-[#EBE6DD] rounded-2xl text-xs text-slate-500 font-semibold max-w-sm mx-auto">
+                            Hãy thử lại để đạt điểm tuyệt đối 5/5 và được ghi nhận kỷ lục thời gian nhé!
+                          </div>
+                        )}
+
+                        <div className="flex gap-3 justify-center max-w-sm mx-auto pt-2">
+                          <button
+                            onClick={startSpeedrun}
+                            className="flex-1 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold transition duration-200 active:scale-97 cursor-pointer"
+                          >
+                            Đấu lại
+                          </button>
+                          <button
+                            onClick={() => setSpeedrunActive(false)}
+                            className="flex-1 py-2.5 rounded-xl border border-[#D5CFC5] text-[#3E3A35] text-xs font-bold hover:bg-[#F9F7F4] transition duration-200 active:scale-97 cursor-pointer"
+                          >
+                            Quay lại Dashboard
+                          </button>
+                        </div>
+                      </div>
+                    ) : speedrunQuizzes.length > 0 ? (
+                      <div className="space-y-5">
+                        {/* Progress dots */}
+                        <div className="flex justify-between items-center text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+                          <span>Câu hỏi {speedrunIndex + 1} / 5</span>
+                          <span className="font-serif italic text-[9px] text-[#8C8375]">Chuyên đề: {speedrunQuizzes[speedrunIndex]?.lessonTitle}</span>
+                        </div>
+                        <div className="flex gap-1.5">
+                          {[0, 1, 2, 3, 4].map((i) => (
+                            <div
+                              key={i}
+                              className={`h-1.5 flex-1 rounded-full transition-all duration-200 ${
+                                i === speedrunIndex
+                                  ? "bg-indigo-600 scale-y-125 shadow-sm"
+                                  : i < speedrunIndex
+                                  ? "bg-indigo-600/35"
+                                  : "bg-slate-100"
+                              }`}
+                            />
+                          ))}
+                        </div>
+
+                        {/* Question title */}
+                        <h4 className="text-sm font-extrabold text-[#3E3A35] leading-relaxed pt-2">
+                          {speedrunQuizzes[speedrunIndex]?.question}
+                        </h4>
+
+                        {/* Options buttons */}
+                        <div className="grid grid-cols-1 gap-2.5 pt-2">
+                          {speedrunQuizzes[speedrunIndex]?.options.map((opt: string, idx: number) => (
+                            <button
+                              key={idx}
+                              onClick={() => selectSpeedrunAnswer(opt)}
+                              className="w-full text-left p-4 rounded-2xl border border-[#EBE6DD] bg-[#FAF8F5]/40 text-xs font-semibold hover:bg-indigo-50/20 hover:border-indigo-150 transition-all duration-200 hover:scale-[1.01] active:scale-[0.98] cursor-pointer"
+                            >
+                              {opt}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
                     ) : (
-                      <span className="text-slate-400 text-xs font-semibold select-none shrink-0 text-center py-2 px-4 border border-slate-800 rounded-xl bg-slate-900/30">
-                        Đã kết thúc lượt
-                      </span>
+                      <div className="text-center py-6 text-xs text-rose-500 font-bold">
+                        ⚠️ Không tìm thấy câu hỏi trắc nghiệm nào trong cơ sở dữ liệu. Hãy tạo thêm bài viết trước!
+                      </div>
                     )}
                   </div>
+                ) : (
+                  <>
+                    {/* Progress bar today */}
+                    {totalCount > 0 && (
+                      <div className="px-1">
+                        <div className="flex justify-between items-center text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-2">
+                          <span>Tiến độ hoàn thành hôm nay</span>
+                          <span className="font-mono text-xs">{completedCount} / {totalCount} bài học</span>
+                        </div>
+                        <div className="h-2 w-full bg-[#F0ECE4] rounded-full overflow-hidden">
+                          <div
+                            className="h-full bg-gradient-to-r from-orange-500 to-amber-500 transition-all duration-500 ease-out rounded-full"
+                            style={{ width: `${(completedCount / totalCount) * 100}%` }}
+                          ></div>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Weekly Challenge Banner */}
+                    {activeChallenge && (
+                      <div className="bg-gradient-to-r from-purple-900 to-indigo-950 text-white rounded-2xl border border-indigo-950 p-5 shadow-lg shadow-indigo-950/10 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 overflow-hidden relative">
+                        <div className="absolute -top-12 -right-12 w-36 h-36 bg-white/5 rounded-full blur-2xl pointer-events-none"></div>
+                        <div className="space-y-1 relative z-10 flex-1">
+                          <div className="flex items-center gap-1.5">
+                            <span className="animate-bounce">🥊</span>
+                            <span className="text-[10px] font-black uppercase tracking-wider text-purple-300">Đấu trường trí tuệ hằng tuần</span>
+                          </div>
+                          <h4 className="text-sm font-extrabold">{activeChallenge.title}</h4>
+                          <p className="text-xs text-indigo-200/90 leading-relaxed max-w-xl">
+                            {activeChallenge.description}
+                          </p>
+                          {activeChallenge.alreadyAttempted && (
+                            <div className="pt-1.5 flex items-center gap-1.5">
+                              <span className="text-emerald-400 text-xs font-bold">✓ Đã tham gia:</span>
+                              <span className="text-xs font-mono font-bold bg-white/10 px-2 py-0.5 rounded">
+                                {activeChallenge.attemptScore} / 10 Điểm
+                              </span>
+                            </div>
+                          )}
+                        </div>
+                        {!activeChallenge.alreadyAttempted ? (
+                          <Link
+                            href="/challenges/arena"
+                            className="bg-white text-indigo-900 hover:bg-purple-100 px-5 py-2.5 rounded-xl text-xs font-extrabold shadow-md transition-all duration-200 shrink-0 text-center relative z-10 hover:scale-[1.02]"
+                          >
+                            Thi đấu ngay (+100💎)
+                          </Link>
+                        ) : (
+                          <span className="text-slate-400 text-xs font-semibold select-none shrink-0 text-center py-2 px-4 border border-slate-800 rounded-xl bg-slate-900/30">
+                            Đã kết thúc lượt
+                          </span>
+                        )}
+                      </div>
+                    )}
+
+                    {/* Daily Speed-Run Duel Banner */}
+                    <div className="bg-gradient-to-r from-amber-600 to-orange-700 text-white rounded-2xl border border-orange-700 p-5 shadow-lg shadow-orange-950/10 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 overflow-hidden relative">
+                      <div className="absolute -top-12 -right-12 w-36 h-36 bg-white/5 rounded-full blur-2xl pointer-events-none"></div>
+                      <div className="space-y-1 relative z-10 flex-1">
+                        <div className="flex items-center gap-1.5">
+                          <span className="animate-pulse">⚡</span>
+                          <span className="text-[10px] font-black uppercase tracking-wider text-orange-200">Đấu trường phản xạ siêu tốc</span>
+                        </div>
+                        <h4 className="text-sm font-extrabold">Speed-Run Duel Hằng Ngày</h4>
+                        <p className="text-xs text-orange-100/90 leading-relaxed max-w-xl">
+                          Trả lời nhanh 5 câu hỏi trắc nghiệm ngẫu nhiên để rèn luyện tốc độ xử lý thông tin.
+                        </p>
+                        {speedrunRecord && (
+                          <div className="pt-1.5 flex items-center gap-1.5">
+                            <span className="text-amber-300 text-xs font-bold">⚡ Kỷ lục của bạn:</span>
+                            <span className="text-xs font-mono font-bold bg-white/10 px-2 py-0.5 rounded">
+                              5/5 câu trong {speedrunRecord.time}s ({speedrunRecord.date})
+                            </span>
+                          </div>
+                        )}
+                      </div>
+                      <button
+                        onClick={startSpeedrun}
+                        className="bg-white text-orange-900 hover:bg-orange-50 px-5 py-2.5 rounded-xl text-xs font-extrabold shadow-md transition-all duration-200 shrink-0 text-center relative z-10 hover:scale-[1.02] active:scale-[0.97] cursor-pointer"
+                      >
+                        Bắt đầu Duel
+                      </button>
+                    </div>
+                  </>
                 )}
 
                 {loadingLessons ? (

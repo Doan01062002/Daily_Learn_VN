@@ -5,6 +5,7 @@ import { useAuth } from "@/components/layout/AuthProvider";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import FeedbackModal from "@/components/FeedbackModal";
+import simulatorsData from "@/data/simulators.json";
 
 interface LessonDetail {
   id: string;
@@ -48,6 +49,120 @@ export default function LessonDetailPage({
 
   // Reading theme switcher states
   const [theme, setTheme] = useState<"light" | "dark" | "sepia">("light");
+
+  // Simulator states
+  const [simActive, setSimActive] = useState(false);
+  const [simStage, setSimStage] = useState("start");
+  const [simMeters, setSimMeters] = useState<any[]>([]);
+  const [simHistory, setSimHistory] = useState<string[]>([]);
+  const [simFinished, setSimFinished] = useState(false);
+  const [simScore, setSimScore] = useState(0);
+
+  // Prompt Practice states
+  const [promptInput, setPromptInput] = useState("");
+  const [promptTested, setPromptTested] = useState(false);
+  const [promptScore, setPromptScore] = useState(0);
+  const [promptFeedback, setPromptFeedback] = useState<any | null>(null);
+
+  // Get simulator configuration if matching this lesson title
+  const simulatorConfig = lesson ? (simulatorsData as any)[lesson.title] : null;
+
+  useEffect(() => {
+    if (simulatorConfig) {
+      setSimMeters(JSON.parse(JSON.stringify(simulatorConfig.meters)));
+      setSimStage("start");
+      setSimFinished(false);
+      setSimActive(false);
+      setSimHistory([]);
+    }
+  }, [lesson]);
+
+  const handleSimChoice = (option: any) => {
+    setSimHistory((prev) => [...prev, `👉 Bạn chọn: "${option.text}"`, `💬 ${option.effectText}`]);
+
+    let isGameOver = false;
+    const updatedMeters = simMeters.map((m) => {
+      const change = option.changes[m.id] || 0;
+      const newVal = Math.min(100, Math.max(0, m.val + change));
+      if (newVal <= 0) {
+        isGameOver = true;
+      }
+      return { ...m, val: newVal };
+    });
+    setSimMeters(updatedMeters);
+
+    if (isGameOver) {
+      setSimStage("game_over");
+      setSimFinished(true);
+      setSimScore(0);
+      return;
+    }
+
+    const next = option.nextStage;
+    setSimStage(next);
+
+    const stageConfig = simulatorConfig.stages[next];
+    if (stageConfig && stageConfig.isTerminal) {
+      setSimFinished(true);
+      setSimScore(stageConfig.score);
+    }
+  };
+
+  const handleTestPrompt = () => {
+    if (!promptInput.trim()) return;
+
+    const text = promptInput.toLowerCase();
+    
+    // Check components
+    const hasRole = text.includes("vai trò") || text.includes("bạn là") || text.includes("acting as") || text.includes("đóng vai") || text.includes("chuyên gia") || text.includes("expert");
+    const hasConstraints = text.includes("không") || text.includes("tránh") || text.includes("chỉ") || text.includes("yêu cầu") || text.includes("ràng buộc") || text.includes("must not") || text.includes("only");
+    const hasFormat = text.includes("định dạng") || text.includes("markdown") || text.includes("json") || text.includes("bảng") || text.includes("table") || text.includes("output");
+    const hasExample = text.includes("ví dụ") || text.includes("như sau") || text.includes("mẫu") || text.includes("example") || text.includes("sau đây");
+    const wordsCount = promptInput.trim().split(/\s+/).length;
+    const isLongEnough = wordsCount >= 25;
+
+    let score = 0;
+    const criteria = [];
+
+    if (hasRole) { score += 20; criteria.push({ name: "Vai trò / Bối cảnh (Role/Context)", pass: true }); }
+    else { criteria.push({ name: "Vai trò / Bối cảnh (Role/Context)", pass: false, tip: "Mên mô tả vai trò cụ thể, ví dụ: 'Bạn là chuyên gia về...'" }); }
+
+    if (hasConstraints) { score += 20; criteria.push({ name: "Ràng buộc & Giới hạn (Constraints)", pass: true }); }
+    else { criteria.push({ name: "Ràng buộc & Giới hạn (Constraints)", pass: false, tip: "Nên thêm các giới hạn, ví dụ: 'Đoạn văn không quá 200 từ...'" }); }
+
+    if (hasFormat) { score += 20; criteria.push({ name: "Định dạng đầu ra (Output Format)", pass: true }); }
+    else { criteria.push({ name: "Định dạng đầu ra (Output Format)", pass: false, tip: "Nên yêu cầu định dạng đầu ra cụ thể, ví dụ: 'Xuất kết quả dạng bảng...'" }); }
+
+    if (hasExample) { score += 20; criteria.push({ name: "Ví dụ minh họa (Few-Shot Example)", pass: true }); }
+    else { criteria.push({ name: "Ví dụ minh họa (Few-Shot Example)", pass: false, tip: "Nên cung cấp 1 ví dụ cụ thể dạng: 'Ví dụ: Đầu vào X -> Đầu ra Y'" }); }
+
+    if (isLongEnough) { score += 20; criteria.push({ name: "Mức độ chi tiết (>25 từ)", pass: true }); }
+    else { criteria.push({ name: "Mức độ chi tiết (>25 từ)", pass: false, tip: "Prompt hiện tại hơi ngắn, nên mô tả thêm chi tiết ngữ cảnh để AI hiểu sâu." }); }
+
+    setPromptScore(score);
+    setPromptTested(true);
+    setPromptFeedback({
+      criteria,
+      wordCount: wordsCount,
+      advice: score === 100 
+        ? "Xuất sắc! Prompt của bạn đã đạt tiêu chuẩn chuyên nghiệp, sẵn sàng gửi cho bất kỳ AI nào."
+        : "Khá tốt! Bạn hãy tham khảo các gợi ý tích đỏ ở trên để hoàn thiện thêm prompt nhé."
+    });
+  };
+
+  const getPromptChallenge = () => {
+    if (!lesson) return "";
+    if (lesson.tags.includes("Tech")) {
+      return `Viết một prompt yêu cầu AI tạo ra cấu trúc API và sơ đồ database tối giản cho đối tượng '${lesson.title}'.`;
+    }
+    if (lesson.tags.includes("Business")) {
+      return `Viết một prompt yêu cầu AI thiết kế mô hình Unit Economics hoặc phân tích đối thủ cạnh tranh cho chủ đề '${lesson.title}'.`;
+    }
+    if (lesson.tags.includes("Design")) {
+      return `Viết một prompt yêu cầu AI phân tích khoảng cách và tư vấn bảng màu (Color Palette) tinh giản cho chủ đề '${lesson.title}'.`;
+    }
+    return `Viết một prompt yêu cầu AI tóm tắt bài viết '${lesson.title}' dưới dạng sơ đồ tư duy dạng text Markdown.`;
+  };
 
   useEffect(() => {
     const savedTheme = localStorage.getItem("reading-theme");
@@ -503,6 +618,186 @@ export default function LessonDetailPage({
                       )}
                     </div>
                   )}
+                </div>
+              )}
+
+              {/* Case-Study Simulator widget */}
+              {simulatorConfig && (
+                <div className="border border-[#EBE6DD] rounded-3xl p-6 sm:p-8 shadow-sm space-y-5 bg-[#FAF8F5]/30 theme-card">
+                  <div className="flex justify-between items-center border-b border-[#EBE6DD] pb-3">
+                    <h3 className="text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 theme-text">
+                      🎮 Giả lập Tình huống Quyết định (Simulator)
+                    </h3>
+                    <span className="text-[10px] font-bold text-amber-600 bg-amber-50 border border-amber-200 px-2.5 py-0.5 rounded-full uppercase tracking-wider">
+                      Thử thách
+                    </span>
+                  </div>
+
+                  {!simActive ? (
+                    <div className="space-y-4 text-center py-4">
+                      <p className="text-xs text-slate-500 leading-relaxed">
+                        Bài viết này đi kèm kịch bản giả lập giúp bạn rèn luyện đưa ra quyết định thực tế của một Kỹ sư / Nhà quản trị.
+                      </p>
+                      <button
+                        onClick={() => setSimActive(true)}
+                        className="px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold transition-all duration-200 hover:scale-[1.02] active:scale-[0.97]"
+                      >
+                        Bắt đầu giả lập quyết định
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="space-y-5">
+                      {/* Meters status bar */}
+                      <div className="grid grid-cols-3 gap-3">
+                        {simMeters.map((m) => (
+                          <div key={m.id} className="p-3 bg-white/70 border border-[#EBE6DD] rounded-2xl text-center space-y-1.5 shadow-sm">
+                            <span className="text-lg block">{m.icon}</span>
+                            <span className="text-[9px] font-bold text-slate-400 block uppercase tracking-wider">{m.name}</span>
+                            <div className="flex items-center justify-center gap-1.5">
+                              <div className="h-1.5 w-12 sm:w-16 bg-slate-100 rounded-full overflow-hidden shrink-0">
+                                <div
+                                  className={`h-full transition-all duration-300 ${
+                                    m.val <= 30 ? "bg-red-500" : m.val <= 60 ? "bg-amber-500" : "bg-emerald-500"
+                                  }`}
+                                  style={{ width: `${m.val}%` }}
+                                />
+                              </div>
+                              <span className="text-xs font-bold font-mono">{m.val}%</span>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+
+                      {/* Scenario console log and text */}
+                      <div className="bg-slate-900 border border-slate-800 text-slate-100 rounded-2xl p-4 font-mono text-[11px] leading-relaxed space-y-3 max-h-56 overflow-y-auto">
+                        <div className="text-indigo-300">== CONSOLE KHỞI TẠO HỆ THỐNG ==</div>
+                        {simHistory.map((h, i) => (
+                          <div key={i} className={h.startsWith("👉") ? "text-amber-300" : "text-slate-350"}>
+                            {h}
+                          </div>
+                        ))}
+                        
+                        {!simFinished && (
+                          <div className="text-slate-100 font-bold border-t border-slate-800 pt-2.5">
+                            {simulatorConfig.stages[simStage]?.text}
+                          </div>
+                        )}
+
+                        {simFinished && (
+                          <div className={`text-center font-bold text-[11px] p-2.5 rounded-xl ${
+                            simScore >= 70 ? "text-emerald-400 border border-emerald-900 bg-emerald-950/20" : "text-red-400 border border-red-900 bg-red-950/20"
+                          }`}>
+                            {simStage === "game_over" || simStage === "stage_fail"
+                              ? "❌ GAME OVER: Bạn đã thất bại khi xử lý kịch bản này!"
+                              : `🎉 THÀNH CÔNG: Hoàn thành kịch bản! Điểm số: ${simScore}/100`}
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Decisions controls */}
+                      {!simFinished ? (
+                        <div className="space-y-2">
+                          {simulatorConfig.stages[simStage]?.options.map((opt: any, idx: number) => (
+                            <button
+                              key={idx}
+                              onClick={() => handleSimChoice(opt)}
+                              className="w-full text-left p-3.5 rounded-xl border border-[#EBE6DD] bg-white text-xs font-semibold hover:bg-slate-50 transition-all duration-200 hover:scale-[1.01] active:scale-[0.98]"
+                            >
+                              {idx === 0 ? "A" : "B"}. {opt.text}
+                            </button>
+                          ))}
+                        </div>
+                      ) : (
+                        <button
+                          onClick={() => {
+                            setSimStage("start");
+                            setSimMeters(JSON.parse(JSON.stringify(simulatorConfig.meters)));
+                            setSimHistory([]);
+                            setSimFinished(false);
+                            setSimScore(0);
+                          }}
+                          className="w-full py-2.5 rounded-xl border border-[#D5CFC5] text-xs font-bold text-slate-650 hover:bg-[#F9F7F4] transition-all duration-200 active:scale-98"
+                        >
+                          Chơi lại giả lập
+                        </button>
+                      )}
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* Prompt Engineering Practice widget */}
+              {lesson && (
+                <div className="border border-[#EBE6DD] rounded-3xl p-6 sm:p-8 shadow-sm space-y-5 bg-[#FAF8F5]/30 theme-card">
+                  <div className="flex justify-between items-center border-b border-[#EBE6DD] pb-3">
+                    <h3 className="text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 theme-text">
+                      💡 Thực hành viết Prompt AI (Prompt Engineering)
+                    </h3>
+                  </div>
+
+                  <div className="space-y-4">
+                    <div className="p-4 bg-indigo-50/40 border border-indigo-100 rounded-2xl space-y-2.5">
+                      <span className="text-[9px] font-black text-indigo-700 uppercase tracking-widest block">Thử thách viết Prompt</span>
+                      <p className="text-xs font-serif italic text-slate-700 leading-relaxed">
+                        {getPromptChallenge()}
+                      </p>
+                    </div>
+
+                    <div className="space-y-1.5">
+                      <label className="block text-[9px] font-bold uppercase tracking-widest text-slate-400">Thiết kế Prompt của bạn</label>
+                      <textarea
+                        rows={4}
+                        value={promptInput}
+                        onChange={(e) => {
+                          setPromptInput(e.target.value);
+                          setPromptTested(false);
+                        }}
+                        placeholder="Ví dụ: Bạn là một chuyên gia RESTful API. Hãy phân tích bối cảnh... Ràng buộc là... Hãy định dạng đầu ra dạng bảng Markdown như sau..."
+                        className="w-full px-3 py-2.5 text-xs border border-[#EBE6DD] bg-white rounded-xl focus:outline-none focus:ring-1 focus:ring-indigo-500 font-sans text-slate-800"
+                      />
+                    </div>
+
+                    <button
+                      onClick={handleTestPrompt}
+                      disabled={!promptInput.trim()}
+                      className="w-full py-2.5 rounded-xl bg-[#4E4941] text-white text-xs font-bold hover:bg-[#3E3A35] transition-all duration-200 hover:scale-[1.02] active:scale-[0.97] disabled:opacity-50"
+                    >
+                      Đánh giá & Chấm điểm Prompt
+                    </button>
+
+                    {promptTested && promptFeedback && (
+                      <div className="space-y-3.5 border-t border-[#EBE6DD] pt-4 animate-fade-in-up">
+                        <div className="flex justify-between items-center">
+                          <span className="text-xs font-bold text-slate-800">Điểm số Prompt:</span>
+                          <span className={`text-xs font-extrabold font-mono rounded px-2.5 py-0.5 border ${
+                            promptScore >= 80 ? "bg-emerald-50 text-emerald-800 border-emerald-200" : promptScore >= 50 ? "bg-amber-50 text-amber-800 border-amber-200" : "bg-rose-50 text-rose-800 border-rose-200"
+                          }`}>
+                            {promptScore} / 100
+                          </span>
+                        </div>
+
+                        <div className="space-y-2 text-xs">
+                          {promptFeedback.criteria.map((c: any, i: number) => (
+                            <div key={i} className="flex flex-col space-y-1 bg-white/70 border border-[#EBE6DD]/60 rounded-xl p-2.5 shadow-sm">
+                              <div className="flex items-center gap-2">
+                                <span className={c.pass ? "text-emerald-500 font-bold" : "text-rose-500 font-bold"}>
+                                  {c.pass ? "✓" : "✗"}
+                                </span>
+                                <span className="font-semibold text-slate-700">{c.name}</span>
+                              </div>
+                              {!c.pass && (
+                                <p className="text-[10px] text-rose-700 pl-4">{c.tip}</p>
+                              )}
+                            </div>
+                          ))}
+                        </div>
+
+                        <p className="text-[11px] font-semibold text-slate-500 leading-relaxed italic bg-[#FAF8F5] border border-[#EBE6DD] p-3 rounded-xl text-center">
+                          {promptFeedback.advice}
+                        </p>
+                      </div>
+                    )}
+                  </div>
                 </div>
               )}
 

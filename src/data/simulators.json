@@ -1,0 +1,115 @@
+{
+  "Hiểu nhanh về RESTful API": {
+    "challenge": "Thiết kế hệ thống API cho dịch vụ giao hàng siêu tốc.",
+    "meters": [
+      { "id": "quality", "name": "Chất lượng API", "val": 100, "icon": "🛡️" },
+      { "id": "speed", "name": "Tốc độ bàn giao", "val": 100, "icon": "⚡" },
+      { "id": "stability", "name": "Độ ổn định Server", "val": 100, "icon": "📟" }
+    ],
+    "stages": {
+      "start": {
+        "text": "Nhà đầu tư yêu cầu tích hợp nhanh API thanh toán và tra cứu đơn hàng để kịp ngày ra mắt sản phẩm. Team phát triển của bạn đề xuất phương án thiết kế URL.",
+        "options": [
+          {
+            "text": "Tạo các endpoint chuẩn RESTful: GET `/api/v1/orders` và POST `/api/v1/orders`.",
+            "effectText": "Thiết kế chuẩn chỉnh, dễ tích hợp và bảo trì lâu dài. Tuy nhiên mất thêm chút thời gian thiết lập chuẩn HTTP.",
+            "changes": { "quality": 10, "speed": -15, "stability": 5 },
+            "nextStage": "stage_2"
+          },
+          {
+            "text": "Tạo một endpoint duy nhất dạng RPC: POST `/api/executeAction` để nhận lệnh JSON tùy ý cho nhanh.",
+            "effectText": "Bàn giao cực nhanh, chạy được ngay. Tuy nhiên thiết kế API lộn xộn, đối tác tích hợp liên tục phàn nàn vì khó đọc hiểu tài liệu.",
+            "changes": { "quality": -35, "speed": 20, "stability": -10 },
+            "nextStage": "stage_2"
+          }
+        ]
+      },
+      "stage_2": {
+        "text": "API bắt đầu nhận lượng tải cao từ cổng đối tác. Một số request GET đọc thông tin đơn hàng của khách bị nghẽn làm server phản hồi rất chậm.",
+        "options": [
+          {
+            "text": "Thiết kế cơ chế phân trang (Pagination) giới hạn trả về tối đa 20 bản ghi mặc định.",
+            "effectText": "Rất tốt! Tải lượng cơ sở dữ liệu giảm mạnh, thời gian phản hồi trung bình giảm từ 2 giây xuống còn 40 mili giây.",
+            "changes": { "quality": 20, "stability": 25 },
+            "nextStage": "win"
+          },
+          {
+            "text": "Không thay đổi code, nâng cấp tài nguyên CPU/RAM cho Server gánh dữ liệu lớn.",
+            "effectText": "Server gánh được tạm thời nhưng chi phí hạ tầng tăng vọt. Khi tải tiếp tục tăng, database vẫn bị khóa nghẽn.",
+            "changes": { "speed": -20, "stability": -30 },
+            "nextStage": "win_costly"
+          }
+        ]
+      },
+      "win": {
+        "text": "Chúc mừng! Bạn đã thiết kế thành công hệ thống RESTful API chuẩn mực. Hệ thống vận hành cực kỳ ổn định, tối ưu chi phí và đối tác đánh giá 5 sao!",
+        "isTerminal": true,
+        "score": 100
+      },
+      "win_costly": {
+        "text": "Hệ thống đã vượt qua tải, nhưng chi phí vận hành tăng quá cao làm hao hụt ngân sách. Bạn cần tối ưu hóa mã nguồn thay vì chỉ nâng cấp phần cứng ở lần sau.",
+        "isTerminal": true,
+        "score": 60
+      },
+      "game_over": {
+        "text": "Hệ thống bị sập hoàn toàn do nghẽn tải hoặc đối tác hủy hợp tác do chất lượng API quá tệ. Hãy thử lại để đưa ra các quyết định sáng suốt hơn!",
+        "isTerminal": true,
+        "score": 0
+      }
+    }
+  },
+  "Kiến trúc Microservices cơ bản": {
+    "challenge": "Di cư hệ thống Monolith cồng kềnh của Acme Corp.",
+    "meters": [
+      { "id": "stability", "name": "Độ ổn định hệ thống", "val": 100, "icon": "📟" },
+      { "id": "budget", "name": "Ngân sách đội ngũ", "val": 100, "icon": "💸" },
+      { "id": "trust", "name": "Lòng tin của CEO", "val": 100, "icon": "🤝" }
+    ],
+    "stages": {
+      "start": {
+        "text": "Cơ sở dữ liệu Monolith bị khóa nghẽn liên tục vào giờ vàng. CEO yêu cầu bạn tách ứng dụng sang kiến trúc Microservices gấp trong vòng 2 tuần để phục vụ sự kiện khuyến mãi.",
+        "options": [
+          {
+            "text": "Tách dịch vụ Đơn hàng (Orders) và cơ sở dữ liệu của nó ra độc lập trước (Database-per-service).",
+            "effectText": "Cô lập dữ liệu thành công, tránh nghẽn chéo! Tuy nhiên bạn phải giải bài toán đồng bộ dữ liệu giữa các dịch vụ.",
+            "changes": { "stability": -10, "budget": -20, "trust": 10 },
+            "nextStage": "stage_2"
+          },
+          {
+            "text": "Tách code chạy dịch vụ Orders mới ra riêng nhưng vẫn trỏ chung vào database Monolith cũ cho nhanh.",
+            "effectText": "Tách nhanh nhưng database dùng chung nhanh chóng cạn kiệt connection pool do quá tải. Cả hệ thống sập hoàn toàn!",
+            "changes": { "stability": -60, "trust": -40 },
+            "nextStage": "stage_fail"
+          }
+        ]
+      },
+      "stage_2": {
+        "text": "Dịch vụ hoạt động riêng biệt ổn định nhưng xảy ra sự cố: Khách hàng đã hủy đơn nhưng bộ phận Kho vẫn nhận thông báo đóng hàng vì dữ liệu không đồng bộ.",
+        "options": [
+          {
+            "text": "Sử dụng Message Broker (RabbitMQ/Kafka) phát sự kiện đồng bộ trạng thái bất đồng bộ (Event-driven).",
+            "effectText": "Tuyệt vời! Giải quyết triệt để vấn đề bất nhất dữ liệu qua mô hình truyền tin tin cậy, không phụ thuộc chéo.",
+            "changes": { "stability": 30, "budget": -15, "trust": 20 },
+            "nextStage": "win"
+          },
+          {
+            "text": "Thiết lập gọi API đồng bộ liên tiếp giữa các dịch vụ để cập nhật trạng thái.",
+            "effectText": "Tạo ra phụ thuộc cứng giữa các dịch vụ (Tight Coupling). Thời gian phản hồi tăng cao và phát sinh lỗi cascade fail.",
+            "changes": { "stability": -30, "trust": -25 },
+            "nextStage": "stage_fail"
+          }
+        ]
+      },
+      "win": {
+        "text": "Chúc mừng! Bạn đã giúp Acme Corp chuyển đổi thành công sang Microservices. Hệ thống chịu tải tăng gấp 10 lần trước đây và CEO thưởng nóng cho cả team!",
+        "isTerminal": true,
+        "score": 100
+      },
+      "stage_fail": {
+        "text": "Hệ thống gặp sự cố nghiêm trọng, mất mát dữ liệu khách hàng. CEO vô cùng thất vọng và quyết định sa thải bạn. Hãy thử lại kịch bản khác!",
+        "isTerminal": true,
+        "score": 0
+      }
+    }
+  }
+}
