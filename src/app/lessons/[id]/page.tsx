@@ -64,6 +64,12 @@ export default function LessonDetailPage({
   const [promptScore, setPromptScore] = useState(0);
   const [promptFeedback, setPromptFeedback] = useState<any | null>(null);
 
+  const [toastMessage, setToastMessage] = useState<string | null>(null);
+  const showToast = (msg: string) => {
+    setToastMessage(msg);
+    setTimeout(() => setToastMessage(null), 4000);
+  };
+
   // Get simulator configuration if matching this lesson title
   const simulatorConfig = lesson ? (simulatorsData as any)[lesson.title] : null;
 
@@ -823,7 +829,7 @@ export default function LessonDetailPage({
                       onClick={(e) => {
                         if (!isQuizUnlocked) {
                           e.preventDefault();
-                          alert("Vui lòng đọc và tích chọn hoàn thành tất cả các ý tóm tắt quan trọng để mở khóa Quiz nhé!");
+                          showToast("Vui lòng đọc và tích chọn hoàn thành tất cả các ý tóm tắt quan trọng để mở khóa Quiz nhé!");
                         }
                       }}
                       className={`block w-full text-center py-3.5 rounded-xl text-sm font-bold shadow-md transition-all duration-200 focus:outline-none ${
@@ -879,6 +885,13 @@ export default function LessonDetailPage({
         )}
 
       </main>
+
+      {toastMessage && (
+        <div className="fixed bottom-6 right-6 z-50 animate-fade-in-up bg-[#3E3A35] text-[#FAF8F5] border border-stone-700/80 px-5 py-3.5 rounded-2xl shadow-xl flex items-center gap-2 max-w-sm">
+          <span className="text-sm">🔔</span>
+          <span className="text-xs font-semibold">{toastMessage}</span>
+        </div>
+      )}
 
       <FeedbackModal
         isOpen={showFeedbackModal}

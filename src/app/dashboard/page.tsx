@@ -178,6 +178,13 @@ export default function DashboardPage() {
   const [speedrunRecord, setSpeedrunRecord] = useState<any>(null);
   const [speedrunScore, setSpeedrunScore] = useState(0);
 
+  // Toast state
+  const [toastMessage, setToastMessage] = useState<string | null>(null);
+  const showToast = (msg: string) => {
+    setToastMessage(msg);
+    setTimeout(() => setToastMessage(null), 4000);
+  };
+
   useEffect(() => {
     const record = localStorage.getItem("daily_speedrun_record");
     if (record) {
@@ -758,7 +765,7 @@ export default function DashboardPage() {
     try {
       canvas.toBlob(async (blob) => {
         if (!blob) {
-          alert("Không thể tạo dữ liệu ảnh chia sẻ.");
+          showToast("Không thể tạo dữ liệu ảnh chia sẻ.");
           return;
         }
 
@@ -773,12 +780,12 @@ export default function DashboardPage() {
             text: `Hãy cùng tôi học lập trình trên Daily Learn VN để nhận ngay +50💎 & +1 Thẻ bảo vệ Streak nhé!`,
           });
         } else {
-          alert("Trình duyệt hoặc hệ điều hành của bạn không hỗ trợ chia sẻ trực tiếp file ảnh. Hãy sử dụng nút 'Tải ảnh về máy' để lưu và chia sẻ thủ công.");
+          showToast("Trình duyệt hoặc hệ điều hành của bạn không hỗ trợ chia sẻ trực tiếp file ảnh. Hãy sử dụng nút 'Tải ảnh về máy' để lưu và chia sẻ thủ công.");
         }
       }, "image/png");
     } catch (err) {
       console.error("Direct share failed:", err);
-      alert("Đã xảy ra lỗi khi cố gắng chia sẻ trực tiếp.");
+      showToast("Đã xảy ra lỗi khi cố gắng chia sẻ trực tiếp.");
     }
   };
 
@@ -2509,7 +2516,7 @@ export default function DashboardPage() {
                           onClick={() => {
                             const inviteMsg = `Hãy cùng tôi học lập trình cực thú vị trên Daily Learn VN để nhận quà chào mừng đặc biệt! Nhấn vào đây để đăng ký: ${typeof window !== "undefined" ? `${window.location.origin}/login?ref=${user.referralCode || ""}` : ""}`;
                             navigator.clipboard.writeText(inviteMsg);
-                            alert("Đã sao chép nội dung lời mời vào clipboard! Bạn có thể dán chia sẻ trực tiếp lên Instagram.");
+                            showToast("Đã sao chép nội dung lời mời vào clipboard! Bạn có thể dán chia sẻ trực tiếp lên Instagram.");
                             window.open("https://www.instagram.com/", "_blank");
                           }}
                           className="flex items-center gap-2 bg-[#E1306C] text-white px-4 py-2.5 rounded-xl text-xs font-bold hover:bg-[#c13584] transition duration-150 shadow-sm shadow-[#E1306C]/10 cursor-pointer"
@@ -2684,6 +2691,12 @@ export default function DashboardPage() {
               </button>
             </div>
           </div>
+        </div>
+      )}
+      {toastMessage && (
+        <div className="fixed bottom-6 right-6 z-50 animate-fade-in-up bg-[#3E3A35] text-[#FAF8F5] border border-stone-700/80 px-5 py-3.5 rounded-2xl shadow-xl flex items-center gap-2 max-w-sm">
+          <span className="text-sm">🔔</span>
+          <span className="text-xs font-semibold">{toastMessage}</span>
         </div>
       )}
     </div>
