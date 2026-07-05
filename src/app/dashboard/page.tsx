@@ -556,15 +556,77 @@ export default function DashboardPage() {
   });
 
   // SVG Flame Component
-  const FlameIcon = ({ className }: { className: string }) => (
-    <svg
-      className={`h-7 w-7 transition-all duration-300 ${className}`}
-      fill="currentColor"
-      viewBox="0 0 24 24"
-    >
-      <path d="M12 2C8 6 6 8.5 6 12c0 3.3 2.7 6 6 6s6-2.7 6-6c0-3.5-2-6-6-10zm2.5 12.3c-.6.6-1.5.8-2.3.5-.8-.3-1.2-1-1.2-1.8 0-.8.4-1.5 1-2 .2-.2.3-.5.2-.7-.1-.2-.3-.4-.5-.4-.6 0-1.1-.3-1.4-.7s-.3-.9-.1-1.4c.1-.2 0-.4-.1-.5-.2-.1-.4 0-.5.1C8.7 8 8 9.5 8 11.2c0 2.6 2.1 4.8 4.8 4.8 1.2 0 2.3-.4 3.1-1.2.2-.2.2-.5 0-.7-.2-.2-.5-.2-.7-.1z" />
-    </svg>
-  );
+  const FlameIcon = ({ streak, className }: { streak: number; className: string }) => {
+    let outerGrad = "url(#orangeOuter)";
+    let innerGrad = "url(#orangeInner)";
+    if (streak >= 30) {
+      outerGrad = "url(#blueOuter)";
+      innerGrad = "url(#blueInner)";
+    } else if (streak >= 14) {
+      outerGrad = "url(#purpleOuter)";
+      innerGrad = "url(#purpleInner)";
+    } else if (streak >= 7) {
+      outerGrad = "url(#redOuter)";
+      innerGrad = "url(#redInner)";
+    }
+
+    return (
+      <svg
+        className={`h-8 w-8 transition-all duration-300 ${className}`}
+        viewBox="0 0 24 24"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+        style={{ transformStyle: "preserve-3d" }}
+      >
+        <path
+          d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
+          fill={outerGrad}
+        />
+        <path
+          d="M15 15.5l-3 3-3-3a4 4 0 116 0z"
+          fill={innerGrad}
+          opacity="0.9"
+        />
+        <defs>
+          <linearGradient id="orangeOuter" x1="12" y1="2" x2="12" y2="22" gradientUnits="userSpaceOnUse">
+            <stop offset="0%" stopColor="#FF9800" />
+            <stop offset="100%" stopColor="#FF5722" />
+          </linearGradient>
+          <linearGradient id="orangeInner" x1="12" y1="8" x2="12" y2="18" gradientUnits="userSpaceOnUse">
+            <stop offset="0%" stopColor="#FFF176" />
+            <stop offset="100%" stopColor="#FFB74D" />
+          </linearGradient>
+
+          <linearGradient id="redOuter" x1="12" y1="2" x2="12" y2="22" gradientUnits="userSpaceOnUse">
+            <stop offset="0%" stopColor="#F44336" />
+            <stop offset="100%" stopColor="#E91E63" />
+          </linearGradient>
+          <linearGradient id="redInner" x1="12" y1="8" x2="12" y2="18" gradientUnits="userSpaceOnUse">
+            <stop offset="0%" stopColor="#FF8A80" />
+            <stop offset="100%" stopColor="#FF5252" />
+          </linearGradient>
+
+          <linearGradient id="purpleOuter" x1="12" y1="2" x2="12" y2="22" gradientUnits="userSpaceOnUse">
+            <stop offset="0%" stopColor="#9C27B0" />
+            <stop offset="100%" stopColor="#673AB7" />
+          </linearGradient>
+          <linearGradient id="purpleInner" x1="12" y1="8" x2="12" y2="18" gradientUnits="userSpaceOnUse">
+            <stop offset="0%" stopColor="#E040FB" />
+            <stop offset="100%" stopColor="#B388FF" />
+          </linearGradient>
+
+          <linearGradient id="blueOuter" x1="12" y1="2" x2="12" y2="22" gradientUnits="userSpaceOnUse">
+            <stop offset="0%" stopColor="#00BCD4" />
+            <stop offset="100%" stopColor="#009688" />
+          </linearGradient>
+          <linearGradient id="blueInner" x1="12" y1="8" x2="12" y2="18" gradientUnits="userSpaceOnUse">
+            <stop offset="0%" stopColor="#E0F7FA" />
+            <stop offset="100%" stopColor="#80DEEA" />
+          </linearGradient>
+        </defs>
+      </svg>
+    );
+  };
 
   const getFlameClass = (streak: number) => {
     if (streak === 0) return "text-slate-350";
@@ -838,30 +900,37 @@ export default function DashboardPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#FAF9F6] via-[#FFFFFF] to-[#F4F1EA] text-[#3E3A35] flex flex-col relative overflow-hidden">
       <style dangerouslySetInnerHTML={{ __html: `
-        @keyframes flame-sway {
-          0% { transform: scale(1) rotate(-1deg); }
-          50% { transform: scale(1.06) rotate(2deg); }
-          100% { transform: scale(1) rotate(-1deg); }
+        @keyframes flame-3d-orange {
+          0% { transform: perspective(100px) rotateX(4deg) rotateY(-8deg) scale3d(1, 1, 1); filter: drop-shadow(0 2px 5px rgba(255,152,0,0.5)); }
+          50% { transform: perspective(100px) rotateX(-8deg) rotateY(12deg) scale3d(1.08, 1.14, 1.08); filter: drop-shadow(0 4px 14px rgba(255,87,34,0.85)); }
+          100% { transform: perspective(100px) rotateX(4deg) rotateY(-8deg) scale3d(1, 1, 1); filter: drop-shadow(0 2px 5px rgba(255,152,0,0.5)); }
+        }
+        @keyframes flame-3d-red {
+          0% { transform: perspective(100px) rotateX(4deg) rotateY(-8deg) scale3d(1, 1, 1); filter: drop-shadow(0 2px 5px rgba(244,67,54,0.5)); }
+          50% { transform: perspective(100px) rotateX(-8deg) rotateY(12deg) scale3d(1.08, 1.14, 1.08); filter: drop-shadow(0 4px 14px rgba(233,30,99,0.85)); }
+          100% { transform: perspective(100px) rotateX(4deg) rotateY(-8deg) scale3d(1, 1, 1); filter: drop-shadow(0 2px 5px rgba(244,67,54,0.5)); }
+        }
+        @keyframes flame-3d-purple {
+          0% { transform: perspective(100px) rotateX(4deg) rotateY(-8deg) scale3d(1, 1, 1); filter: drop-shadow(0 2px 5px rgba(156,39,176,0.5)); }
+          50% { transform: perspective(100px) rotateX(-8deg) rotateY(12deg) scale3d(1.08, 1.14, 1.08); filter: drop-shadow(0 4px 14px rgba(103,58,183,0.85)); }
+          100% { transform: perspective(100px) rotateX(4deg) rotateY(-8deg) scale3d(1, 1, 1); filter: drop-shadow(0 2px 5px rgba(156,39,176,0.5)); }
+        }
+        @keyframes flame-3d-blue {
+          0% { transform: perspective(100px) rotateX(4deg) rotateY(-8deg) scale3d(1, 1, 1); filter: drop-shadow(0 2px 5px rgba(0,188,212,0.5)); }
+          50% { transform: perspective(100px) rotateX(-8deg) rotateY(12deg) scale3d(1.08, 1.14, 1.08); filter: drop-shadow(0 4px 14px rgba(0,150,136,0.85)); }
+          100% { transform: perspective(100px) rotateX(4deg) rotateY(-8deg) scale3d(1, 1, 1); filter: drop-shadow(0 2px 5px rgba(0,188,212,0.5)); }
         }
         .animate-flame-orange {
-          animation: flame-sway 1.2s ease-in-out infinite;
-          color: #FF6B35;
-          filter: drop-shadow(0 2px 4px rgba(255,107,53,0.3));
+          animation: flame-3d-orange 1.2s ease-in-out infinite;
         }
         .animate-flame-red {
-          animation: flame-sway 0.8s ease-in-out infinite;
-          color: #EF4444;
-          filter: drop-shadow(0 0 8px rgba(239,68,68,0.6));
+          animation: flame-3d-red 0.8s ease-in-out infinite;
         }
         .animate-flame-purple {
-          animation: flame-sway 0.6s ease-in-out infinite;
-          color: #A855F7;
-          filter: drop-shadow(0 0 12px rgba(168,85,247,0.8));
+          animation: flame-3d-purple 0.6s ease-in-out infinite;
         }
         .animate-flame-blue {
-          animation: flame-sway 0.4s ease-in-out infinite;
-          color: #3B82F6;
-          filter: drop-shadow(0 0 16px rgba(59,130,246,0.9));
+          animation: flame-3d-blue 0.4s ease-in-out infinite;
         }
         @keyframes shimmer {
           100% { transform: translateX(100%); }
@@ -1076,7 +1145,7 @@ export default function DashboardPage() {
 
                 {/* Dynamic Swaying Flame widget */}
                 <div className="flex items-center gap-2.5 bg-[#FAF8F5]/80 border border-[#EBE6DD]/80 px-4 py-2.5 rounded-xl w-full justify-center">
-                  <FlameIcon className={getFlameClass(streakVal)} />
+                  <FlameIcon streak={streakVal} className={getFlameClass(streakVal)} />
                   <div className="text-left">
                     <div className="text-xs font-black text-[#3E3A35]">{streakVal} ngày liên tiếp</div>
                     <span className="text-[9px] text-slate-400 uppercase tracking-wider font-semibold block">
@@ -1088,42 +1157,42 @@ export default function DashboardPage() {
             </div>
 
             {/* Knowledge points & Streak freezes inventory card */}
-            <div className="bg-gradient-to-br from-indigo-900 to-slate-900 border border-indigo-950 p-6 rounded-2xl shadow-md text-white">
-              <h3 className="text-xs font-black uppercase tracking-wider text-indigo-200 mb-4 flex items-center gap-1.5">
+            <div className="bg-[#FAF8F5]/80 border border-[#EBE6DD] p-6 rounded-2xl shadow-sm theme-card">
+              <h3 className="text-xs font-black uppercase tracking-wider text-[#3E3A35]/90 mb-4 flex items-center gap-1.5">
                 🎒 Hành trang tri thức
               </h3>
               
               <div className="grid grid-cols-2 gap-4 items-center">
                 <div className="space-y-1">
-                  <span className="text-[10px] text-indigo-300 font-bold uppercase tracking-wider block">Điểm tích lũy</span>
+                  <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider block">Điểm tích lũy</span>
                   <div className="flex items-center gap-1.5">
                     <span className="text-lg">💎</span>
-                    <span className="text-lg font-extrabold font-mono text-indigo-50">{user.knowledgePoints || 0}</span>
+                    <span className="text-base font-extrabold font-mono text-[#3E3A35]">{user.knowledgePoints || 0}</span>
                   </div>
                 </div>
                 <div className="space-y-1">
-                  <span className="text-[10px] text-indigo-300 font-bold uppercase tracking-wider block">Thẻ bảo vệ</span>
+                  <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider block">Thẻ bảo vệ</span>
                   <div className="flex items-center gap-1.5">
                     <span className="text-lg">❄️</span>
-                    <span className="text-lg font-extrabold font-mono text-indigo-50">{user.streakFreezes || 0}</span>
+                    <span className="text-base font-extrabold font-mono text-[#3E3A35]">{user.streakFreezes || 0}</span>
                   </div>
                 </div>
               </div>
 
-              <div className="mt-4 pt-3.5 border-t border-indigo-800/40 space-y-3">
-                <p className="text-[11px] text-indigo-200/80 leading-relaxed">
+              <div className="mt-4 pt-3.5 border-t border-[#EBE6DD] space-y-3">
+                <p className="text-[11px] text-slate-500 leading-relaxed">
                   Dùng <strong>50 Điểm</strong> để mua 1 <strong>Thẻ bảo vệ</strong> giúp chống đứt Streak.
                 </p>
                 <button
                   onClick={buyStreakFreeze}
                   disabled={buyingFreeze || (user.knowledgePoints || 0) < 50}
-                  className="w-full bg-white text-indigo-900 disabled:bg-indigo-950 disabled:text-indigo-400 hover:bg-indigo-50 py-2 rounded-xl text-xs font-bold shadow-sm transition-all duration-200 select-none"
+                  className="w-full bg-[#3E3A35] text-[#FAF8F5] disabled:bg-slate-200 disabled:text-slate-400 hover:bg-[#524c43] py-2 rounded-xl text-xs font-bold shadow-sm transition-all duration-200 select-none cursor-pointer"
                 >
                   {buyingFreeze ? "Đang xử lý..." : "Mua Thẻ bảo vệ (50💎)"}
                 </button>
               </div>
               {buyError && (
-                <p className="text-red-300 text-[10px] font-bold mt-2 text-center">{buyError}</p>
+                <p className="text-rose-500 text-[10px] font-bold mt-2 text-center">{buyError}</p>
               )}
             </div>
 
@@ -2307,7 +2376,7 @@ export default function DashboardPage() {
                       <span>T5</span>
                       <span>T7</span>
                     </div>
-                    <div className="grid grid-flow-col grid-rows-7 gap-1.2 h-[105px]">
+                    <div className="grid grid-flow-col grid-rows-7 gap-[3px] h-[105px]">
                       {getHeatmapGrid().map((d, index) => {
                         const dateStr = d.toLocaleDateString("en-CA", { timeZone: "Asia/Ho_Chi_Minh" });
                         const count = heatmapData[dateStr] || 0;
@@ -2317,7 +2386,7 @@ export default function DashboardPage() {
                         return (
                           <div
                             key={index}
-                            className={`h-3.2 w-3.2 rounded-sm transition-all duration-150 cursor-pointer ${getCellColor(d)}`}
+                            className={`h-[11px] w-[11px] rounded-sm transition-all duration-150 cursor-pointer ${getCellColor(d)}`}
                             title={titleText}
                           />
                         );
