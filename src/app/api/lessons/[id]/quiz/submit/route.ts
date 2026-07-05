@@ -138,8 +138,103 @@ export async function POST(
             knowledgePoints: { increment: 10 },
           },
         });
+
+        // Check if this is the user's first completed lesson
+        const completedLessonsCount = await prisma.userLessonProgress.count({
+          where: {
+            userId,
+            status: "COMPLETED",
+          },
+        });
+
+        if (completedLessonsCount === 1) {
+          const currentUser = await prisma.user.findUnique({
+            where: { id: userId },
+            select: { referredById: true, name: true, referralRewarded: true },
+          });
+
+          if (currentUser?.referredById && !currentUser.referralRewarded) {
+            const referrerId = currentUser.referredById;
+
+            // Transactionally reward both users
+            await prisma.$transaction([
+              prisma.user.update({
+                where: { id: userId },
+                data: {
+                  knowledgePoints: { increment: 50 },
+                  streakFreezes: { increment: 1 },
+                  referralRewarded: true,
+                },
+              }),
+              prisma.user.update({
+                where: { id: referrerId },
+                data: {
+                  knowledgePoints: { increment: 50 },
+                  streakFreezes: { increment: 1 },
+                },
+              }),
+            ]);
+
+            // Send notification emails
+            try {
+              const referrer = await prisma.user.findUnique({
+                where: { id: referrerId },
+                select: { email: true, name: true },
+              });
+              const refereeEmail = decoded.email || "";
+
+              const { sendEmail } = await import("@/lib/notifications");
+
+              if (referrer) {
+                await sendEmail({
+                  to: referrer.email,
+                  subject: "[Daily Learn VN] Quà tặng giới thiệu bạn học mới thành công!",
+                  html: `
+                    <div style="font-family: sans-serif; padding: 20px; line-height: 1.6; color: #333;">
+                      <h2 style="color: #4f46e5;">Chào ${referrer.name},</h2>
+                      <p>Chúc mừng! Bạn học <strong>${currentUser.name}</strong> mà bạn giới thiệu đã hoàn thành bài học đầu tiên trên Daily Learn VN.</p>
+                      <p>Hệ thống đã tự động gửi tặng bạn phần thưởng giới thiệu:</p>
+                      <ul style="font-size: 14px; font-weight: bold; color: #4f46e5;">
+                        <li>+50 Điểm tích lũy (Knowledge Points) 💎</li>
+                        <li>+1 Thẻ bảo vệ chuỗi Streak ❄️</li>
+                      </ul>
+                      <p>Hãy tiếp tục chia sẻ mã giới thiệu của mình để cùng nhau xây dựng thói quen học tập tốt mỗi ngày nhé!</p>
+                      <br />
+                      <p>Trân trọng,</p>
+                      <p><strong>Daily Learn VN</strong></p>
+                    </div>
+                  `,
+                }).catch(() => {});
+              }
+
+              if (refereeEmail) {
+                await sendEmail({
+                  to: refereeEmail,
+                  subject: "[Daily Learn VN] Chúc mừng nhận quà chào mừng giới thiệu bạn học!",
+                  html: `
+                    <div style="font-family: sans-serif; padding: 20px; line-height: 1.6; color: #333;">
+                      <h2 style="color: #4f46e5;">Chào ${currentUser.name},</h2>
+                      <p>Chúc mừng bạn đã hoàn thành xuất sắc bài học đầu tiên trên Daily Learn VN!</p>
+                      <p>Vì bạn được giới thiệu bởi thành viên khác, bạn nhận được quà chào mừng đặc biệt:</p>
+                      <ul style="font-size: 14px; font-weight: bold; color: #4f46e5;">
+                        <li>+50 Điểm tích lũy (Knowledge Points) 💎</li>
+                        <li>+1 Thẻ bảo vệ chuỗi Streak ❄️</li>
+                      </ul>
+                      <p>Hãy sử dụng Điểm tích lũy để thăng cấp và mua sắm Thẻ bảo vệ Streak khi cần thiết nhé!</p>
+                      <br />
+                      <p>Trân trọng,</p>
+                      <p><strong>Daily Learn VN</strong></p>
+                    </div>
+                  `,
+                }).catch(() => {});
+              }
+            } catch (mailErr) {
+              console.error("Failed to send referral reward emails:", mailErr);
+            }
+          }
+        }
       } catch (err) {
-        console.error("Failed to award knowledge points:", err);
+        console.error("Failed to award knowledge points or referral bonus:", err);
       }
     }
 

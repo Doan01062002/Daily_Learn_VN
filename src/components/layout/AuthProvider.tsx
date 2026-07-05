@@ -21,6 +21,7 @@ export interface UserSession {
   knowledgePoints: number;
   savedLessonIds: string[];
   permissions?: string[];
+  referralCode?: string | null;
 }
 
 interface AuthContextType {

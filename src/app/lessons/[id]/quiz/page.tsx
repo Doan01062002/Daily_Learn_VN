@@ -120,17 +120,27 @@ export default function QuizPage({
   // Confetti effect hook when 100% score is achieved
   useEffect(() => {
     if (showSummary && finalScore === 100) {
-      const colors = ["#4F46E5", "#EC4899", "#F59E0B", "#10B981", "#3B82F6", "#8B5CF6"];
-      const particles = Array.from({ length: 80 }).map((_, i) => ({
-        id: i,
-        left: Math.random() * 100,
-        delay: Math.random() * 1.2,
-        color: colors[Math.floor(Math.random() * colors.length)],
-        duration: 2 + Math.random() * 2.5,
-        size: 6 + Math.random() * 8,
-      }));
-      setConfettiParticles(particles);
-      setShowConfetti(true);
+      import("canvas-confetti").then((confetti) => {
+        confetti.default({
+          particleCount: 100,
+          spread: 70,
+          origin: { y: 0.6 }
+        });
+        setTimeout(() => {
+          confetti.default({
+            particleCount: 50,
+            angle: 60,
+            spread: 55,
+            origin: { x: 0 }
+          });
+          confetti.default({
+            particleCount: 50,
+            angle: 120,
+            spread: 55,
+            origin: { x: 1 }
+          });
+        }, 250);
+      });
     }
   }, [showSummary, finalScore]);
 

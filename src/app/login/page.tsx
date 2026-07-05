@@ -6,6 +6,17 @@ import { useAuth } from "@/components/layout/AuthProvider";
 export default function LoginPage() {
   const { login, refreshSession } = useAuth();
   const [isRegisterMode, setIsRegisterMode] = useState(false);
+
+  // Capture ref query parameter on load
+  React.useEffect(() => {
+    if (typeof window !== "undefined") {
+      const urlParams = new URLSearchParams(window.location.search);
+      const ref = urlParams.get("ref");
+      if (ref) {
+        localStorage.setItem("referredByCode", ref.trim().toUpperCase());
+      }
+    }
+  }, []);
   const [isForgotPasswordMode, setIsForgotPasswordMode] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
@@ -150,10 +161,11 @@ export default function LoginPage() {
     setFieldErrors({});
 
     try {
+      const referrerCode = localStorage.getItem("referredByCode") || undefined;
       const res = await fetch("/api/auth/register/verify", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: email.trim(), otpCode: cleanOtp }),
+        body: JSON.stringify({ email: email.trim(), otpCode: cleanOtp, referrerCode }),
       });
 
       if (res.ok) {

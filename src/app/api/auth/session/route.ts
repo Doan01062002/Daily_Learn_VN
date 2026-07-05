@@ -60,6 +60,30 @@ export async function GET(req: NextRequest) {
       );
     }
 
+    // Self-heal: generate referral code if missing (e.g. for existing users)
+    let userReferralCode = user.referralCode;
+    if (!userReferralCode) {
+      let isUnique = false;
+      let attempts = 0;
+      while (!isUnique && attempts < 10) {
+        userReferralCode = Math.random().toString(36).substring(2, 10).toUpperCase();
+        const codeCheck = await prisma.user.findUnique({
+          where: { referralCode: userReferralCode },
+        });
+        if (!codeCheck) {
+          isUnique = true;
+        }
+        attempts++;
+      }
+      if (!isUnique) {
+        userReferralCode = `DL${Date.now().toString(36).substring(4).toUpperCase()}`;
+      }
+      await prisma.user.update({
+        where: { id: user.id },
+        data: { referralCode: userReferralCode },
+      });
+    }
+
     const isOnboarded = user.interestedTopics && user.interestedTopics.length > 0;
 
     // Resolve permissions dynamically for administrative roles
@@ -110,6 +134,7 @@ export async function GET(req: NextRequest) {
         streakFreezes: user.streakFreezes,
         knowledgePoints: user.knowledgePoints,
         savedLessonIds: user.savedLessonIds,
+        referralCode: userReferralCode,
         permissions,
       },
     });

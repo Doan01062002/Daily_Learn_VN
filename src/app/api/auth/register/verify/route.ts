@@ -6,7 +6,7 @@ import { signToken } from "@/lib/jwt";
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const { email, otpCode } = body;
+    const { email, otpCode, referrerCode } = body;
 
     if (!email || !otpCode) {
       return NextResponse.json(
@@ -64,6 +64,35 @@ export async function POST(req: NextRequest) {
 
     const isSystemAdmin = cleanEmail === "admin@gmail.com";
 
+    // Generate unique 8-character referral code for new user
+    let referralCode = "";
+    let isUnique = false;
+    let attempts = 0;
+    while (!isUnique && attempts < 10) {
+      referralCode = Math.random().toString(36).substring(2, 10).toUpperCase();
+      const codeCheck = await prisma.user.findUnique({
+        where: { referralCode },
+      });
+      if (!codeCheck) {
+        isUnique = true;
+      }
+      attempts++;
+    }
+    if (!isUnique) {
+      referralCode = `DL${Date.now().toString(36).substring(4).toUpperCase()}`;
+    }
+
+    // Validate and find referrer
+    let referredById = null;
+    if (referrerCode && typeof referrerCode === "string" && referrerCode.trim()) {
+      const referrer = await prisma.user.findUnique({
+        where: { referralCode: referrerCode.trim().toUpperCase() },
+      });
+      if (referrer && referrer.email !== cleanEmail) {
+        referredById = referrer.id;
+      }
+    }
+
     // Create the User in the database
     const user = await prisma.user.create({
       data: {
@@ -72,6 +101,8 @@ export async function POST(req: NextRequest) {
         password: verification.password,
         role: isSystemAdmin ? "ADMIN" : "STUDENT",
         avatarUrl: "https://lh3.googleusercontent.com/a/default-user",
+        referralCode,
+        referredById,
         streaks: {
           create: {
             currentStreak: 0,

@@ -108,7 +108,7 @@ export default function DashboardPage() {
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
   // Stats and Leaderboard states
-  const [activeTab, setActiveTab] = useState<"today" | "bookmarks" | "leaderboard" | "stats" | "groups">("today");
+  const [activeTab, setActiveTab] = useState<"today" | "bookmarks" | "leaderboard" | "stats" | "groups" | "referrals">("today");
   const [stats, setStats] = useState<UserStats | null>(null);
   const [competencies, setCompetencies] = useState<any[]>([]);
   const [leaderboard, setLeaderboard] = useState<LeaderboardUser[]>([]);
@@ -119,6 +119,17 @@ export default function DashboardPage() {
   const [bookmarks, setBookmarks] = useState<LessonFeedItem[]>([]);
   const [loadingBookmarks, setLoadingBookmarks] = useState(false);
   const [bookmarkingId, setBookmarkingId] = useState<string | null>(null);
+
+  // Referrals states
+  const [referralsList, setReferralsList] = useState<any[]>([]);
+  const [referralStats, setReferralStats] = useState<any>(null);
+  const [loadingReferrals, setLoadingReferrals] = useState(false);
+  const [copySuccess, setCopySuccess] = useState(false);
+  const [showShareModal, setShowShareModal] = useState(false);
+  const canvasRef = React.useRef<HTMLCanvasElement | null>(null);
+
+  // Level Up Check Ref
+  const levelRef = React.useRef<number | null>(null);
 
   // Tag filter state
   const [selectedTag, setSelectedTag] = useState<string>("All");
@@ -168,6 +179,22 @@ export default function DashboardPage() {
       console.error("Error loading bookmarks:", error);
     } finally {
       setLoadingBookmarks(false);
+    }
+  };
+
+  const fetchReferralsData = async () => {
+    setLoadingReferrals(true);
+    try {
+      const res = await fetch("/api/user/referrals");
+      if (res.ok) {
+        const data = await res.json();
+        setReferralsList(data.referrals || []);
+        setReferralStats(data.stats || null);
+      }
+    } catch (error) {
+      console.error("Error fetching referrals:", error);
+    } finally {
+      setLoadingReferrals(false);
     }
   };
 
@@ -361,6 +388,8 @@ export default function DashboardPage() {
       fetchGroupsData();
     } else if (activeTab === "stats") {
       fetchBadgesData();
+    } else if (activeTab === "referrals") {
+      fetchReferralsData();
     }
   }, [activeTab, user]);
 
@@ -490,6 +519,178 @@ export default function DashboardPage() {
   };
   const levelTitle = getLevelTitle(level);
 
+  // Level Up Confetti Trigger
+  useEffect(() => {
+    if (!user) return;
+    const computedLevel = Math.floor((user.knowledgePoints || 0) / 100) + 1;
+    if (levelRef.current !== null && computedLevel > levelRef.current) {
+      import("canvas-confetti").then((confetti) => {
+        confetti.default({
+          particleCount: 150,
+          spread: 80,
+          origin: { y: 0.6 },
+        });
+      });
+    }
+    levelRef.current = computedLevel;
+  }, [user]);
+
+  const drawCanvas = () => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+
+    ctx.clearRect(0, 0, 600, 400);
+
+    const grad = ctx.createLinearGradient(0, 0, 600, 400);
+    grad.addColorStop(0, "#1e1b4b");
+    grad.addColorStop(0.5, "#311042");
+    grad.addColorStop(1, "#090d16");
+    ctx.fillStyle = grad;
+    ctx.fillRect(0, 0, 600, 400);
+
+    ctx.fillStyle = "rgba(79, 70, 229, 0.12)";
+    ctx.beginPath();
+    ctx.arc(100, 100, 160, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.fillStyle = "rgba(236, 72, 153, 0.08)";
+    ctx.beginPath();
+    ctx.arc(520, 280, 130, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.strokeStyle = "rgba(255, 255, 255, 0.08)";
+    ctx.lineWidth = 4;
+    ctx.strokeRect(10, 10, 580, 380);
+
+    ctx.fillStyle = "rgba(255, 255, 255, 0.4)";
+    ctx.font = "bold 9px sans-serif";
+    ctx.fillText("DAILY LEARN VIỆT NAM", 35, 45);
+
+    const drawTextAvatar = () => {
+      ctx.fillStyle = "#4f46e5";
+      ctx.beginPath();
+      ctx.arc(85, 95, 35, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.fillStyle = "#ffffff";
+      ctx.font = "bold 24px sans-serif";
+      ctx.textAlign = "center";
+      ctx.fillText(user.name ? user.name[0].toUpperCase() : "D", 85, 103);
+      ctx.textAlign = "left";
+    };
+
+    if (user.avatarUrl) {
+      const avatarImg = new Image();
+      avatarImg.crossOrigin = "anonymous";
+      avatarImg.onload = () => {
+        ctx.save();
+        ctx.beginPath();
+        ctx.arc(85, 95, 35, 0, Math.PI * 2);
+        ctx.closePath();
+        ctx.clip();
+        ctx.drawImage(avatarImg, 50, 60, 70, 70);
+        ctx.restore();
+      };
+      avatarImg.onerror = () => {
+        drawTextAvatar();
+      };
+      avatarImg.src = user.avatarUrl;
+    } else {
+      drawTextAvatar();
+    }
+
+    ctx.fillStyle = "#ffffff";
+    ctx.font = "bold 22px sans-serif";
+    ctx.fillText(user.name, 35, 175);
+
+    ctx.fillStyle = "#cbd5e1";
+    ctx.font = "bold 13px sans-serif";
+    ctx.fillText(`Cấp độ: ${levelTitle} (Cấp ${level})`, 35, 205);
+
+    ctx.fillStyle = "#94a3b8";
+    ctx.font = "normal 11px sans-serif";
+    ctx.fillText(`Bài học đã hoàn thành: ${stats?.completedLessons || 0} bài`, 35, 235);
+
+    const streakBgGrad = ctx.createLinearGradient(35, 265, 200, 310);
+    streakBgGrad.addColorStop(0, "#f97316");
+    streakBgGrad.addColorStop(1, "#f59e0b");
+    ctx.fillStyle = streakBgGrad;
+    ctx.beginPath();
+    ctx.roundRect(35, 265, 170, 45, 12);
+    ctx.fill();
+
+    ctx.fillStyle = "#ffffff";
+    ctx.font = "bold 15px sans-serif";
+    ctx.fillText(`🔥 ${streakVal} ngày liên tiếp`, 50, 293);
+
+    const refCode = user.referralCode || "";
+    const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(`https://dailylearn.vn/login?ref=${refCode}`)}`;
+    const qrImg = new Image();
+    qrImg.crossOrigin = "anonymous";
+    qrImg.onload = () => {
+      ctx.fillStyle = "#ffffff";
+      ctx.beginPath();
+      ctx.roundRect(400, 80, 160, 160, 12);
+      ctx.fill();
+
+      ctx.drawImage(qrImg, 405, 85, 150, 150);
+
+      ctx.fillStyle = "#f1f5f9";
+      ctx.font = "bold 12px sans-serif";
+      ctx.textAlign = "center";
+      ctx.fillText("Quét mã học cùng tôi!", 480, 270);
+
+      ctx.fillStyle = "#cbd5e1";
+      ctx.font = "normal 10px sans-serif";
+      ctx.fillText("Nhận ngay +50💎 & +1 Thẻ bảo vệ", 480, 290);
+      ctx.textAlign = "left";
+    };
+    qrImg.src = qrUrl;
+  };
+
+  const downloadShareCard = () => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const url = canvas.toDataURL("image/png");
+    const link = document.createElement("a");
+    link.download = `DailyLearn_BentoCard_${user.name.replace(/\s+/g, "_")}.png`;
+    link.href = url;
+    link.click();
+  };
+
+  const shareDirectly = async () => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    try {
+      canvas.toBlob(async (blob) => {
+        if (!blob) {
+          alert("Không thể tạo dữ liệu ảnh chia sẻ.");
+          return;
+        }
+
+        const file = new File([blob], `DailyLearn_BentoCard_${user.name.replace(/\s+/g, "_")}.png`, {
+          type: "image/png",
+        });
+
+        if (navigator.canShare && navigator.canShare({ files: [file] })) {
+          await navigator.share({
+            files: [file],
+            title: "Daily Learn Việt Nam",
+            text: `Hãy cùng tôi học lập trình trên Daily Learn VN để nhận ngay +50💎 & +1 Thẻ bảo vệ Streak nhé!`,
+          });
+        } else {
+          alert("Trình duyệt hoặc hệ điều hành của bạn không hỗ trợ chia sẻ trực tiếp file ảnh. Hãy sử dụng nút 'Tải ảnh về máy' để lưu và chia sẻ thủ công.");
+        }
+      }, "image/png");
+    } catch (err) {
+      console.error("Direct share failed:", err);
+      alert("Đã xảy ra lỗi khi cố gắng chia sẻ trực tiếp.");
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#EEF2F6] via-[#FFFFFF] to-[#F5EFFF] text-slate-800 flex flex-col relative overflow-hidden">
       <style dangerouslySetInnerHTML={{ __html: `
@@ -594,6 +795,17 @@ export default function DashboardPage() {
           >
             <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v5.25c0 .621-.504 1.125-1.125 1.125h-2.25A1.125 1.125 0 013 18.375v-5.25zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125v-9.75zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v14.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z" /></svg>
             Tiến trình
+          </button>
+          <button
+            onClick={() => setActiveTab("referrals")}
+            className={`px-3.5 py-1.5 text-[11px] font-extrabold uppercase tracking-wider rounded-lg transition duration-200 focus:outline-none flex items-center gap-1.5 cursor-pointer ${
+              activeTab === "referrals"
+                ? "bg-white text-indigo-600 shadow-sm"
+                : "text-slate-500 hover:text-slate-800"
+            }`}
+          >
+            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M19 7.5v3m0 0v3m0-3h3m-3 0h-3m-2.25-4.125a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zM4 19.235v-.11a6.375 6.375 0 0112.75 0v.109A12.318 12.318 0 0110.374 21c-2.331 0-4.512-.645-6.374-1.766z" /></svg>
+            Giới thiệu
           </button>
         </nav>
 
@@ -815,22 +1027,6 @@ export default function DashboardPage() {
               </div>
             )}
 
-            {/* Tag filtering categories buttons */}
-            <div className="flex flex-wrap gap-2 px-1">
-              {["All", "Tech", "Business", "SoftSkills", "Design", "Health"].map((tag) => (
-                <button
-                  key={tag}
-                  onClick={() => setSelectedTag(tag)}
-                  className={`text-[10px] font-bold uppercase tracking-wider px-4 py-2 rounded-full border transition duration-200 ${
-                    selectedTag === tag
-                      ? "bg-indigo-600 text-white border-indigo-600 shadow-sm"
-                      : "bg-white text-slate-500 border-slate-200 hover:bg-slate-50"
-                  }`}
-                >
-                  {tag === "All" ? "Tất cả" : `#${tag}`}
-                </button>
-              ))}
-            </div>
 
             {/* Mobile Tab Navigation Feed Switcher - Hidden on desktop */}
             <div className="flex md:hidden border-b border-slate-100 gap-5 px-1 pb-1 overflow-x-auto select-none scrollbar-none">
@@ -883,6 +1079,16 @@ export default function DashboardPage() {
                 }`}
               >
                 Tiến trình
+              </button>
+              <button
+                onClick={() => setActiveTab("referrals")}
+                className={`pb-2 text-xs font-bold uppercase tracking-wider border-b-2 transition duration-200 focus:outline-none shrink-0 ${
+                  activeTab === "referrals"
+                    ? "border-indigo-600 text-indigo-600 font-extrabold"
+                    : "border-transparent text-slate-450 hover:text-slate-700"
+                }`}
+              >
+                Giới thiệu
               </button>
             </div>
 
@@ -1535,7 +1741,7 @@ export default function DashboardPage() {
                   </div>
                 </div>
               </div>
-            ) : (
+            ) : activeTab === "stats" ? (
               /* Expanded Stats & Contribution Heatmap + Timeline combined */
               <div className="space-y-6">
 
@@ -1891,15 +2097,237 @@ export default function DashboardPage() {
                   )}
                 </div>
               </div>
+            ) : (
+              <div className="space-y-6">
+                {/* Referrals Stats Bento Cards */}
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                  <div className="bg-white/80 border border-slate-100 p-5 rounded-2xl shadow-sm text-center space-y-1">
+                    <span className="text-2xl">👥</span>
+                    <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider block">Tổng số đã mời</span>
+                    <div className="text-xl font-black text-slate-800">{referralStats?.totalInvited || 0}</div>
+                  </div>
+                  <div className="bg-white/80 border border-slate-100 p-5 rounded-2xl shadow-sm text-center space-y-1">
+                    <span className="text-2xl">✅</span>
+                    <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider block">Mời thành công</span>
+                    <div className="text-xl font-black text-slate-800">{referralStats?.successfulReferrals || 0}</div>
+                  </div>
+                  <div className="bg-white/80 border border-slate-100 p-5 rounded-2xl shadow-sm text-center space-y-1">
+                    <span className="text-2xl">💎</span>
+                    <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider block">Điểm nhận được</span>
+                    <div className="text-xl font-black text-indigo-600 font-mono">+{referralStats?.pointsEarned || 0}</div>
+                  </div>
+                  <div className="bg-white/80 border border-slate-100 p-5 rounded-2xl shadow-sm text-center space-y-1">
+                    <span className="text-2xl">❄️</span>
+                    <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider block">Thẻ bảo vệ nhận được</span>
+                    <div className="text-xl font-black text-indigo-600 font-mono">+{referralStats?.freezesEarned || 0}</div>
+                  </div>
+                </div>
+
+                {/* Referral Link & Bento Card Generation */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  <div className="md:col-span-2 bg-white/80 border border-slate-100 p-6 rounded-3xl shadow-sm space-y-5">
+                    <div>
+                      <h3 className="font-serif text-base font-bold text-slate-800">Mời bạn cùng học tập</h3>
+                      <p className="text-xs text-slate-400 mt-1">Gửi link giới thiệu cho bạn bè của bạn. Cả hai cùng nhận được <strong>50💎 và 1❄️</strong> ngay khi bạn của bạn hoàn thành bài học và quiz đầu tiên!</p>
+                    </div>
+
+                    <div className="space-y-4">
+                      <div className="flex gap-2">
+                        <div className="bg-slate-50 border border-slate-200/80 rounded-xl px-4 py-2.5 text-xs text-slate-700 flex-1 font-mono select-all truncate flex items-center">
+                          {typeof window !== "undefined" ? `${window.location.origin}/login?ref=${user.referralCode || ""}` : ""}
+                        </div>
+                        <button
+                          onClick={() => {
+                            if (typeof window !== "undefined") {
+                              navigator.clipboard.writeText(`${window.location.origin}/login?ref=${user.referralCode || ""}`);
+                              setCopySuccess(true);
+                              setTimeout(() => setCopySuccess(false), 2000);
+                            }
+                          }}
+                          className="bg-indigo-600 text-white hover:bg-indigo-700 px-5 rounded-xl text-xs font-bold transition duration-200 shrink-0"
+                        >
+                          {copySuccess ? "Đã chép! ✓" : "Sao chép"}
+                        </button>
+                      </div>
+
+                      <div className="flex flex-wrap gap-3.5 pt-2">
+                        <a
+                          href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(typeof window !== "undefined" ? `${window.location.origin}/login?ref=${user.referralCode || ""}` : "")}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex items-center gap-2 bg-[#1877F2] text-white px-4 py-2.5 rounded-xl text-xs font-bold hover:bg-[#166FE5] transition duration-150 shadow-sm shadow-[#1877F2]/10"
+                        >
+                          Chia sẻ qua Facebook
+                        </a>
+                        <a
+                          href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(typeof window !== "undefined" ? `${window.location.origin}/login?ref=${user.referralCode || ""}` : "")}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex items-center gap-2 bg-[#0A66C2] text-white px-4 py-2.5 rounded-xl text-xs font-bold hover:bg-[#0958A8] transition duration-150 shadow-sm shadow-[#0A66C2]/10"
+                        >
+                          Chia sẻ qua LinkedIn
+                        </a>
+                        <a
+                          href={`https://sp.zalo.me/share_to_zalo?url=${encodeURIComponent(typeof window !== "undefined" ? `${window.location.origin}/login?ref=${user.referralCode || ""}` : "")}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex items-center gap-2 bg-[#0068FF] text-white px-4 py-2.5 rounded-xl text-xs font-bold hover:bg-[#0052cc] transition duration-150 shadow-sm shadow-[#0068FF]/10"
+                        >
+                          Chia sẻ qua Zalo
+                        </a>
+                        <button
+                          onClick={() => {
+                            const inviteMsg = `Hãy cùng tôi học lập trình cực thú vị trên Daily Learn VN để nhận quà chào mừng đặc biệt! Nhấn vào đây để đăng ký: ${typeof window !== "undefined" ? `${window.location.origin}/login?ref=${user.referralCode || ""}` : ""}`;
+                            navigator.clipboard.writeText(inviteMsg);
+                            alert("Đã sao chép nội dung lời mời vào clipboard! Bạn có thể dán chia sẻ trực tiếp lên Instagram.");
+                            window.open("https://www.instagram.com/", "_blank");
+                          }}
+                          className="flex items-center gap-2 bg-[#E1306C] text-white px-4 py-2.5 rounded-xl text-xs font-bold hover:bg-[#c13584] transition duration-150 shadow-sm shadow-[#E1306C]/10 cursor-pointer"
+                        >
+                          Chia sẻ qua Instagram
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="bg-gradient-to-br from-indigo-900 via-indigo-950 to-slate-955 border border-indigo-950 p-6 rounded-3xl shadow-sm text-white flex flex-col justify-between space-y-4">
+                    <div className="space-y-1">
+                      <span className="text-xl">🎨</span>
+                      <h3 className="text-sm font-extrabold text-indigo-100">Tạo Bento Card Thành Tích</h3>
+                      <p className="text-[11px] text-indigo-200/80 leading-relaxed">
+                        Tự động vẽ một ảnh bento card thành tích cực đẹp chứa Streak, Level, Avatar của bạn và mã QR link giới thiệu trực tiếp bằng trình duyệt của bạn (không tốn dung lượng server).
+                      </p>
+                    </div>
+                    <button
+                      onClick={() => {
+                        setShowShareModal(true);
+                        setTimeout(() => drawCanvas(), 200);
+                      }}
+                      className="w-full bg-white text-indigo-950 hover:bg-indigo-50 py-2.5 rounded-xl text-xs font-black shadow-md transition-all duration-200"
+                    >
+                      Tạo Bento Card Khoe Bạn Bè
+                    </button>
+                  </div>
+                </div>
+
+                {/* Referred Friends Table */}
+                <div className="bg-white/80 border border-slate-100 rounded-3xl p-6 shadow-sm space-y-4">
+                  <div>
+                    <h3 className="font-serif text-base font-bold text-slate-800">Bạn bè đã giới thiệu</h3>
+                    <p className="text-xs text-slate-455 mt-0.5">Danh sách các tài khoản đã đăng ký qua liên kết của bạn.</p>
+                  </div>
+
+                  {loadingReferrals ? (
+                    <div className="flex justify-center items-center py-10">
+                      <div className="h-6 w-6 animate-spin rounded-full border-2 border-indigo-500 border-t-transparent"></div>
+                    </div>
+                  ) : referralsList.length === 0 ? (
+                    <div className="text-center py-10 border border-dashed border-slate-200 rounded-2xl bg-white/40 flex flex-col items-center justify-center p-6 space-y-3">
+                      <span className="text-3xl select-none">🕊️</span>
+                      <div className="space-y-0.5 max-w-xs">
+                        <h4 className="text-xs font-bold text-slate-700">Chưa giới thiệu được ai</h4>
+                        <p className="text-[10px] text-slate-400 leading-normal">
+                          Hãy chia sẻ liên kết giới thiệu để mời những bạn bè đầu tiên cùng tham gia nhé!
+                        </p>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="border border-slate-100 rounded-2xl overflow-hidden bg-white/40">
+                      <div className="overflow-x-auto">
+                        <table className="w-full text-left border-collapse">
+                          <thead>
+                            <tr className="bg-slate-50/70 text-[10px] font-bold text-slate-450 uppercase tracking-wider border-b border-slate-100">
+                              <th className="py-3 px-5">Tên thành viên</th>
+                              <th className="py-3 px-5">Email</th>
+                              <th className="py-3 px-5">Ngày tham gia</th>
+                              <th className="py-3 px-5 text-right">Trạng thái thưởng</th>
+                            </tr>
+                          </thead>
+                          <tbody className="divide-y divide-slate-100 text-xs">
+                            {referralsList.map((ref) => (
+                              <tr key={ref.id} className="hover:bg-slate-50/50 transition duration-150">
+                                <td className="py-3 px-5 font-bold text-slate-800">{ref.name}</td>
+                                <td className="py-3 px-5 font-mono text-slate-500">{ref.email}</td>
+                                <td className="py-3 px-5 text-slate-500">{new Date(ref.joinedAt).toLocaleDateString("vi-VN")}</td>
+                                <td className="py-3 px-5 text-right font-bold">
+                                  <span className={`px-2.5 py-0.5 rounded-full text-[9px] font-extrabold uppercase border ${
+                                    ref.status === "COMPLETED"
+                                      ? "bg-emerald-50 border-emerald-250 text-emerald-800"
+                                      : "bg-amber-50 border-amber-250 text-amber-800"
+                                  }`}>
+                                    {ref.status === "COMPLETED" ? "Đã nhận quà (+50💎)" : "Đang chờ học"}
+                                  </span>
+                                </td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
             )}
           </div>
 
         </div>
       </main>
 
+      {/* Share Bento Card Canvas Modal */}
+      {showShareModal && (
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-slate-900/40 backdrop-blur-sm animate-fade-in p-4">
+          <div className="bg-white border border-slate-100 rounded-3xl p-5 shadow-2xl max-w-xl w-full mx-auto space-y-4 text-center animate-scale-up">
+            <div className="flex justify-between items-center border-b border-slate-100 pb-2">
+              <h3 className="font-serif text-sm font-bold text-slate-800">Ảnh Bento Thành Tích Của Bạn</h3>
+              <button
+                onClick={() => setShowShareModal(false)}
+                className="text-slate-400 hover:text-slate-655 font-bold text-xs cursor-pointer select-none"
+              >
+                Đóng
+              </button>
+            </div>
+            
+            <div className="overflow-x-auto py-1 flex justify-center">
+              <canvas
+                ref={canvasRef}
+                width={600}
+                height={400}
+                className="max-w-full rounded-2xl shadow-md border border-slate-200"
+                style={{ width: "100%", maxWidth: "480px", height: "auto" }}
+              />
+            </div>
+
+            <p className="text-[9px] text-slate-400 italic">
+              Ảnh trên được vẽ trực tiếp bằng Canvas API phía client của bạn, hoàn toàn không lưu trữ hoặc tải lên máy chủ.
+            </p>
+
+            <div className="flex gap-3 pt-1 flex-wrap md:flex-nowrap">
+              <button
+                onClick={() => setShowShareModal(false)}
+                className="flex-1 text-center py-2 rounded-xl border border-slate-200 text-xs font-bold text-slate-600 hover:bg-slate-50 transition duration-200 cursor-pointer whitespace-nowrap"
+              >
+                Đóng lại
+              </button>
+              <button
+                onClick={downloadShareCard}
+                className="flex-1 text-center py-2 rounded-xl bg-indigo-50 border border-indigo-200 text-indigo-750 text-xs font-bold hover:bg-indigo-100 transition duration-200 cursor-pointer whitespace-nowrap"
+              >
+                Tải ảnh về máy
+              </button>
+              <button
+                onClick={shareDirectly}
+                className="flex-1 text-center py-2 rounded-xl bg-indigo-600 text-white text-xs font-bold hover:bg-indigo-750 transition duration-200 shadow-md shadow-indigo-500/10 cursor-pointer whitespace-nowrap"
+              >
+                Chia sẻ trực tiếp
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Center-screen Modal for Logout Confirmation */}
       {showLogoutConfirm && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 backdrop-blur-sm animate-fade-in">
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-slate-900/40 backdrop-blur-sm animate-fade-in">
           <div className="bg-white/95 border border-slate-100 rounded-3xl p-6 shadow-2xl max-w-sm w-full mx-4 space-y-5 text-center animate-scale-up">
             <div className="h-12 w-12 rounded-full bg-rose-50 border border-rose-100 text-rose-500 flex items-center justify-center mx-auto text-xl">
               ⚠️

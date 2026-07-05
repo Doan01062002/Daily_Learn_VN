@@ -51,6 +51,13 @@ model User {
   knowledgePoints     Int                  @default(0)
   savedLessonIds      String[]             @default([])
 
+  // Referrals
+  referralCode        String?              @unique
+  referredById        String?
+  referredBy          User?                @relation("UserReferrals", fields: [referredById], references: [id])
+  referrals           User[]               @relation("UserReferrals")
+  referralRewarded    Boolean              @default(false)
+
   // Relations
   progress            UserLessonProgress[]
   streaks             Streak[]
