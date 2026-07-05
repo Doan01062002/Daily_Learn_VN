@@ -609,53 +609,73 @@ export default function DashboardPage() {
     return (
       <svg
         className={`h-8 w-8 transition-all duration-300 ${className}`}
-        viewBox="0 0 24 24"
+        viewBox="0 0 16 16"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
-        style={{ transformStyle: "preserve-3d" }}
+        style={{ transformStyle: "preserve-3d", perspective: "100px" }}
       >
+        {/* Back glow layer */}
         <path
-          d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
+          d="M8 16c3.314 0 6-2 6-5.5 0-1.5-.5-4-2.5-6 .25 1.5-1.25 2-1.25 2C11 4 9 .5 6 0c.357 2 .5 4-2 6-1.25 1-2 2.729-2 4.5C2 14 4.686 16 8 16z"
           fill={outerGrad}
+          style={{
+            transform: "translateZ(-4px) scale(1.05)",
+            filter: "blur(1.5px)",
+            opacity: 0.85,
+          }}
         />
+        {/* Main outer flame layer */}
         <path
-          d="M15 15.5l-3 3-3-3a4 4 0 116 0z"
+          d="M8 16c3.314 0 6-2 6-5.5 0-1.5-.5-4-2.5-6 .25 1.5-1.25 2-1.25 2C11 4 9 .5 6 0c.357 2 .5 4-2 6-1.25 1-2 2.729-2 4.5C2 14 4.686 16 8 16z"
+          fill={outerGrad}
+          style={{ transform: "translateZ(0px)" }}
+        />
+        {/* Middle flame layer */}
+        <path
+          d="M8 15c-1.657 0-3-1-3-2.75 0-.75.25-2 1.25-3C6.125 10 7 10.5 7 10.5c-.375-1.25.5-3.25 2-3.5-.179 1-.25 2 1 3 .625.5 1 1.364 1 2.25C11 14 9.657 15 8 15z"
           fill={innerGrad}
+          style={{ transform: "translateZ(3px) scale(0.95)" }}
+        />
+        {/* Innermost hot white core */}
+        <path
+          d="M8 14.2c-0.8 0-1.5-0.5-1.5-1.3 0-0.4 0.1-1 0.6-1.5C7.1 11.4 7.5 11.6 7.5 11.6c-0.2-0.6 0.2-1.6 1-1.7-.1 0.5-.1 1 0.5 1.5.3.3.5 0.7.5 1.1 0 1-0.7 1.7-1.5 1.7z"
+          fill="#ffffff"
           opacity="0.9"
+          style={{ transform: "translateZ(6px) scale(0.85)" }}
         />
         <defs>
-          <linearGradient id="orangeOuter" x1="12" y1="2" x2="12" y2="22" gradientUnits="userSpaceOnUse">
+          <linearGradient id="orangeOuter" x1="8" y1="0" x2="8" y2="16" gradientUnits="userSpaceOnUse">
             <stop offset="0%" stopColor="#FF9800" />
             <stop offset="100%" stopColor="#FF5722" />
           </linearGradient>
-          <linearGradient id="orangeInner" x1="12" y1="8" x2="12" y2="18" gradientUnits="userSpaceOnUse">
+          <linearGradient id="orangeInner" x1="8" y1="4" x2="8" y2="14" gradientUnits="userSpaceOnUse">
             <stop offset="0%" stopColor="#FFF176" />
             <stop offset="100%" stopColor="#FFB74D" />
           </linearGradient>
 
-          <linearGradient id="redOuter" x1="12" y1="2" x2="12" y2="22" gradientUnits="userSpaceOnUse">
+          <linearGradient id="redOuter" x1="8" y1="0" x2="8" y2="16" gradientUnits="userSpaceOnUse">
             <stop offset="0%" stopColor="#F44336" />
             <stop offset="100%" stopColor="#E91E63" />
           </linearGradient>
-          <linearGradient id="redInner" x1="12" y1="8" x2="12" y2="18" gradientUnits="userSpaceOnUse">
+          <linearGradient id="redInner" x1="8" y1="4" x2="8" y2="14" gradientUnits="userSpaceOnUse">
             <stop offset="0%" stopColor="#FF8A80" />
             <stop offset="100%" stopColor="#FF5252" />
           </linearGradient>
 
-          <linearGradient id="purpleOuter" x1="12" y1="2" x2="12" y2="22" gradientUnits="userSpaceOnUse">
+          <linearGradient id="purpleOuter" x1="8" y1="0" x2="8" y2="16" gradientUnits="userSpaceOnUse">
             <stop offset="0%" stopColor="#9C27B0" />
             <stop offset="100%" stopColor="#673AB7" />
           </linearGradient>
-          <linearGradient id="purpleInner" x1="12" y1="8" x2="12" y2="18" gradientUnits="userSpaceOnUse">
+          <linearGradient id="purpleInner" x1="8" y1="4" x2="8" y2="14" gradientUnits="userSpaceOnUse">
             <stop offset="0%" stopColor="#E040FB" />
             <stop offset="100%" stopColor="#B388FF" />
           </linearGradient>
 
-          <linearGradient id="blueOuter" x1="12" y1="2" x2="12" y2="22" gradientUnits="userSpaceOnUse">
+          <linearGradient id="blueOuter" x1="8" y1="0" x2="8" y2="16" gradientUnits="userSpaceOnUse">
             <stop offset="0%" stopColor="#00BCD4" />
             <stop offset="100%" stopColor="#009688" />
           </linearGradient>
-          <linearGradient id="blueInner" x1="12" y1="8" x2="12" y2="18" gradientUnits="userSpaceOnUse">
+          <linearGradient id="blueInner" x1="8" y1="4" x2="8" y2="14" gradientUnits="userSpaceOnUse">
             <stop offset="0%" stopColor="#E0F7FA" />
             <stop offset="100%" stopColor="#80DEEA" />
           </linearGradient>
