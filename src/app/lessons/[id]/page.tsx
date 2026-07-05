@@ -215,7 +215,7 @@ export default function LessonDetailPage({
       <header className="sticky top-4 z-40 max-w-7xl w-[calc(100%-2rem)] mx-auto rounded-2xl border px-5 py-3 flex justify-between items-center shadow-lg shadow-indigo-950/5 mt-4 transition-all duration-300 theme-header">
         <Link
           href="/dashboard"
-          className="flex items-center gap-1.5 text-xs font-bold transition-all duration-200 border border-slate-200/85 px-3 py-2 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800/50 hover:scale-[1.03] active:scale-[0.96] shadow-sm theme-muted"
+          className="flex items-center gap-1.5 text-xs font-bold transition-all duration-200 border border-[#D5CFC5]/85 px-3 py-2 rounded-xl hover:bg-[#FAF8F5] dark:hover:bg-slate-800/50 hover:scale-[1.03] active:scale-[0.96] shadow-sm theme-muted"
         >
           <span>←</span> <span className="hidden sm:inline">Quay lại Dashboard</span>
         </Link>
@@ -228,7 +228,7 @@ export default function LessonDetailPage({
             <div className="absolute right-0 mt-1.5 w-32 theme-card border rounded-xl shadow-lg opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto transition-all duration-150 z-50 p-1 space-y-1">
               <button
                 onClick={() => changeTheme("light")}
-                className="w-full text-left px-3 py-2 text-xs font-semibold rounded-lg hover:bg-slate-100/50 flex items-center gap-1.5 cursor-pointer"
+                className="w-full text-left px-3 py-2 text-xs font-semibold rounded-lg hover:bg-[#F0ECE4]/50 flex items-center gap-1.5 cursor-pointer"
               >
                 <span>☀️</span> Sáng
               </button>
@@ -254,7 +254,7 @@ export default function LessonDetailPage({
             <svg className="w-3.5 h-3.5 text-amber-700" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" /></svg>
             Báo cáo lỗi
           </button>
-          <span className="font-serif italic text-xs bg-slate-50 px-2.5 py-1.5 rounded-xl border border-slate-150 theme-muted">Đọc tập trung</span>
+          <span className="font-serif italic text-xs bg-[#FAF8F5] px-2.5 py-1.5 rounded-xl border border-slate-150 theme-muted">Đọc tập trung</span>
         </div>
       </header>
 
@@ -274,27 +274,27 @@ export default function LessonDetailPage({
             `}} />
 
             {/* Left Column Shimmer (2/3 width) */}
-            <div className="lg:col-span-2 space-y-6 relative overflow-hidden bg-white/70 border border-slate-100 rounded-3xl p-6 sm:p-8 shadow-sm">
+            <div className="lg:col-span-2 space-y-6 relative overflow-hidden bg-white/70 border border-[#EBE6DD] rounded-3xl p-6 sm:p-8 shadow-sm">
               <div className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-slate-205/20 to-transparent animate-shimmer" style={{ animation: 'shimmer 1.6s infinite' }} />
               {/* Meta tags shimmer */}
               <div className="flex gap-2 mb-4">
-                <div className="h-5 w-16 bg-slate-100 rounded-full" />
-                <div className="h-5 w-24 bg-slate-100 rounded-full" />
+                <div className="h-5 w-16 bg-[#F0ECE4] rounded-full" />
+                <div className="h-5 w-24 bg-[#F0ECE4] rounded-full" />
               </div>
               {/* Title shimmer */}
               <div className="space-y-2.5">
-                <div className="h-8 w-3/4 bg-slate-100 rounded-md" />
+                <div className="h-8 w-3/4 bg-[#F0ECE4] rounded-md" />
                 <div className="h-8 w-1/2 bg-slate-150 rounded-md" />
               </div>
               {/* Takeaways lines shimmer */}
-              <div className="space-y-4 pt-6 border-t border-slate-100">
-                <div className="h-4 w-1/4 bg-slate-100 rounded" />
+              <div className="space-y-4 pt-6 border-t border-[#EBE6DD]">
+                <div className="h-4 w-1/4 bg-[#F0ECE4] rounded" />
                 {[1, 2, 3].map((i) => (
-                  <div key={i} className="flex items-start gap-4 p-4 rounded-2xl border border-slate-100/50 bg-white/50 space-y-2">
-                    <div className="h-6 w-6 rounded-lg bg-slate-100 shrink-0" />
+                  <div key={i} className="flex items-start gap-4 p-4 rounded-2xl border border-[#EBE6DD]/50 bg-white/50 space-y-2">
+                    <div className="h-6 w-6 rounded-lg bg-[#F0ECE4] shrink-0" />
                     <div className="space-y-2 flex-1 pt-1">
-                      <div className="h-4 w-full bg-slate-100 rounded" />
-                      <div className="h-4 w-5/6 bg-slate-100 rounded" />
+                      <div className="h-4 w-full bg-[#F0ECE4] rounded" />
+                      <div className="h-4 w-5/6 bg-[#F0ECE4] rounded" />
                     </div>
                   </div>
                 ))}
@@ -302,10 +302,10 @@ export default function LessonDetailPage({
             </div>
 
             {/* Right Column Shimmer (1/3 width) */}
-            <div className="lg:col-span-1 space-y-6 relative overflow-hidden bg-white/70 border border-slate-100 rounded-3xl p-6 shadow-sm">
+            <div className="lg:col-span-1 space-y-6 relative overflow-hidden bg-white/70 border border-[#EBE6DD] rounded-3xl p-6 shadow-sm">
               <div className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-slate-205/20 to-transparent animate-shimmer" style={{ animation: 'shimmer 1.6s infinite' }} />
-              <div className="h-6 w-1/3 bg-slate-100 rounded mb-4" />
-              <div className="h-32 bg-slate-100 rounded-xl" />
+              <div className="h-6 w-1/3 bg-[#F0ECE4] rounded mb-4" />
+              <div className="h-32 bg-[#F0ECE4] rounded-xl" />
               <div className="h-10 bg-slate-150 rounded-xl mt-6" />
             </div>
           </div>
@@ -350,12 +350,12 @@ export default function LessonDetailPage({
 
                 {/* Progress bar today */}
                 {!lesson.completed && (
-                  <div className="mt-4 pt-4 border-t border-slate-50 dark:border-slate-800">
+                  <div className="mt-4 pt-4 border-t border-[#EBE6DD]/60 dark:border-slate-800">
                     <div className="flex justify-between items-center text-[10px] font-bold uppercase tracking-wider mb-2 theme-muted">
                       <span>Tiến độ đọc hiểu bài viết</span>
                       <span className="font-mono text-xs theme-text">{checkedCount} / {totalTakeaways} ý đã tích chọn</span>
                     </div>
-                    <div className="h-2 w-full bg-slate-100 dark:bg-slate-850 rounded-full overflow-hidden">
+                    <div className="h-2 w-full bg-[#F0ECE4] dark:bg-slate-850 rounded-full overflow-hidden">
                       <div
                         className="h-full bg-indigo-600 transition-all duration-300 ease-out rounded-full"
                         style={{ width: `${readingProgress}%` }}
@@ -365,7 +365,7 @@ export default function LessonDetailPage({
                 )}
 
                 {/* Takeaways bullet points list */}
-                <div className="space-y-4 pt-4 border-t border-slate-100 dark:border-slate-800">
+                <div className="space-y-4 pt-4 border-t border-[#EBE6DD] dark:border-slate-800">
                   <h3 className="text-xs font-bold uppercase tracking-wider theme-muted">
                     Điểm tóm tắt quan trọng (Tích chọn để đánh dấu đã đọc)
                   </h3>
@@ -393,7 +393,7 @@ export default function LessonDetailPage({
                             className={`h-6 w-6 rounded-lg border flex items-center justify-center text-xs font-bold shrink-0 transition-all duration-150 active:scale-90 ${
                               isChecked
                                 ? "bg-indigo-600 border-indigo-600 text-white"
-                                : "bg-white border-slate-200 text-slate-400"
+                                : "bg-white border-[#D5CFC5] text-slate-400"
                             }`}
                           >
                             {isChecked ? "✓" : index + 1}
@@ -423,9 +423,9 @@ export default function LessonDetailPage({
               {/* Assignment widget */}
               {assignment && (
                 <div className="border rounded-3xl p-6 sm:p-8 shadow-xl shadow-indigo-950/5 space-y-4 font-sans theme-card">
-                  <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-2">
+                  <div className="flex items-center justify-between border-b border-[#EBE6DD] dark:border-slate-800 pb-2">
                     <h3 className="text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 theme-muted">
-                      <svg className="w-3.5 h-3.5 text-slate-500" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" /></svg>
+                      <svg className="w-3.5 h-3.5 text-[#8C8375]" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" /></svg>
                       Bài tập tự luận ({assignment.type === "WRITING" ? "Viết" : "Nói/Phát âm"})
                     </h3>
                     {submission && (
@@ -482,10 +482,10 @@ export default function LessonDetailPage({
                     </form>
                   ) : (
                     // Graded Result Display
-                    <div className="space-y-4 pt-3 border-t border-slate-100 dark:border-slate-800 text-xs leading-relaxed">
+                    <div className="space-y-4 pt-3 border-t border-[#EBE6DD] dark:border-slate-800 text-xs leading-relaxed">
                       <div className="space-y-1">
                         <span className="text-[9px] font-bold uppercase tracking-widest theme-muted">Bài làm của bạn</span>
-                        <p className="p-3 bg-slate-100/50 dark:bg-slate-850/50 rounded-xl font-serif italic theme-text">{submission.content}</p>
+                        <p className="p-3 bg-[#F0ECE4]/50 dark:bg-slate-850/50 rounded-xl font-serif italic theme-text">{submission.content}</p>
                       </div>
 
                       {submission.grammarEdits && (
@@ -498,7 +498,7 @@ export default function LessonDetailPage({
                       {submission.comment && (
                         <div className="space-y-1">
                           <span className="text-[9px] font-bold text-blue-900 uppercase tracking-widest block">Nhận xét chi tiết</span>
-                          <p className="p-3 bg-blue-50/30 border border-blue-100 rounded-xl text-slate-700 italic">"{submission.comment}"</p>
+                          <p className="p-3 bg-blue-50/30 border border-blue-100 rounded-xl text-[#3E3A35] italic">"{submission.comment}"</p>
                         </div>
                       )}
                     </div>
@@ -507,7 +507,7 @@ export default function LessonDetailPage({
               )}
 
               {/* Bottom Actions */}
-              <div className="pt-6 border-t border-slate-100 dark:border-slate-800 mt-6">
+              <div className="pt-6 border-t border-[#EBE6DD] dark:border-slate-800 mt-6">
                 {lesson.completed ? (
                   <div className="space-y-4">
                     <div className="text-center text-xs font-serif italic theme-muted">
@@ -556,9 +556,9 @@ export default function LessonDetailPage({
             {/* Right Column (1/3 Width) - Floating Ghi Chép cá nhân Notepad */}
             <div className="lg:col-span-1 space-y-6 order-2">
               <div className="backdrop-blur-md border rounded-3xl p-6 shadow-xl shadow-indigo-950/5 space-y-4 theme-card">
-                <div className="flex justify-between items-center border-b border-slate-100 dark:border-slate-800 pb-2.5">
+                <div className="flex justify-between items-center border-b border-[#EBE6DD] dark:border-slate-800 pb-2.5">
                   <h3 className="text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 theme-text">
-                    <svg className="w-3.5 h-3.5 text-slate-500" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" /></svg>
+                    <svg className="w-3.5 h-3.5 text-[#8C8375]" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" /></svg>
                     Ghi chép cá nhân
                   </h3>
                   <span className="text-[10px] font-bold font-mono transition-all duration-200 theme-muted">

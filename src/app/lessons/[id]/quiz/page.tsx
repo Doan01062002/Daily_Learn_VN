@@ -341,7 +341,7 @@ export default function QuizPage({
       <header className="sticky top-4 z-40 max-w-7xl w-[calc(100%-2rem)] mx-auto rounded-2xl border px-5 py-3 flex justify-between items-center shadow-lg shadow-indigo-950/5 mt-4 transition-all duration-300 theme-header">
         <Link
           href={`/lessons/${lessonId}`}
-          className="flex items-center gap-1.5 text-xs font-bold transition-all duration-200 border border-slate-200/85 px-3 py-2 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800/50 hover:scale-[1.03] active:scale-[0.96] shadow-sm theme-muted"
+          className="flex items-center gap-1.5 text-xs font-bold transition-all duration-200 border border-[#D5CFC5]/85 px-3 py-2 rounded-xl hover:bg-[#FAF8F5] dark:hover:bg-slate-800/50 hover:scale-[1.03] active:scale-[0.96] shadow-sm theme-muted"
         >
           <span>←</span> <span className="hidden sm:inline">Quay lại bài học</span>
         </Link>
@@ -354,7 +354,7 @@ export default function QuizPage({
             <div className="absolute right-0 mt-1.5 w-32 theme-card border rounded-xl shadow-lg opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto transition-all duration-150 z-50 p-1 space-y-1">
               <button
                 onClick={() => changeTheme("light")}
-                className="w-full text-left px-3 py-2 text-xs font-semibold rounded-lg hover:bg-slate-100/50 flex items-center gap-1.5 cursor-pointer"
+                className="w-full text-left px-3 py-2 text-xs font-semibold rounded-lg hover:bg-[#F0ECE4]/50 flex items-center gap-1.5 cursor-pointer"
               >
                 <span>☀️</span> Sáng
               </button>
@@ -379,7 +379,7 @@ export default function QuizPage({
           >
             📬 Báo cáo lỗi
           </button>
-          <span className="font-serif italic text-xs bg-slate-50 px-2.5 py-1.5 rounded-xl border border-slate-150 theme-muted">
+          <span className="font-serif italic text-xs bg-[#FAF8F5] px-2.5 py-1.5 rounded-xl border border-slate-150 theme-muted">
             {showSummary ? "Kết quả" : `Câu hỏi ${currentIndex + 1}/${totalQuestions}`}
           </span>
         </div>
@@ -389,13 +389,13 @@ export default function QuizPage({
       <main className="flex-1 max-w-xl w-full mx-auto px-4 py-8 flex flex-col justify-center z-20">
         
         {loading ? (
-          <div className="backdrop-blur-md border border-slate-100 rounded-3xl p-6 sm:p-8 shadow-sm space-y-6 relative overflow-hidden bg-white/70 w-full animate-pulse">
+          <div className="backdrop-blur-md border border-[#EBE6DD] rounded-3xl p-6 sm:p-8 shadow-sm space-y-6 relative overflow-hidden bg-white/70 w-full animate-pulse">
             <div className="h-2 w-full bg-slate-200 rounded-full" />
             <div className="space-y-2">
               <div className="h-7 w-5/6 bg-slate-200 rounded-md" />
               <div className="h-7 w-2/3 bg-slate-200 rounded-md" />
             </div>
-            <div className="space-y-3 pt-4 border-t border-slate-100">
+            <div className="space-y-3 pt-4 border-t border-[#EBE6DD]">
               {[1, 2, 3, 4].map((i) => (
                 <div key={i} className="h-14 w-full bg-slate-200 rounded-xl" />
               ))}
@@ -441,7 +441,7 @@ export default function QuizPage({
               </p>
             </div>
 
-            <div className="pt-6 border-t border-slate-100 dark:border-slate-800 mt-6">
+            <div className="pt-6 border-t border-[#EBE6DD] dark:border-slate-800 mt-6">
               <button
                 onClick={handleFinishQuiz}
                 disabled={isFinishing}
@@ -482,7 +482,7 @@ export default function QuizPage({
               </h2>
 
               {/* Options buttons */}
-              <div className="grid grid-cols-1 gap-3 pt-4 border-t border-slate-100 dark:border-slate-800">
+              <div className="grid grid-cols-1 gap-3 pt-4 border-t border-[#EBE6DD] dark:border-slate-800">
                 {currentQuiz.options.map((option) => {
                   const isSelected = selectedOption === option;
                   
@@ -546,7 +546,7 @@ export default function QuizPage({
             </div>
 
             {/* Next/Submit Button Trigger */}
-            <div className="pt-6 border-t border-slate-100 dark:border-slate-800 mt-6">
+            <div className="pt-6 border-t border-[#EBE6DD] dark:border-slate-800 mt-6">
               {!isSubmitted ? (
                 <button
                   onClick={handleSubmitAnswer}

@@ -163,7 +163,7 @@ export default function UserSettingsPage() {
   if (!user) return null;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#F8FAFC] via-[#FFFFFF] to-[#F1F5F9] text-slate-800 flex flex-col relative overflow-hidden">
+    <div className="min-h-screen bg-gradient-to-br from-[#FAF9F6] via-[#FFFFFF] to-[#F4F1EA] text-[#3E3A35] flex flex-col relative overflow-hidden">
       {/* Decorative background shapes */}
       <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] rounded-full bg-indigo-200/10 blur-[100px] pointer-events-none"></div>
       <div className="absolute bottom-[20%] right-[-10%] w-[35%] h-[35%] rounded-full bg-pink-200/15 blur-[120px] pointer-events-none"></div>
@@ -184,7 +184,7 @@ export default function UserSettingsPage() {
 
         <Link
           href="/dashboard"
-          className="flex items-center gap-1.5 text-xs font-bold text-slate-500 hover:text-slate-800 transition-all duration-200 border border-slate-200/85 px-3 py-2 rounded-xl hover:bg-slate-50 hover:scale-[1.03] active:scale-[0.96] shadow-sm"
+          className="flex items-center gap-1.5 text-xs font-bold text-[#8C8375] hover:text-slate-800 transition-all duration-200 border border-[#D5CFC5]/85 px-3 py-2 rounded-xl hover:bg-[#FAF8F5] hover:scale-[1.03] active:scale-[0.96] shadow-sm"
         >
           <span>←</span> <span>Quay lại Dashboard</span>
         </Link>
@@ -195,10 +195,10 @@ export default function UserSettingsPage() {
         
         {/* Left Side: Summary & Membership card (1 col) */}
         <div className="lg:col-span-1 space-y-6">
-          <div className="backdrop-blur-md bg-white/70 border border-slate-200/60 p-6 rounded-3xl shadow-xl shadow-indigo-950/5 space-y-6">
+          <div className="backdrop-blur-md bg-white/70 border border-[#D5CFC5]/60 p-6 rounded-3xl shadow-xl shadow-indigo-950/5 space-y-6">
             
             {/* Profile Avatar Card */}
-            <div className="flex flex-col items-center text-center space-y-4 pb-6 border-b border-slate-100">
+            <div className="flex flex-col items-center text-center space-y-4 pb-6 border-b border-[#EBE6DD]">
               <div className="h-20 w-20 rounded-full bg-gradient-to-tr from-indigo-500 to-purple-500 flex items-center justify-center text-white text-3xl font-bold font-serif shadow-md border-4 border-white">
                 {name ? name.trim().charAt(0).toUpperCase() : user.name?.charAt(0).toUpperCase()}
               </div>
@@ -249,8 +249,8 @@ export default function UserSettingsPage() {
 
         {/* Right Side: Profile Settings Form & Billing Log (2 cols) */}
         <div className="lg:col-span-2 space-y-6">
-          <div className="backdrop-blur-md bg-white/70 border border-slate-200/60 p-6 sm:p-8 rounded-3xl shadow-xl shadow-indigo-950/5 space-y-6">
-            <h3 className="font-serif text-lg font-bold border-b border-slate-100 pb-3 mb-4 text-slate-800">
+          <div className="backdrop-blur-md bg-white/70 border border-[#D5CFC5]/60 p-6 sm:p-8 rounded-3xl shadow-xl shadow-indigo-950/5 space-y-6">
+            <h3 className="font-serif text-lg font-bold border-b border-[#EBE6DD] pb-3 mb-4 text-slate-800">
               Cấu hình sở thích học tập
             </h3>
 
@@ -267,7 +267,7 @@ export default function UserSettingsPage() {
             )}
 
             {loading ? (
-              <div className="space-y-6 relative overflow-hidden bg-white/50 rounded-2xl p-6 border border-slate-100/50">
+              <div className="space-y-6 relative overflow-hidden bg-white/50 rounded-2xl p-6 border border-[#EBE6DD]/50">
                 {/* Shimmer animation keyframe */}
                 <style dangerouslySetInnerHTML={{ __html: `
                   @keyframes shimmer {
@@ -280,7 +280,7 @@ export default function UserSettingsPage() {
                 <div className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-slate-205/20 to-transparent animate-shimmer" style={{ animation: 'shimmer 1.6s infinite' }} />
                 {[1, 2, 3].map((i) => (
                   <div key={i} className="space-y-2">
-                    <div className="h-4.5 w-24 bg-slate-100 rounded-md" />
+                    <div className="h-4.5 w-24 bg-[#F0ECE4] rounded-md" />
                     <div className="h-10 w-full bg-slate-200/50 rounded-xl" />
                   </div>
                 ))}
@@ -297,7 +297,7 @@ export default function UserSettingsPage() {
                     required
                     value={name}
                     onChange={(e) => handleNameChange(e.target.value)}
-                    className="block w-full rounded-xl border border-slate-200 bg-white/50 px-3.5 py-2.5 text-xs text-slate-700 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 focus:outline-none transition shadow-sm"
+                    className="block w-full rounded-xl border border-[#D5CFC5] bg-white/50 px-3.5 py-2.5 text-xs text-[#3E3A35] focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 focus:outline-none transition shadow-sm"
                   />
                 </div>
 
@@ -308,7 +308,7 @@ export default function UserSettingsPage() {
                     type="email"
                     disabled
                     value={user.email}
-                    className="block w-full rounded-xl border border-slate-100 bg-slate-50/50 px-3.5 py-2.5 text-xs text-slate-400 cursor-not-allowed shadow-none"
+                    className="block w-full rounded-xl border border-[#EBE6DD] bg-[#FAF8F5]/50 px-3.5 py-2.5 text-xs text-slate-400 cursor-not-allowed shadow-none"
                   />
                 </div>
 
@@ -326,7 +326,7 @@ export default function UserSettingsPage() {
                           className={`flex items-center justify-between p-3.5 rounded-xl border text-xs font-bold transition-all duration-200 text-left hover:scale-[1.015] active:scale-[0.98] focus:outline-none ${
                             isSelected
                               ? topic.activeStyle
-                              : "bg-white/50 border-slate-200 text-slate-500 hover:border-slate-350"
+                              : "bg-white/50 border-[#D5CFC5] text-[#8C8375] hover:border-slate-350"
                           }`}
                         >
                           <div className="flex items-center gap-2">
@@ -354,7 +354,7 @@ export default function UserSettingsPage() {
                           className={`flex flex-col p-3.5 rounded-xl border text-xs text-left transition-all duration-200 hover:scale-[1.015] active:scale-[0.98] focus:outline-none ${
                             isSelected
                               ? "bg-indigo-500/10 border-indigo-500 text-indigo-600 font-bold"
-                              : "bg-white/50 border-slate-200 text-slate-500 hover:border-slate-350"
+                              : "bg-white/50 border-[#D5CFC5] text-[#8C8375] hover:border-slate-350"
                           }`}
                         >
                           <span className="font-bold">{level.label}</span>
@@ -381,7 +381,7 @@ export default function UserSettingsPage() {
                           className={`flex items-center justify-between p-3.5 rounded-xl border text-xs text-left transition-all duration-200 hover:scale-[1.015] active:scale-[0.98] focus:outline-none ${
                             isSelected
                               ? "bg-indigo-500/10 border-indigo-500 text-indigo-600 font-bold"
-                              : "bg-white/50 border-slate-200 text-slate-500 hover:border-slate-350"
+                              : "bg-white/50 border-[#D5CFC5] text-[#8C8375] hover:border-slate-350"
                           }`}
                         >
                           <div className="flex flex-col">
@@ -410,8 +410,8 @@ export default function UserSettingsPage() {
           </div>
 
           {/* Payment Invoices Card */}
-          <div className="backdrop-blur-md bg-white/70 border border-slate-200/60 p-6 sm:p-8 rounded-3xl shadow-xl shadow-indigo-950/5 space-y-4">
-            <h3 className="font-serif text-sm font-bold border-b border-slate-100 pb-3 mb-4 text-slate-800">
+          <div className="backdrop-blur-md bg-white/70 border border-[#D5CFC5]/60 p-6 sm:p-8 rounded-3xl shadow-xl shadow-indigo-950/5 space-y-4">
+            <h3 className="font-serif text-sm font-bold border-b border-[#EBE6DD] pb-3 mb-4 text-slate-800">
               Lịch sử thanh toán
             </h3>
 
@@ -428,7 +428,7 @@ export default function UserSettingsPage() {
                 {transactions.map((tx) => (
                   <div key={tx.id} className="py-3 flex justify-between items-center text-[10px]">
                     <div>
-                      <div className="font-bold text-slate-700 font-mono">{tx.txCode}</div>
+                      <div className="font-bold text-[#3E3A35] font-mono">{tx.txCode}</div>
                       <div className="text-slate-400 mt-0.5">
                         {new Date(tx.createdAt).toLocaleDateString("vi-VN", {
                           month: "numeric",
@@ -438,7 +438,7 @@ export default function UserSettingsPage() {
                       </div>
                     </div>
                     <div className="text-right">
-                      <div className="font-bold text-slate-700 font-mono">{(tx.amount).toLocaleString("vi-VN")} đ</div>
+                      <div className="font-bold text-[#3E3A35] font-mono">{(tx.amount).toLocaleString("vi-VN")} đ</div>
                       <span
                         className={`font-bold text-[8px] rounded px-1.5 py-0.5 mt-1.5 inline-block uppercase tracking-wide ${
                           tx.status === "COMPLETED"

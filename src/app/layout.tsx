@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Inter, Lora } from "next/font/google";
+import { Geist, Geist_Mono, Lora } from "next/font/google";
 import "./globals.css";
 import { AuthProvider } from "@/components/layout/AuthProvider";
 import { headers, cookies } from "next/headers";
@@ -8,9 +8,14 @@ import { promises as fs } from "fs";
 import path from "path";
 import { redirect } from "next/navigation";
 
-const inter = Inter({
-  variable: "--font-inter",
-  subsets: ["latin", "vietnamese"],
+const geistSans = Geist({
+  variable: "--font-geist-sans",
+  subsets: ["latin"],
+});
+
+const geistMono = Geist_Mono({
+  variable: "--font-geist-mono",
+  subsets: ["latin"],
 });
 
 const lora = Lora({
@@ -75,7 +80,7 @@ export default async function RootLayout({
   return (
     <html
       lang="vi"
-      className={`${inter.variable} ${lora.variable} h-full antialiased`}
+      className={`${geistSans.variable} ${geistMono.variable} ${lora.variable} h-full antialiased`}
       suppressHydrationWarning
     >
       <body className="min-h-full flex flex-col bg-[#FAF8F5] text-[#3E3A35]" suppressHydrationWarning>

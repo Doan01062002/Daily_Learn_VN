@@ -497,7 +497,7 @@ export default function DashboardPage() {
   const getCellColor = (date: Date) => {
     const dateStr = date.toLocaleDateString("en-CA", { timeZone: "Asia/Ho_Chi_Minh" });
     const count = heatmapData[dateStr] || 0;
-    if (count === 0) return "bg-slate-100 hover:bg-slate-200";
+    if (count === 0) return "bg-[#F0ECE4] hover:bg-slate-200";
     if (count === 1) return "bg-indigo-200 hover:bg-indigo-300";
     if (count === 2) return "bg-indigo-400 hover:bg-indigo-500";
     return "bg-indigo-600 hover:bg-indigo-700";
@@ -697,38 +697,38 @@ export default function DashboardPage() {
         {[1, 2].map((i) => (
           <div
             key={i}
-            className="rounded-2xl border border-slate-100/80 bg-white/80 p-6 relative overflow-hidden space-y-4 shadow-sm"
+            className="rounded-2xl border border-[#EBE6DD]/80 bg-white/80 p-6 relative overflow-hidden space-y-4 shadow-sm"
           >
             {/* Shimmer overlay animation */}
             <div className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-slate-200/20 to-transparent animate-shimmer" style={{ animation: 'shimmer 1.6s infinite' }} />
             
             {/* Tags row skeleton */}
             <div className="flex gap-2">
-              <div className="h-4.5 w-16 bg-slate-100 rounded-full" />
+              <div className="h-4.5 w-16 bg-[#F0ECE4] rounded-full" />
               <div className="h-4.5 w-24 bg-slate-150 rounded-full" />
             </div>
 
             {/* Title skeleton */}
             <div className="space-y-2">
-              <div className="h-6.5 w-3/4 bg-slate-100 rounded-md" />
+              <div className="h-6.5 w-3/4 bg-[#F0ECE4] rounded-md" />
               <div className="h-6.5 w-1/2 bg-slate-150 rounded-md" />
             </div>
 
             {/* Takeaways lines skeleton */}
             <div className="space-y-2.5 pt-2">
               <div className="flex items-center gap-2.5">
-                <div className="h-3 w-3 rounded-full bg-slate-100 shrink-0" />
-                <div className="h-3.5 w-5/6 bg-slate-100 rounded-md" />
+                <div className="h-3 w-3 rounded-full bg-[#F0ECE4] shrink-0" />
+                <div className="h-3.5 w-5/6 bg-[#F0ECE4] rounded-md" />
               </div>
               <div className="flex items-center gap-2.5">
-                <div className="h-3 w-3 rounded-full bg-slate-100 shrink-0" />
-                <div className="h-3.5 w-2/3 bg-slate-100 rounded-md" />
+                <div className="h-3 w-3 rounded-full bg-[#F0ECE4] shrink-0" />
+                <div className="h-3.5 w-2/3 bg-[#F0ECE4] rounded-md" />
               </div>
             </div>
 
             {/* Divider and Footer skeleton */}
-            <div className="flex justify-between items-center pt-4 border-t border-slate-100/50">
-              <div className="h-4.5 w-24 bg-slate-100 rounded-full" />
+            <div className="flex justify-between items-center pt-4 border-t border-[#EBE6DD]/50">
+              <div className="h-4.5 w-24 bg-[#F0ECE4] rounded-full" />
               <div className="h-8.5 w-28 bg-slate-150 rounded-xl" />
             </div>
           </div>
@@ -738,7 +738,7 @@ export default function DashboardPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#EEF2F6] via-[#FFFFFF] to-[#F5EFFF] text-slate-800 flex flex-col relative overflow-hidden">
+    <div className="min-h-screen bg-gradient-to-br from-[#FAF9F6] via-[#FFFFFF] to-[#F4F1EA] text-[#3E3A35] flex flex-col relative overflow-hidden">
       <style dangerouslySetInnerHTML={{ __html: `
         @keyframes flame-sway {
           0% { transform: scale(1) rotate(-1deg); }
@@ -793,7 +793,7 @@ export default function DashboardPage() {
       <div className="absolute bottom-[20%] right-[-10%] w-[35%] h-[35%] rounded-full bg-pink-200/15 blur-[120px] pointer-events-none"></div>
 
       {/* Header Layout - Floating Pill design */}
-      <header className="sticky top-4 z-40 max-w-7xl w-[calc(100%-2rem)] mx-auto rounded-2xl border border-white/60 bg-white/75 backdrop-blur-md px-5 py-3 flex justify-between items-center shadow-lg shadow-indigo-950/5 mt-4 transition-all duration-300">
+      <header className="sticky top-4 z-40 max-w-7xl w-[calc(100%-2rem)] mx-auto rounded-2xl border border-[#EBE6DD]/60 bg-white/75 backdrop-blur-md px-5 py-3 flex justify-between items-center shadow-lg shadow-stone-900/5 mt-4 transition-all duration-300">
         <div className="flex items-center gap-3">
           <div className="h-9.5 w-9.5 rounded-xl bg-gradient-to-tr from-[#4F46E5] to-[#EC4899] flex items-center justify-center shadow-md shadow-indigo-500/25 shrink-0 transform hover:rotate-6 transition duration-300">
             <svg className="h-5.5 w-5.5 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
@@ -801,19 +801,19 @@ export default function DashboardPage() {
             </svg>
           </div>
           <div className="flex flex-col">
-            <span className="font-serif font-black text-sm tracking-tight text-slate-800 leading-none">Daily Learn</span>
+            <span className="font-serif font-black text-sm tracking-tight text-[#3E3A35] leading-none">Daily Learn</span>
             <span className="text-[8px] font-black text-indigo-600/80 tracking-widest uppercase mt-0.5 font-sans">Việt Nam</span>
           </div>
         </div>
 
         {/* Global navigation tabs inside Header */}
-        <nav className="hidden md:flex items-center gap-1 bg-slate-100/80 border border-slate-200/60 p-1 rounded-xl select-none">
+        <nav className="hidden md:flex items-center gap-1 bg-stone-100/80 border border-stone-200/60 p-1 rounded-xl select-none">
           <button
             onClick={() => setActiveTab("today")}
             className={`px-3.5 py-1.5 text-[11px] font-extrabold uppercase tracking-wider rounded-lg transition-all duration-200 hover:scale-[1.03] active:scale-[0.95] focus:outline-none flex items-center gap-1.5 cursor-pointer ${
               activeTab === "today"
                 ? "bg-white text-indigo-600 shadow-sm"
-                : "text-slate-500 hover:text-slate-800"
+                : "text-[#8C8375] hover:text-[#3E3A35]"
             }`}
           >
             <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18c-2.305 0-4.408.867-6 2.292m0-14.25v14.25" /></svg>
@@ -892,7 +892,7 @@ export default function DashboardPage() {
           
           <Link
             href="/dashboard/settings"
-            className="p-2 text-slate-500 border border-slate-200/80 rounded-xl hover:bg-slate-50 hover:text-slate-800 transition duration-200 flex items-center justify-center"
+            className="p-2 text-[#8C8375] border border-[#EBE6DD] rounded-xl hover:bg-[#F9F7F4] hover:text-[#3E3A35] transition duration-200 flex items-center justify-center"
             title="Cài đặt tài khoản"
           >
             <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.2">
@@ -913,7 +913,7 @@ export default function DashboardPage() {
 
           <button
             onClick={() => setShowLogoutConfirm(true)}
-            className="p-2 text-slate-500 border border-slate-200/80 rounded-xl hover:bg-rose-50 hover:text-rose-600 hover:border-rose-100 transition duration-200 flex items-center justify-center cursor-pointer"
+            className="p-2 text-[#8C8375] border border-[#EBE6DD] rounded-xl hover:bg-rose-50 hover:text-rose-600 hover:border-rose-100 transition duration-200 flex items-center justify-center cursor-pointer"
             title="Đăng xuất"
           >
             <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.2">
@@ -932,7 +932,7 @@ export default function DashboardPage() {
           <div className="lg:col-span-1 space-y-6 order-2 lg:order-1">
             
             {/* Streak & Profile Info Card - Redesigned with premium banner & XP progression */}
-            <div className="rounded-2xl border border-slate-100 bg-white/70 backdrop-blur-md overflow-hidden shadow-sm shadow-indigo-950/5 flex flex-col items-center text-center pb-6">
+            <div className="rounded-2xl border border-[#EBE6DD] bg-white/75 backdrop-blur-md overflow-hidden shadow-sm shadow-stone-900/5 flex flex-col items-center text-center pb-6">
               {/* Colorful gradient header banner */}
               <div className="h-16 w-full bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 relative">
                 {user.role === "PREMIUM" && (
@@ -954,21 +954,21 @@ export default function DashboardPage() {
 
               <div className="px-6 w-full space-y-4">
                 <div>
-                  <h2 className="font-serif text-lg font-bold text-slate-800 leading-snug">
+                  <h2 className="font-serif text-lg font-bold text-[#3E3A35] leading-snug">
                     {user.name}
                   </h2>
                   <p className="text-[10px] font-semibold text-slate-400 mt-0.5">{user.email}</p>
                 </div>
 
                 {/* Level progression bar */}
-                <div className="w-full text-left space-y-1.5 pt-3.5 border-t border-slate-100">
+                <div className="w-full text-left space-y-1.5 pt-3.5 border-t border-[#EBE6DD]/60">
                   <div className="flex justify-between items-center text-[10px] font-bold text-slate-500">
                     <span className="bg-indigo-50 text-indigo-700 px-2 py-0.5 rounded border border-indigo-100 uppercase tracking-wider">
                       Cấp {level}: {levelTitle}
                     </span>
                     <span className="font-mono text-slate-400 font-bold">{xpInCurrentLevel}/100 XP</span>
                   </div>
-                  <div className="h-1.5 w-full bg-slate-100 rounded-full overflow-hidden">
+                  <div className="h-1.5 w-full bg-[#F0ECE4] rounded-full overflow-hidden">
                     <div
                       className="h-full bg-gradient-to-r from-[#4F46E5] to-[#EC4899] transition-all duration-500 rounded-full"
                       style={{ width: `${xpInCurrentLevel}%` }}
@@ -977,10 +977,10 @@ export default function DashboardPage() {
                 </div>
 
                 {/* Dynamic Swaying Flame widget */}
-                <div className="flex items-center gap-2.5 bg-slate-50 border border-slate-100/80 px-4 py-2.5 rounded-xl w-full justify-center">
+                <div className="flex items-center gap-2.5 bg-[#FAF8F5]/80 border border-[#EBE6DD]/80 px-4 py-2.5 rounded-xl w-full justify-center">
                   <FlameIcon className={getFlameClass(streakVal)} />
                   <div className="text-left">
-                    <div className="text-xs font-black text-slate-800">{streakVal} ngày liên tiếp</div>
+                    <div className="text-xs font-black text-[#3E3A35]">{streakVal} ngày liên tiếp</div>
                     <span className="text-[9px] text-slate-400 uppercase tracking-wider font-semibold block">
                       Kỷ lục cá nhân: {stats?.maxStreak || 0} ngày
                     </span>
@@ -1030,39 +1030,39 @@ export default function DashboardPage() {
             </div>
 
             {/* Daily Quests Gamification Card */}
-            <div className="bg-white/80 border border-slate-100 p-5 rounded-2xl shadow-sm space-y-3">
-              <h3 className="font-serif text-sm font-bold text-slate-800 flex items-center gap-1.5">
+            <div className="bg-white/75 border border-[#EBE6DD] p-5 rounded-2xl shadow-sm shadow-stone-900/5 space-y-3">
+              <h3 className="font-serif text-sm font-bold text-[#3E3A35] flex items-center gap-1.5">
                 🎯 Nhiệm vụ hôm nay
               </h3>
               <div className="space-y-2.5">
-                <div className="flex items-center justify-between text-xs p-2.5 rounded-xl bg-slate-50 border border-slate-100/50">
+                <div className="flex items-center justify-between text-xs p-2.5 rounded-xl bg-[#FAF8F5]/50 border border-[#EBE6DD]/50">
                   <div className="flex items-center gap-2">
                     <span className={lessons.some(l => l.completed) ? "text-emerald-500 font-bold" : "text-slate-350 font-bold"}>
                       {lessons.some(l => l.completed) ? "✓" : "○"}
                     </span>
-                    <span className={lessons.some(l => l.completed) ? "line-through text-slate-400 font-medium" : "text-slate-650 font-semibold"}>
+                    <span className={lessons.some(l => l.completed) ? "line-through text-slate-400 font-medium" : "text-[#3E3A35]/85 font-semibold"}>
                       Đọc bài học đầu tiên
                     </span>
                   </div>
                   <span className="text-[10px] font-bold text-indigo-600 font-mono">+10 XP</span>
                 </div>
-                <div className="flex items-center justify-between text-xs p-2.5 rounded-xl bg-slate-50 border border-slate-100/50">
+                <div className="flex items-center justify-between text-xs p-2.5 rounded-xl bg-[#FAF8F5]/50 border border-[#EBE6DD]/50">
                   <div className="flex items-center gap-2">
                     <span className={stats && stats.averageQuizScore === 100 ? "text-emerald-500 font-bold" : "text-slate-350 font-bold"}>
                       {stats && stats.averageQuizScore === 100 ? "✓" : "○"}
                     </span>
-                    <span className={stats && stats.averageQuizScore === 100 ? "line-through text-slate-400 font-medium" : "text-slate-650 font-semibold"}>
+                    <span className={stats && stats.averageQuizScore === 100 ? "line-through text-slate-400 font-medium" : "text-[#3E3A35]/85 font-semibold"}>
                       Đạt 100% điểm Quiz
                     </span>
                   </div>
                   <span className="text-[10px] font-bold text-indigo-600 font-mono">+20 XP</span>
                 </div>
-                <div className="flex items-center justify-between text-xs p-2.5 rounded-xl bg-slate-50 border border-slate-100/50">
+                <div className="flex items-center justify-between text-xs p-2.5 rounded-xl bg-[#FAF8F5]/50 border border-[#EBE6DD]/50">
                   <div className="flex items-center gap-2">
                     <span className={streakVal >= 3 ? "text-emerald-500 font-bold" : "text-slate-350 font-bold"}>
                       {streakVal >= 3 ? "✓" : "○"}
                     </span>
-                    <span className={streakVal >= 3 ? "line-through text-slate-400 font-medium" : "text-slate-650 font-semibold"}>
+                    <span className={streakVal >= 3 ? "line-through text-slate-400 font-medium" : "text-[#3E3A35]/85 font-semibold"}>
                       Duy trì chuỗi Streak 3 ngày
                     </span>
                   </div>
@@ -1079,13 +1079,13 @@ export default function DashboardPage() {
             
             {/* Daily Quote widget */}
             {dailyQuote.text && (
-              <div className="rounded-2xl border border-slate-100 bg-white/70 backdrop-blur-md p-6 shadow-sm shadow-indigo-950/5 relative overflow-hidden">
+              <div className="rounded-2xl border border-[#EBE6DD] bg-white/75 backdrop-blur-md p-6 shadow-sm shadow-stone-900/5 relative overflow-hidden">
                 <div className="absolute -top-10 -right-10 w-32 h-32 bg-indigo-500/5 rounded-full blur-xl pointer-events-none"></div>
                 <div className="flex items-start gap-4">
                   <div className="text-3xl select-none animate-pulse">💡</div>
                   <div className="space-y-1">
                     <span className="text-[10px] font-bold text-indigo-600 uppercase tracking-widest block">Cảm hứng học tập mỗi ngày</span>
-                    <p className="text-sm font-medium text-slate-700 leading-relaxed font-serif italic">
+                    <p className="text-sm font-medium text-[#3E3A35]/90 leading-relaxed font-serif italic">
                       "{dailyQuote.text}"
                     </p>
                     <span className="text-[10px] text-slate-400 font-bold block pt-1">— {dailyQuote.author}</span>
@@ -1096,13 +1096,13 @@ export default function DashboardPage() {
 
 
             {/* Mobile Tab Navigation Feed Switcher - Hidden on desktop */}
-            <div className="flex md:hidden border-b border-slate-100 gap-5 px-1 pb-1 overflow-x-auto select-none scrollbar-none">
+            <div className="flex md:hidden border-b border-[#EBE6DD] gap-5 px-1 pb-1 overflow-x-auto select-none scrollbar-none">
               <button
                 onClick={() => setActiveTab("today")}
                 className={`pb-2 text-xs font-bold uppercase tracking-wider border-b-2 transition-all duration-200 active:scale-[0.95] focus:outline-none shrink-0 ${
                   activeTab === "today"
                     ? "border-indigo-600 text-indigo-600 font-extrabold"
-                    : "border-transparent text-slate-450 hover:text-slate-700"
+                    : "border-transparent text-slate-450 hover:text-[#3E3A35]"
                 }`}
               >
                 Bài học
@@ -1112,7 +1112,7 @@ export default function DashboardPage() {
                 className={`pb-2 text-xs font-bold uppercase tracking-wider border-b-2 transition-all duration-200 active:scale-[0.95] focus:outline-none shrink-0 ${
                   activeTab === "bookmarks"
                     ? "border-indigo-600 text-indigo-600 font-extrabold"
-                    : "border-transparent text-slate-450 hover:text-slate-700"
+                    : "border-transparent text-slate-450 hover:text-[#3E3A35]"
                 }`}
               >
                 Đã lưu
@@ -1122,7 +1122,7 @@ export default function DashboardPage() {
                 className={`pb-2 text-xs font-bold uppercase tracking-wider border-b-2 transition-all duration-200 active:scale-[0.95] focus:outline-none shrink-0 ${
                   activeTab === "groups"
                     ? "border-indigo-600 text-indigo-600 font-extrabold"
-                    : "border-transparent text-slate-450 hover:text-slate-700"
+                    : "border-transparent text-slate-450 hover:text-[#3E3A35]"
                 }`}
               >
                 Nhóm
@@ -1132,7 +1132,7 @@ export default function DashboardPage() {
                 className={`pb-2 text-xs font-bold uppercase tracking-wider border-b-2 transition-all duration-200 active:scale-[0.95] focus:outline-none shrink-0 ${
                   activeTab === "leaderboard"
                     ? "border-indigo-600 text-indigo-600 font-extrabold"
-                    : "border-transparent text-slate-450 hover:text-slate-700"
+                    : "border-transparent text-slate-450 hover:text-[#3E3A35]"
                 }`}
               >
                 Xếp hạng
@@ -1142,7 +1142,7 @@ export default function DashboardPage() {
                 className={`pb-2 text-xs font-bold uppercase tracking-wider border-b-2 transition-all duration-200 active:scale-[0.95] focus:outline-none shrink-0 ${
                   activeTab === "stats"
                     ? "border-indigo-600 text-indigo-600 font-extrabold"
-                    : "border-transparent text-slate-450 hover:text-slate-700"
+                    : "border-transparent text-slate-450 hover:text-[#3E3A35]"
                 }`}
               >
                 Tiến trình
@@ -1152,7 +1152,7 @@ export default function DashboardPage() {
                 className={`pb-2 text-xs font-bold uppercase tracking-wider border-b-2 transition-all duration-200 active:scale-[0.95] focus:outline-none shrink-0 ${
                   activeTab === "referrals"
                     ? "border-indigo-600 text-indigo-600 font-extrabold"
-                    : "border-transparent text-slate-450 hover:text-slate-700"
+                    : "border-transparent text-slate-450 hover:text-[#3E3A35]"
                 }`}
               >
                 Giới thiệu
@@ -1170,7 +1170,7 @@ export default function DashboardPage() {
                       <span>Tiến độ hoàn thành hôm nay</span>
                       <span className="font-mono text-xs">{completedCount} / {totalCount} bài học</span>
                     </div>
-                    <div className="h-2 w-full bg-slate-100 rounded-full overflow-hidden">
+                    <div className="h-2 w-full bg-[#F0ECE4] rounded-full overflow-hidden">
                       <div
                         className="h-full bg-gradient-to-r from-orange-500 to-amber-500 transition-all duration-500 ease-out rounded-full"
                         style={{ width: `${(completedCount / totalCount) * 100}%` }}
@@ -1224,12 +1224,12 @@ export default function DashboardPage() {
                   </div>
                 ) : filteredLessons.length === 0 ? (
                   /* SVG Illustration empty state for lessons feed */
-                  <div className="text-center py-16 border border-dashed border-slate-200 rounded-2xl bg-white/40 flex flex-col items-center justify-center p-6 space-y-4">
+                  <div className="text-center py-16 border border-dashed border-[#D5CFC5] rounded-2xl bg-white/40 flex flex-col items-center justify-center p-6 space-y-4">
                     <svg className="h-16 w-16 text-indigo-300 animate-pulse" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
                       <path strokeLinecap="round" strokeLinejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25" />
                     </svg>
                     <div className="space-y-1 max-w-xs">
-                      <h3 className="text-sm font-bold text-slate-700">Không tìm thấy bài học</h3>
+                      <h3 className="text-sm font-bold text-[#3E3A35]">Không tìm thấy bài học</h3>
                       <p className="text-xs text-slate-400 leading-normal">
                         Không tìm thấy bài học nào phù hợp với danh mục lọc hoặc sở thích học tập của bạn hôm nay.
                       </p>
@@ -1242,7 +1242,7 @@ export default function DashboardPage() {
                       return (
                         <div
                           key={lesson.id}
-                          className={`rounded-[2rem] bg-slate-50/40 p-2 border border-slate-100/50 transition-all duration-300 relative ${
+                          className={`rounded-[2rem] bg-[#FAF8F5]/40 p-2 border border-[#EBE6DD]/50 transition-all duration-300 relative ${
                             lesson.completed
                               ? "opacity-95 shadow-none"
                               : "hover:scale-[1.015] hover:shadow-xl hover:shadow-indigo-950/5"
@@ -1252,7 +1252,7 @@ export default function DashboardPage() {
                             className={`rounded-[calc(2rem-0.5rem)] p-6 border transition-all duration-300 ${
                               lesson.completed
                                 ? "bg-emerald-50/30 border-emerald-100/80 shadow-none"
-                                : "bg-white/90 border-slate-100 shadow-[inset_0_1px_1px_rgba(255,255,255,0.2)]"
+                                : "bg-white/90 border-[#EBE6DD] shadow-[inset_0_1px_1px_rgba(255,255,255,0.2)]"
                             }`}
                           >
                           {/* Bookmark Toggle Button */}
@@ -1263,7 +1263,7 @@ export default function DashboardPage() {
                               handleToggleBookmark(lesson.id);
                             }}
                             disabled={bookmarkingId === lesson.id}
-                            className="absolute top-4 right-4 text-slate-400 hover:text-indigo-600 p-1.5 rounded-lg hover:bg-slate-100 transition duration-200 z-10"
+                            className="absolute top-4 right-4 text-slate-400 hover:text-indigo-600 p-1.5 rounded-lg hover:bg-[#F0ECE4] transition duration-200 z-10"
                             title={isSaved ? "Bỏ lưu bài học" : "Lưu bài học"}
                           >
                             <svg
@@ -1301,7 +1301,7 @@ export default function DashboardPage() {
 
                           {/* Summary takeaways list with side category watermark SVG */}
                           <div className="flex justify-between items-start gap-5 mb-6">
-                            <ul className="space-y-2.5 text-sm text-slate-600 flex-1">
+                            <ul className="space-y-2.5 text-sm text-[#5C554B] flex-1">
                               {lesson.summary.slice(0, 2).map((bullet, idx) => (
                                 <li key={idx} className="flex items-start gap-2.5">
                                   <span className="text-orange-500 mt-1.5 text-xs select-none">•</span>
@@ -1314,13 +1314,13 @@ export default function DashboardPage() {
                                 </li>
                               )}
                             </ul>
-                            <div className="hidden sm:block shrink-0 pt-1 select-none pointer-events-none bg-slate-50 p-2 rounded-2xl border border-slate-100/50">
+                            <div className="hidden sm:block shrink-0 pt-1 select-none pointer-events-none bg-[#FAF8F5] p-2 rounded-2xl border border-[#EBE6DD]/50">
                               {getCategoryIcon(lesson.tags)}
                             </div>
                           </div>
 
                           {/* Action trigger button */}
-                          <div className="flex justify-between items-center pt-4 border-t border-slate-100">
+                          <div className="flex justify-between items-center pt-4 border-t border-[#EBE6DD]">
                             <span className={`text-[9px] font-extrabold uppercase tracking-wider px-2.5 py-0.5 rounded-full border ${getLevelBadge(lesson.level)}`}>
                               Trình độ: {lesson.level}
                             </span>
@@ -1374,7 +1374,7 @@ export default function DashboardPage() {
                 {/* Create / Join Group widgets */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   {/* Join Group card */}
-                  <div className="bg-white/80 border border-slate-100 p-5 rounded-2xl shadow-sm space-y-4">
+                  <div className="bg-white/80 border border-[#EBE6DD] p-5 rounded-2xl shadow-sm space-y-4">
                     <div>
                       <h3 className="font-serif text-sm font-bold text-slate-800">Gia nhập nhóm học tập</h3>
                       <p className="text-[10px] text-slate-400 mt-0.5">Nhập mã Code 6 ký tự để gia nhập nhóm học của bạn bè.</p>
@@ -1386,7 +1386,7 @@ export default function DashboardPage() {
                         value={joinGroupCode}
                         onChange={(e) => setJoinGroupCode(e.target.value.toUpperCase())}
                         maxLength={6}
-                        className="bg-slate-50 border border-slate-200/80 rounded-xl px-4 py-2.5 text-xs font-mono font-bold uppercase tracking-wider text-slate-800 focus:outline-none focus:border-indigo-400 flex-1"
+                        className="bg-[#FAF8F5] border border-[#D5CFC5]/80 rounded-xl px-4 py-2.5 text-xs font-mono font-bold uppercase tracking-wider text-slate-800 focus:outline-none focus:border-indigo-400 flex-1"
                       />
                       <button
                         onClick={joinGroup}
@@ -1399,7 +1399,7 @@ export default function DashboardPage() {
                   </div>
 
                   {/* Create Group card */}
-                  <div className="bg-white/80 border border-slate-100 p-5 rounded-2xl shadow-sm space-y-4">
+                  <div className="bg-white/80 border border-[#EBE6DD] p-5 rounded-2xl shadow-sm space-y-4">
                     <div>
                       <h3 className="font-serif text-sm font-bold text-slate-800">Tạo nhóm học tập mới</h3>
                       <p className="text-[10px] text-slate-400 mt-0.5">Lập nhóm thi đua học tập riêng cùng bạn bè của bạn.</p>
@@ -1411,7 +1411,7 @@ export default function DashboardPage() {
                         value={newGroupName}
                         onChange={(e) => setNewGroupName(e.target.value)}
                         maxLength={25}
-                        className="bg-slate-50 border border-slate-200/80 rounded-xl px-4 py-2.5 text-xs font-bold text-slate-800 focus:outline-none focus:border-indigo-400 flex-1"
+                        className="bg-[#FAF8F5] border border-[#D5CFC5]/80 rounded-xl px-4 py-2.5 text-xs font-bold text-slate-800 focus:outline-none focus:border-indigo-400 flex-1"
                       />
                       <button
                         onClick={createGroup}
@@ -1429,10 +1429,10 @@ export default function DashboardPage() {
                     <div className="h-8 w-8 animate-spin rounded-full border-2 border-indigo-500 border-t-transparent"></div>
                   </div>
                 ) : groups.length === 0 ? (
-                  <div className="text-center py-16 border border-dashed border-slate-200 rounded-2xl bg-white/40 flex flex-col items-center justify-center p-6 space-y-3">
+                  <div className="text-center py-16 border border-dashed border-[#D5CFC5] rounded-2xl bg-white/40 flex flex-col items-center justify-center p-6 space-y-3">
                     <span className="text-3xl select-none">👥</span>
                     <div className="space-y-1 max-w-xs">
-                      <h3 className="text-sm font-bold text-slate-700">Chưa tham gia nhóm nào</h3>
+                      <h3 className="text-sm font-bold text-[#3E3A35]">Chưa tham gia nhóm nào</h3>
                       <p className="text-xs text-slate-400 leading-normal">
                         Hãy tự tạo nhóm hoặc nhập mã mời của bạn bè để bắt đầu thi đua và chia sẻ tiến độ học tập.
                       </p>
@@ -1451,7 +1451,7 @@ export default function DashboardPage() {
                             className={`px-4 py-2 rounded-xl text-xs font-bold transition duration-200 ${
                               activeGroupIndex === idx
                                 ? "bg-indigo-50 text-indigo-700 border border-indigo-200"
-                                : "bg-white/60 text-slate-500 border border-slate-100 hover:bg-white"
+                                : "bg-white/60 text-slate-500 border border-[#EBE6DD] hover:bg-white"
                             }`}
                           >
                             {g.name}
@@ -1465,13 +1465,13 @@ export default function DashboardPage() {
                       const group = groups[activeGroupIndex];
                       return (
                         <div className="space-y-6">
-                          <div className="bg-white/80 border border-slate-100 rounded-3xl p-6 shadow-sm space-y-5">
-                            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between border-b border-slate-100/70 pb-4 gap-3">
+                          <div className="bg-white/80 border border-[#EBE6DD] rounded-3xl p-6 shadow-sm space-y-5">
+                            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between border-b border-[#EBE6DD]/70 pb-4 gap-3">
                               <div>
                                 <h3 className="font-serif text-lg font-bold text-slate-800">{group.name}</h3>
                                 <p className="text-[10px] text-slate-400 mt-0.5">Ngày lập: {new Date(group.createdAt).toLocaleDateString("vi-VN")}</p>
                               </div>
-                              <div className="flex items-center gap-2 bg-slate-50 border border-slate-200/80 px-3.5 py-1.5 rounded-2xl max-w-max">
+                              <div className="flex items-center gap-2 bg-[#FAF8F5] border border-[#D5CFC5]/80 px-3.5 py-1.5 rounded-2xl max-w-max">
                                 <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Mã mời nhóm:</span>
                                 <span className="text-sm font-mono font-black text-indigo-600 select-all cursor-pointer" title="Nhấn để bôi đen và copy">{group.code}</span>
                               </div>
@@ -1487,7 +1487,7 @@ export default function DashboardPage() {
                                     <div
                                       key={member.id}
                                       className={`flex flex-col sm:flex-row sm:items-center sm:justify-between border p-4.5 rounded-2xl transition duration-150 gap-4 ${
-                                        isSelf ? "bg-indigo-50/20 border-indigo-100" : "bg-slate-50/30 border-slate-100 hover:bg-slate-50/50"
+                                        isSelf ? "bg-indigo-50/20 border-indigo-100" : "bg-[#FAF8F5]/30 border-[#EBE6DD] hover:bg-[#FAF8F5]/50"
                                       }`}
                                     >
                                       <div className="flex items-center gap-3">
@@ -1495,7 +1495,7 @@ export default function DashboardPage() {
                                         <img
                                           src={member.avatarUrl || "https://lh3.googleusercontent.com/a/default-user"}
                                           alt={member.name}
-                                          className="h-10 w-10 rounded-full border border-slate-200 shadow-sm"
+                                          className="h-10 w-10 rounded-full border border-[#D5CFC5] shadow-sm"
                                         />
                                         <div>
                                           <div className="text-xs font-bold text-slate-800 flex items-center gap-1.5">
@@ -1512,7 +1512,7 @@ export default function DashboardPage() {
                                           <span className={`h-5 w-5 rounded-full flex items-center justify-center text-xs font-bold ${
                                             member.completedToday
                                               ? "bg-emerald-50 border border-emerald-200 text-emerald-600"
-                                              : "bg-slate-100 border border-slate-200 text-slate-400"
+                                              : "bg-[#F0ECE4] border border-[#D5CFC5] text-slate-400"
                                           }`}>
                                             {member.completedToday ? "✓" : "○"}
                                           </span>
@@ -1525,7 +1525,7 @@ export default function DashboardPage() {
 
                                         {/* Kudobox Reaction Stickers */}
                                         {!isSelf && member.completedToday && (
-                                          <div className="flex items-center gap-2 border-l border-slate-200/80 pl-4.5">
+                                          <div className="flex items-center gap-2 border-l border-[#D5CFC5]/80 pl-4.5">
                                             <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest mr-1">Cổ vũ:</span>
                                             {["🔥", "👏", "💪"].map((emoji) => (
                                               <button
@@ -1547,7 +1547,7 @@ export default function DashboardPage() {
                           </div>
 
                           {/* Group Heatmap activity graph */}
-                          <div className="bg-white/80 border border-slate-100 p-6 rounded-3xl shadow-sm space-y-4">
+                          <div className="bg-white/80 border border-[#EBE6DD] p-6 rounded-3xl shadow-sm space-y-4">
                             <div>
                               <h3 className="font-serif text-sm font-bold text-slate-800">Hoạt động chung của nhóm</h3>
                               <p className="text-[10px] text-slate-455 mt-0.5">Tần suất tích lũy bài học hoàn thành của cả nhóm học tập 6 tháng qua.</p>
@@ -1570,7 +1570,7 @@ export default function DashboardPage() {
                                     const titleText = `${formattedDate}: Cả nhóm học ${count} bài học`;
                                     
                                     // Custom colors for group heatmap counts
-                                    let cellColor = "bg-slate-100 hover:bg-slate-200";
+                                    let cellColor = "bg-[#F0ECE4] hover:bg-slate-200";
                                     if (count === 1) cellColor = "bg-indigo-100 hover:bg-indigo-200";
                                     else if (count === 2) cellColor = "bg-indigo-300 hover:bg-indigo-400";
                                     else if (count >= 3) cellColor = "bg-indigo-600 hover:bg-indigo-700";
@@ -1588,7 +1588,7 @@ export default function DashboardPage() {
                             </div>
                             <div className="flex items-center justify-end gap-1.5 text-[8px] text-slate-400 pr-1">
                               <span>Ít</span>
-                              <div className="h-2 w-2 rounded-sm bg-slate-100" />
+                              <div className="h-2 w-2 rounded-sm bg-[#F0ECE4]" />
                               <div className="h-2 w-2 rounded-sm bg-indigo-100" />
                               <div className="h-2 w-2 rounded-sm bg-indigo-300" />
                               <div className="h-2 w-2 rounded-sm bg-indigo-600" />
@@ -1611,12 +1611,12 @@ export default function DashboardPage() {
                   renderShimmerSkeletons()
                 ) : filteredBookmarks.length === 0 ? (
                   /* SVG Illustration empty state for bookmarks */
-                  <div className="text-center py-16 border border-dashed border-slate-200 rounded-2xl bg-white/40 flex flex-col items-center justify-center p-6 space-y-4">
+                  <div className="text-center py-16 border border-dashed border-[#D5CFC5] rounded-2xl bg-white/40 flex flex-col items-center justify-center p-6 space-y-4">
                     <svg className="h-16 w-16 text-indigo-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
                       <path strokeLinecap="round" strokeLinejoin="round" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
                     </svg>
                     <div className="space-y-1 max-w-xs">
-                      <h3 className="text-sm font-bold text-slate-700">Chưa lưu bài học nào</h3>
+                      <h3 className="text-sm font-bold text-[#3E3A35]">Chưa lưu bài học nào</h3>
                       <p className="text-xs text-slate-400 leading-normal">
                         Hãy nhấn biểu tượng Bookmark bên cạnh bài học để lưu lại và ôn tập bất kỳ lúc nào bạn muốn.
                       </p>
@@ -1627,7 +1627,7 @@ export default function DashboardPage() {
                     {filteredBookmarks.map((lesson) => (
                       <div
                         key={lesson.id}
-                        className={`rounded-[2rem] bg-slate-50/40 p-2 border border-slate-100/50 transition-all duration-300 relative ${
+                        className={`rounded-[2rem] bg-[#FAF8F5]/40 p-2 border border-[#EBE6DD]/50 transition-all duration-300 relative ${
                           lesson.completed
                             ? "opacity-95 shadow-none"
                             : "hover:scale-[1.015] hover:shadow-xl hover:shadow-indigo-950/5"
@@ -1637,7 +1637,7 @@ export default function DashboardPage() {
                           className={`rounded-[calc(2rem-0.5rem)] p-6 border transition-all duration-300 ${
                             lesson.completed
                               ? "bg-emerald-50/30 border-emerald-100/80 shadow-none"
-                              : "bg-white/90 border-slate-100 shadow-[inset_0_1px_1px_rgba(255,255,255,0.2)]"
+                              : "bg-white/90 border-[#EBE6DD] shadow-[inset_0_1px_1px_rgba(255,255,255,0.2)]"
                           }`}
                         >
                         {/* Bookmark Toggle Button */}
@@ -1648,7 +1648,7 @@ export default function DashboardPage() {
                             handleToggleBookmark(lesson.id);
                           }}
                           disabled={bookmarkingId === lesson.id}
-                          className="absolute top-4 right-4 text-slate-400 hover:text-indigo-600 p-1.5 rounded-lg hover:bg-slate-100 transition duration-200 z-10"
+                          className="absolute top-4 right-4 text-slate-400 hover:text-indigo-600 p-1.5 rounded-lg hover:bg-[#F0ECE4] transition duration-200 z-10"
                           title="Bỏ lưu bài học"
                         >
                           <svg
@@ -1686,7 +1686,7 @@ export default function DashboardPage() {
 
                         {/* Summary takeaways list with side category watermark SVG */}
                         <div className="flex justify-between items-start gap-5 mb-6">
-                          <ul className="space-y-2.5 text-sm text-slate-600 flex-1">
+                          <ul className="space-y-2.5 text-sm text-[#5C554B] flex-1">
                             {lesson.summary.slice(0, 2).map((bullet, idx) => (
                               <li key={idx} className="flex items-start gap-2.5">
                                 <span className="text-orange-500 mt-1.5 text-xs select-none">•</span>
@@ -1699,13 +1699,13 @@ export default function DashboardPage() {
                               </li>
                             )}
                           </ul>
-                          <div className="hidden sm:block shrink-0 pt-1 select-none pointer-events-none bg-slate-50 p-2 rounded-2xl border border-slate-100/50">
+                          <div className="hidden sm:block shrink-0 pt-1 select-none pointer-events-none bg-[#FAF8F5] p-2 rounded-2xl border border-[#EBE6DD]/50">
                             {getCategoryIcon(lesson.tags)}
                           </div>
                         </div>
 
                         {/* Action trigger button */}
-                        <div className="flex justify-between items-center pt-4 border-t border-slate-100">
+                        <div className="flex justify-between items-center pt-4 border-t border-[#EBE6DD]">
                           <span className={`text-[9px] font-extrabold uppercase tracking-wider px-2.5 py-0.5 rounded-full border ${getLevelBadge(lesson.level)}`}>
                             Trình độ: {lesson.level}
                           </span>
@@ -1728,7 +1728,7 @@ export default function DashboardPage() {
               </div>
             ) : activeTab === "leaderboard" ? (
               /* New spacious Leaderboard View */
-              <div className="bg-white/80 border border-slate-100 rounded-2xl shadow-sm overflow-hidden p-6 space-y-5">
+              <div className="bg-white/80 border border-[#EBE6DD] rounded-2xl shadow-sm overflow-hidden p-6 space-y-5">
                 <div>
                   <h3 className="font-serif text-lg font-bold text-slate-800">Bảng xếp hạng thi đua</h3>
                   <p className="text-xs text-slate-400 mt-0.5">Xếp hạng học tập dựa trên chuỗi ngày học liên tục (Streak) giữa các thành viên.</p>
@@ -1749,7 +1749,7 @@ export default function DashboardPage() {
                     }
 
                     return (
-                      <div key={idx} className={`bg-gradient-to-br ${item.name === user.name ? "from-indigo-50/50 to-purple-50/30 border-indigo-200" : "from-slate-50 to-white/70 border-slate-100"} border p-5 rounded-2xl shadow-sm flex flex-col items-center text-center gap-3 relative overflow-hidden`}>
+                      <div key={idx} className={`bg-gradient-to-br ${item.name === user.name ? "from-indigo-50/50 to-purple-50/30 border-indigo-200" : "from-slate-50 to-white/70 border-[#EBE6DD]"} border p-5 rounded-2xl shadow-sm flex flex-col items-center text-center gap-3 relative overflow-hidden`}>
                         <div className={`absolute top-3 left-3 text-[9px] font-black uppercase tracking-wider bg-gradient-to-r ${badgeColor} px-2.5 py-0.5 rounded-full`}>
                           {placement}
                         </div>
@@ -1775,11 +1775,11 @@ export default function DashboardPage() {
                   })}
                 </div>
 
-                <div className="border border-slate-100 rounded-xl overflow-hidden mt-6 bg-white/40">
+                <div className="border border-[#EBE6DD] rounded-xl overflow-hidden mt-6 bg-white/40">
                   <div className="overflow-x-auto">
                     <table className="w-full text-left border-collapse">
                       <thead>
-                        <tr className="bg-slate-50/70 text-[10px] font-bold text-slate-450 uppercase tracking-wider border-b border-slate-100">
+                        <tr className="bg-[#FAF8F5]/70 text-[10px] font-bold text-slate-450 uppercase tracking-wider border-b border-[#EBE6DD]">
                           <th className="py-3.5 px-5">Thứ hạng</th>
                           <th className="py-3.5 px-5">Thành viên</th>
                           <th className="py-3.5 px-5">Số bài đã học</th>
@@ -1795,7 +1795,7 @@ export default function DashboardPage() {
                           if (item.rank === 3) rankLabel = "🥉";
 
                           return (
-                            <tr key={idx} className={`${isCurrentUser ? "bg-indigo-50/30" : "hover:bg-slate-50/50"} transition duration-150`}>
+                            <tr key={idx} className={`${isCurrentUser ? "bg-indigo-50/30" : "hover:bg-[#FAF8F5]/50"} transition duration-150`}>
                               <td className="py-3 px-5 font-bold text-slate-500">{rankLabel}</td>
                               <td className="py-3 px-5">
                                 <div className="flex items-center gap-2.5">
@@ -1803,7 +1803,7 @@ export default function DashboardPage() {
                                   <img
                                     src={item.avatarUrl || "https://lh3.googleusercontent.com/a/default-user"}
                                     alt={item.name}
-                                    className="h-6.5 w-6.5 rounded-full border border-slate-200"
+                                    className="h-6.5 w-6.5 rounded-full border border-[#D5CFC5]"
                                   />
                                   <span className={`font-bold ${isCurrentUser ? "text-indigo-600" : "text-slate-800"}`}>
                                     {item.name}
@@ -1828,7 +1828,7 @@ export default function DashboardPage() {
                 {/* RPG Skills Radar Chart & Category details */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   {/* Radar Chart Visual */}
-                  <div className="bg-white/80 border border-slate-100 p-6 rounded-2xl shadow-sm space-y-4 flex flex-col items-center justify-center">
+                  <div className="bg-white/80 border border-[#EBE6DD] p-6 rounded-2xl shadow-sm space-y-4 flex flex-col items-center justify-center">
                     <div className="w-full text-left">
                       <h3 className="font-serif text-sm font-bold text-slate-800">Biểu đồ kỹ năng RPG</h3>
                       <p className="text-[10px] text-slate-455 mt-0.5">Trực quan hóa trình độ tri thức của bạn qua các chủ đề.</p>
@@ -1992,7 +1992,7 @@ export default function DashboardPage() {
                   </div>
 
                   {/* Competency detail card list */}
-                  <div className="bg-white/80 border border-slate-100 p-6 rounded-2xl shadow-sm space-y-4">
+                  <div className="bg-white/80 border border-[#EBE6DD] p-6 rounded-2xl shadow-sm space-y-4">
                     <div>
                       <h3 className="font-serif text-sm font-bold text-slate-800">Chi tiết phân tích kỹ năng</h3>
                       <p className="text-[10px] text-slate-455 mt-0.5">Tiến độ bài học đã hoàn thành và điểm số kiểm tra trắc nghiệm của từng chủ đề.</p>
@@ -2014,7 +2014,7 @@ export default function DashboardPage() {
                             Design: { name: "Thiết kế", color: "bg-pink-500" },
                             Health: { name: "Sức khỏe", color: "bg-rose-500" },
                           };
-                          const item = labelMap[c.category] || { name: c.category, color: "bg-slate-500" };
+                          const item = labelMap[c.category] || { name: c.category, color: "bg-[#FAF8F5]0" };
                           
                           return (
                             <div key={c.category} className="space-y-2">
@@ -2027,7 +2027,7 @@ export default function DashboardPage() {
                                   {c.completed} / {c.total} bài học ({c.progress}%)
                                 </span>
                               </div>
-                              <div className="h-2 w-full bg-slate-100 rounded-full overflow-hidden relative">
+                              <div className="h-2 w-full bg-[#F0ECE4] rounded-full overflow-hidden relative">
                                 <div
                                   className={`h-full ${item.color} rounded-full transition-all duration-500`}
                                   style={{ width: `${c.progress}%` }}
@@ -2047,7 +2047,7 @@ export default function DashboardPage() {
                 </div>
 
                 {/* Heatmap graph Card - stretched beautifully */}
-                <div className="bg-white/80 border border-slate-100 p-6 rounded-2xl shadow-sm space-y-4">
+                <div className="bg-white/80 border border-[#EBE6DD] p-6 rounded-2xl shadow-sm space-y-4">
                   <div>
                     <h3 className="font-serif text-sm font-bold text-slate-800">Nhật ký hoạt động</h3>
                     <p className="text-[10px] text-slate-450 mt-0.5">Tần suất và lịch sử học tập 6 tháng qua của bạn.</p>
@@ -2079,7 +2079,7 @@ export default function DashboardPage() {
                   </div>
                   <div className="flex items-center justify-end gap-1.5 text-[8px] text-slate-400 pr-1">
                     <span>Ít</span>
-                    <div className="h-2 w-2 rounded-sm bg-slate-100" />
+                    <div className="h-2 w-2 rounded-sm bg-[#F0ECE4]" />
                     <div className="h-2 w-2 rounded-sm bg-indigo-200" />
                     <div className="h-2 w-2 rounded-sm bg-indigo-400" />
                     <div className="h-2 w-2 rounded-sm bg-indigo-600" />
@@ -2088,7 +2088,7 @@ export default function DashboardPage() {
                 </div>
 
                 {/* Achievements Badges Cabinet */}
-                <div className="bg-white/80 border border-slate-100 p-6 rounded-2xl shadow-sm space-y-4">
+                <div className="bg-white/80 border border-[#EBE6DD] p-6 rounded-2xl shadow-sm space-y-4">
                   <div>
                     <h3 className="font-serif text-sm font-bold text-slate-800">Tủ trưng bày Huy hiệu</h3>
                     <p className="text-[10px] text-slate-450 mt-0.5">Các cột mốc học tập và danh hiệu cao quý bạn đã mở khóa thành công.</p>
@@ -2108,7 +2108,7 @@ export default function DashboardPage() {
                           className={`relative border rounded-2xl p-4.5 flex items-center gap-3.5 transition-all duration-300 ${
                             badge.isUnlocked
                               ? "bg-gradient-to-br from-indigo-50/50 to-white/70 border-indigo-200 shadow-md shadow-indigo-500/5"
-                              : "bg-slate-50 border-slate-200/60 opacity-50 select-none grayscale"
+                              : "bg-[#FAF8F5] border-[#D5CFC5]/60 opacity-50 select-none grayscale"
                           }`}
                         >
                           <div className={`h-11 w-11 rounded-full flex items-center justify-center text-xl shadow-sm shrink-0 ${
@@ -2134,19 +2134,19 @@ export default function DashboardPage() {
                 </div>
 
                 {/* Timeline Card */}
-                <div className="bg-white/80 border border-slate-100 p-6 rounded-2xl shadow-sm space-y-4">
+                <div className="bg-white/80 border border-[#EBE6DD] p-6 rounded-2xl shadow-sm space-y-4">
                   <div>
                     <h3 className="font-serif text-sm font-bold text-slate-800">Lịch sử bài học đã hoàn thành</h3>
                     <p className="text-[10px] text-slate-450 mt-0.5">Nhật ký chi tiết các ngày nộp bài tập kiểm tra.</p>
                   </div>
 
                   {timeline.length === 0 ? (
-                    <div className="text-center py-12 border border-dashed border-slate-200 rounded-2xl bg-white/40 flex flex-col items-center justify-center p-6 space-y-4">
+                    <div className="text-center py-12 border border-dashed border-[#D5CFC5] rounded-2xl bg-white/40 flex flex-col items-center justify-center p-6 space-y-4">
                       <svg className="h-14 w-14 text-indigo-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
                         <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                       </svg>
                       <div className="space-y-1 max-w-xs">
-                        <h3 className="text-sm font-bold text-slate-700">Chưa có hoạt động nào</h3>
+                        <h3 className="text-sm font-bold text-[#3E3A35]">Chưa có hoạt động nào</h3>
                         <p className="text-xs text-slate-450 leading-normal">
                           Hãy bắt đầu học và vượt qua các bài kiểm tra trắc nghiệm để ghi nhận nhật ký của bạn.
                         </p>
@@ -2174,7 +2174,7 @@ export default function DashboardPage() {
                                   Đạt {item.score}%
                                 </span>
                                 {item.tags.map((tag: string) => (
-                                  <span key={tag} className="text-[9px] font-semibold text-slate-400 bg-slate-50 px-1.5 py-0.5 rounded border border-slate-100">
+                                  <span key={tag} className="text-[9px] font-semibold text-slate-400 bg-[#FAF8F5] px-1.5 py-0.5 rounded border border-[#EBE6DD]">
                                     #{tag}
                                   </span>
                                 ))}
@@ -2191,22 +2191,22 @@ export default function DashboardPage() {
               <div className="space-y-6">
                 {/* Referrals Stats Bento Cards */}
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                  <div className="bg-white/80 border border-slate-100 p-5 rounded-2xl shadow-sm text-center space-y-1">
+                  <div className="bg-white/80 border border-[#EBE6DD] p-5 rounded-2xl shadow-sm text-center space-y-1">
                     <span className="text-2xl">👥</span>
                     <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider block">Tổng số đã mời</span>
                     <div className="text-xl font-black text-slate-800">{referralStats?.totalInvited || 0}</div>
                   </div>
-                  <div className="bg-white/80 border border-slate-100 p-5 rounded-2xl shadow-sm text-center space-y-1">
+                  <div className="bg-white/80 border border-[#EBE6DD] p-5 rounded-2xl shadow-sm text-center space-y-1">
                     <span className="text-2xl">✅</span>
                     <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider block">Mời thành công</span>
                     <div className="text-xl font-black text-slate-800">{referralStats?.successfulReferrals || 0}</div>
                   </div>
-                  <div className="bg-white/80 border border-slate-100 p-5 rounded-2xl shadow-sm text-center space-y-1">
+                  <div className="bg-white/80 border border-[#EBE6DD] p-5 rounded-2xl shadow-sm text-center space-y-1">
                     <span className="text-2xl">💎</span>
                     <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider block">Điểm nhận được</span>
                     <div className="text-xl font-black text-indigo-600 font-mono">+{referralStats?.pointsEarned || 0}</div>
                   </div>
-                  <div className="bg-white/80 border border-slate-100 p-5 rounded-2xl shadow-sm text-center space-y-1">
+                  <div className="bg-white/80 border border-[#EBE6DD] p-5 rounded-2xl shadow-sm text-center space-y-1">
                     <span className="text-2xl">❄️</span>
                     <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider block">Thẻ bảo vệ nhận được</span>
                     <div className="text-xl font-black text-indigo-600 font-mono">+{referralStats?.freezesEarned || 0}</div>
@@ -2215,7 +2215,7 @@ export default function DashboardPage() {
 
                 {/* Referral Link & Bento Card Generation */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                  <div className="md:col-span-2 bg-white/80 border border-slate-100 p-6 rounded-3xl shadow-sm space-y-5">
+                  <div className="md:col-span-2 bg-white/80 border border-[#EBE6DD] p-6 rounded-3xl shadow-sm space-y-5">
                     <div>
                       <h3 className="font-serif text-base font-bold text-slate-800">Mời bạn cùng học tập</h3>
                       <p className="text-xs text-slate-400 mt-1">Gửi link giới thiệu cho bạn bè của bạn. Cả hai cùng nhận được <strong>50💎 và 1❄️</strong> ngay khi bạn của bạn hoàn thành bài học và quiz đầu tiên!</p>
@@ -2223,7 +2223,7 @@ export default function DashboardPage() {
 
                     <div className="space-y-4">
                       <div className="flex gap-2">
-                        <div className="bg-slate-50 border border-slate-200/80 rounded-xl px-4 py-2.5 text-xs text-slate-700 flex-1 font-mono select-all truncate flex items-center">
+                        <div className="bg-[#FAF8F5] border border-[#D5CFC5]/80 rounded-xl px-4 py-2.5 text-xs text-[#3E3A35] flex-1 font-mono select-all truncate flex items-center">
                           {typeof window !== "undefined" ? `${window.location.origin}/login?ref=${user.referralCode || ""}` : ""}
                         </div>
                         <button
@@ -2301,7 +2301,7 @@ export default function DashboardPage() {
                 </div>
 
                 {/* Referred Friends Table */}
-                <div className="bg-white/80 border border-slate-100 rounded-3xl p-6 shadow-sm space-y-4">
+                <div className="bg-white/80 border border-[#EBE6DD] rounded-3xl p-6 shadow-sm space-y-4">
                   <div>
                     <h3 className="font-serif text-base font-bold text-slate-800">Bạn bè đã giới thiệu</h3>
                     <p className="text-xs text-slate-455 mt-0.5">Danh sách các tài khoản đã đăng ký qua liên kết của bạn.</p>
@@ -2312,21 +2312,21 @@ export default function DashboardPage() {
                       <div className="h-6 w-6 animate-spin rounded-full border-2 border-indigo-500 border-t-transparent"></div>
                     </div>
                   ) : referralsList.length === 0 ? (
-                    <div className="text-center py-10 border border-dashed border-slate-200 rounded-2xl bg-white/40 flex flex-col items-center justify-center p-6 space-y-3">
+                    <div className="text-center py-10 border border-dashed border-[#D5CFC5] rounded-2xl bg-white/40 flex flex-col items-center justify-center p-6 space-y-3">
                       <span className="text-3xl select-none">🕊️</span>
                       <div className="space-y-0.5 max-w-xs">
-                        <h4 className="text-xs font-bold text-slate-700">Chưa giới thiệu được ai</h4>
+                        <h4 className="text-xs font-bold text-[#3E3A35]">Chưa giới thiệu được ai</h4>
                         <p className="text-[10px] text-slate-400 leading-normal">
                           Hãy chia sẻ liên kết giới thiệu để mời những bạn bè đầu tiên cùng tham gia nhé!
                         </p>
                       </div>
                     </div>
                   ) : (
-                    <div className="border border-slate-100 rounded-2xl overflow-hidden bg-white/40">
+                    <div className="border border-[#EBE6DD] rounded-2xl overflow-hidden bg-white/40">
                       <div className="overflow-x-auto">
                         <table className="w-full text-left border-collapse">
                           <thead>
-                            <tr className="bg-slate-50/70 text-[10px] font-bold text-slate-450 uppercase tracking-wider border-b border-slate-100">
+                            <tr className="bg-[#FAF8F5]/70 text-[10px] font-bold text-slate-450 uppercase tracking-wider border-b border-[#EBE6DD]">
                               <th className="py-3 px-5">Tên thành viên</th>
                               <th className="py-3 px-5">Email</th>
                               <th className="py-3 px-5">Ngày tham gia</th>
@@ -2335,7 +2335,7 @@ export default function DashboardPage() {
                           </thead>
                           <tbody className="divide-y divide-slate-100 text-xs">
                             {referralsList.map((ref) => (
-                              <tr key={ref.id} className="hover:bg-slate-50/50 transition duration-150">
+                              <tr key={ref.id} className="hover:bg-[#FAF8F5]/50 transition duration-150">
                                 <td className="py-3 px-5 font-bold text-slate-800">{ref.name}</td>
                                 <td className="py-3 px-5 font-mono text-slate-500">{ref.email}</td>
                                 <td className="py-3 px-5 text-slate-500">{new Date(ref.joinedAt).toLocaleDateString("vi-VN")}</td>
@@ -2367,8 +2367,8 @@ export default function DashboardPage() {
       {/* Share Bento Card Canvas Modal */}
       {showShareModal && (
         <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-slate-900/40 backdrop-blur-sm animate-fade-in p-4">
-          <div className="bg-white border border-slate-100 rounded-3xl p-5 shadow-2xl max-w-xl w-full mx-auto space-y-4 text-center animate-scale-up">
-            <div className="flex justify-between items-center border-b border-slate-100 pb-2">
+          <div className="bg-white border border-[#EBE6DD] rounded-3xl p-5 shadow-2xl max-w-xl w-full mx-auto space-y-4 text-center animate-scale-up">
+            <div className="flex justify-between items-center border-b border-[#EBE6DD] pb-2">
               <h3 className="font-serif text-sm font-bold text-slate-800">Ảnh Bento Thành Tích Của Bạn</h3>
               <button
                 onClick={() => setShowShareModal(false)}
@@ -2383,7 +2383,7 @@ export default function DashboardPage() {
                 ref={canvasRef}
                 width={600}
                 height={400}
-                className="max-w-full rounded-2xl shadow-md border border-slate-200"
+                className="max-w-full rounded-2xl shadow-md border border-[#D5CFC5]"
                 style={{ width: "100%", maxWidth: "480px", height: "auto" }}
               />
             </div>
@@ -2395,7 +2395,7 @@ export default function DashboardPage() {
             <div className="flex gap-3 pt-1 flex-wrap md:flex-nowrap">
               <button
                 onClick={() => setShowShareModal(false)}
-                className="flex-1 text-center py-2 rounded-xl border border-slate-200 text-xs font-bold text-slate-600 hover:bg-slate-50 transition duration-200 cursor-pointer whitespace-nowrap"
+                className="flex-1 text-center py-2 rounded-xl border border-[#D5CFC5] text-xs font-bold text-[#5C554B] hover:bg-[#FAF8F5] transition duration-200 cursor-pointer whitespace-nowrap"
               >
                 Đóng lại
               </button>
@@ -2419,7 +2419,7 @@ export default function DashboardPage() {
       {/* Center-screen Modal for Logout Confirmation */}
       {showLogoutConfirm && (
         <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-slate-900/40 backdrop-blur-sm animate-fade-in">
-          <div className="bg-white/95 border border-slate-100 rounded-3xl p-6 shadow-2xl max-w-sm w-full mx-4 space-y-5 text-center animate-scale-up">
+          <div className="bg-white/95 border border-[#EBE6DD] rounded-3xl p-6 shadow-2xl max-w-sm w-full mx-4 space-y-5 text-center animate-scale-up">
             <div className="h-12 w-12 rounded-full bg-rose-50 border border-rose-100 text-rose-500 flex items-center justify-center mx-auto text-xl">
               ⚠️
             </div>
@@ -2432,7 +2432,7 @@ export default function DashboardPage() {
             <div className="flex gap-3 pt-2">
               <button
                 onClick={() => setShowLogoutConfirm(false)}
-                className="flex-1 text-center py-2.5 rounded-xl border border-slate-200 text-xs font-bold text-slate-600 hover:bg-slate-50 transition duration-200 cursor-pointer"
+                className="flex-1 text-center py-2.5 rounded-xl border border-[#D5CFC5] text-xs font-bold text-[#5C554B] hover:bg-[#FAF8F5] transition duration-200 cursor-pointer"
               >
                 Hủy bỏ
               </button>
